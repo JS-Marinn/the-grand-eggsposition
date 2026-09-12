@@ -54,7 +54,7 @@ func _setup_shelves() -> void:
 
 		# 5 tiers of display shelves (d = 0..4)
 		for d in range(DOZENS_COUNT):
-			var tier_base_y: float = 0.28 + float(d) * 0.43
+			var tier_base_y: float = 0.30 + float(d) * 0.43
 			
 			# Main shelf board
 			var mi_shelf: MeshInstance3D = MeshInstance3D.new()
@@ -68,20 +68,10 @@ func _setup_shelves() -> void:
 			mi_riser.position = Vector3(0, tier_base_y + 0.0425, -0.15)
 			shelves_container.add_child(mi_riser)
 
-		# Decorative dividing ledge above 5th tier at Y = 2.38m (shallow depth so it never occludes the plaque from below)
-		var ledge_mesh: BoxMesh = BoxMesh.new()
-		ledge_mesh.size = Vector3(2.20, 0.035, 0.26)
-		ledge_mesh.material = velvet_mat
-
-		var mi_top_ledge: MeshInstance3D = MeshInstance3D.new()
-		mi_top_ledge.mesh = ledge_mesh
-		mi_top_ledge.position = Vector3(0, 2.38, -0.18)
-		shelves_container.add_child(mi_top_ledge)
-
-		# Former 6th tier space (Y = 2.43m to 2.81m) transformed into Showcase Category Plaque:
-		# 1. Brass / Gold framing border
+		# Name / Category plaque integrated into the bottom wooden base (PlinthBase at Y = 0.15m, front at Z = 0.38m):
+		# 1. Subtle antique brass frame trim
 		var frame_mesh: BoxMesh = BoxMesh.new()
-		frame_mesh.size = Vector3(2.12, 0.34, 0.04)
+		frame_mesh.size = Vector3(2.04, 0.20, 0.015)
 		var frame_mat: StandardMaterial3D = StandardMaterial3D.new()
 		frame_mat.albedo_color = Color(0.85, 0.70, 0.28, 1.0) # Antique brass/gold
 		frame_mat.metallic = 0.85
@@ -90,34 +80,34 @@ func _setup_shelves() -> void:
 
 		var mi_frame: MeshInstance3D = MeshInstance3D.new()
 		mi_frame.mesh = frame_mesh
-		mi_frame.position = Vector3(0, 2.60, 0.02)
+		mi_frame.position = Vector3(0, 0.15, 0.382)
 		shelves_container.add_child(mi_frame)
 
-		# 2. Rich dark royal oak plaque backplate
+		# 2. Carved dark walnut / oak wooden plate
 		var plaque_mesh: BoxMesh = BoxMesh.new()
-		plaque_mesh.size = Vector3(2.06, 0.28, 0.05)
+		plaque_mesh.size = Vector3(1.98, 0.16, 0.02)
 		var plaque_mat: StandardMaterial3D = StandardMaterial3D.new()
-		plaque_mat.albedo_color = Color(0.14, 0.09, 0.06, 1.0) # Midnight walnut/oak
-		plaque_mat.roughness = 0.35
+		plaque_mat.albedo_color = Color(0.16, 0.10, 0.06, 1.0) # Midnight walnut
+		plaque_mat.roughness = 0.40
 		plaque_mesh.material = plaque_mat
 
 		var mi_plaque: MeshInstance3D = MeshInstance3D.new()
 		mi_plaque.mesh = plaque_mesh
-		mi_plaque.position = Vector3(0, 2.60, 0.03)
+		mi_plaque.position = Vector3(0, 0.15, 0.385)
 		shelves_container.add_child(mi_plaque)
 
-		# 3. Gilded 3D Category Title Label
+		# 3. Gilded 3D Category Title Label on the wooden base
 		category_label = Label3D.new()
 		category_label.name = "CategoryLabel"
 		category_label.text = tr(showcase_title).to_upper()
-		category_label.font_size = 32
+		category_label.font_size = 28
 		category_label.outline_size = 8
-		category_label.outline_modulate = Color(0.06, 0.04, 0.02, 1.0)
+		category_label.outline_modulate = Color(0.08, 0.05, 0.02, 1.0)
 		category_label.modulate = Color(0.98, 0.93, 0.78, 1.0) # Warm radiant ivory-gold
 		category_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		category_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		category_label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
-		category_label.position = Vector3(0, 2.60, 0.06)
+		category_label.position = Vector3(0, 0.15, 0.398)
 		shelves_container.add_child(category_label)
 	else:
 		category_label = shelves_container.get_node_or_null("CategoryLabel") as Label3D
@@ -195,7 +185,7 @@ func _refresh_visuals() -> void:
 		var egg_info: EggData = GameManager.get_egg_for_showcase_dozen(showcase_id, d)
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 
-		var tier_base_y: float = 0.28 + float(d - 1) * 0.43
+		var tier_base_y: float = 0.30 + float(d - 1) * 0.43
 
 		for s in range(count):
 			var slot_x: float
