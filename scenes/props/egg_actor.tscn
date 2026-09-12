@@ -8,17 +8,17 @@ roughness = 0.25
 
 [sub_resource type="SphereMesh" id="SphereMesh_egg"]
 material = SubResource("StandardMaterial3D_egg")
-radius = 0.07
-height = 0.18
+radius = 0.085
+height = 0.22
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_egg"]
-radius = 0.07
-height = 0.18
+radius = 0.085
+height = 0.22
 
 [node name="EggActor" type="RigidBody3D"]
 collision_layer = 1
 collision_mask = 3
-mass = 1.4
+mass = 2.6
 script = ExtResource("1_egg_script")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
