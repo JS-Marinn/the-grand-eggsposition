@@ -221,4 +221,3 @@ func _resolve_egg(collider: Object) -> EggActor:
 
 func _trigger_resonance() -> void:
 	AudioManager.play_chime(global_position)
-

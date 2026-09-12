@@ -97,3 +97,10 @@ func has_matching_egg_for_showcase(showcase_id: int) -> bool:
 		if egg.showcase_id == showcase_id:
 			return true
 	return false
+
+## Returns the EggData definition associated with a given showcase and dozen slot
+func get_egg_for_showcase_dozen(showcase: int, dozen: int) -> EggData:
+	for egg: EggData in egg_database.values():
+		if egg.showcase_id == showcase and egg.dozen_group == dozen:
+			return egg
+	return null
