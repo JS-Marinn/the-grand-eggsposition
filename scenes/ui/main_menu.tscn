@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cmm001mainmenu"]
+[gd_scene format=3 uid="uid://dcul8hvhdkvik"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu_script"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="2_settings_scene"]

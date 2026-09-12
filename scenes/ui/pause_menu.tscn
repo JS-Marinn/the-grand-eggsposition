@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cpm001pausescene"]
+[gd_scene format=3 uid="uid://b0y82adm3qsqw"]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_pause_script"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="2_settings_scene"]

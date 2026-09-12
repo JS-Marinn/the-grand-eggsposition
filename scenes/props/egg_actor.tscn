@@ -1,4 +1,4 @@
-﻿[gd_scene load_steps=5 format=3 uid="uid://ce1egg001scene"]
+[gd_scene load_steps=5 format=3 uid="uid://ce1egg001scene"]
 
 [ext_resource type="Script" path="res://scripts/environment/egg_actor.gd" id="1_egg_script"]
 
@@ -8,16 +8,17 @@ roughness = 0.25
 
 [sub_resource type="SphereMesh" id="SphereMesh_egg"]
 material = SubResource("StandardMaterial3D_egg")
-radius = 0.03
-height = 0.085
+radius = 0.07
+height = 0.18
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_egg"]
-radius = 0.03
-height = 0.085
+radius = 0.07
+height = 0.18
 
 [node name="EggActor" type="RigidBody3D"]
 collision_layer = 1
 collision_mask = 3
+mass = 1.4
 script = ExtResource("1_egg_script")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

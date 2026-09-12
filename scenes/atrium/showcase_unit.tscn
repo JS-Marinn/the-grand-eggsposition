@@ -8,48 +8,48 @@ roughness = 0.45
 
 [sub_resource type="BoxMesh" id="BoxMesh_back"]
 material = SubResource("StandardMaterial3D_oak")
-size = Vector3(2.2, 2.5, 0.04)
+size = Vector3(3.04, 2.92, 0.05)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
 material = SubResource("StandardMaterial3D_oak")
-size = Vector3(0.08, 2.5, 0.36)
+size = Vector3(0.10, 2.92, 0.44)
 
 [sub_resource type="BoxMesh" id="BoxMesh_plinth"]
 material = SubResource("StandardMaterial3D_oak")
-size = Vector3(2.24, 0.22, 0.42)
+size = Vector3(3.08, 0.28, 0.50)
 
 [sub_resource type="BoxMesh" id="BoxMesh_crown"]
 material = SubResource("StandardMaterial3D_oak")
-size = Vector3(2.24, 0.08, 0.40)
+size = Vector3(3.08, 0.10, 0.48)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
-size = Vector3(2.4, 2.8, 0.8)
+size = Vector3(3.3, 3.3, 1.1)
 
 [node name="ShowcaseUnit" type="Node3D"]
 script = ExtResource("1_showcase_script")
 
 [node name="BackPanel" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -0.16)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.74, -0.20)
 mesh = SubResource("BoxMesh_back")
 
 [node name="PillarLeft" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.06, 1.35, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.48, 1.74, 0)
 mesh = SubResource("BoxMesh_pillar")
 
 [node name="PillarRight" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.06, 1.35, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.48, 1.74, 0)
 mesh = SubResource("BoxMesh_pillar")
 
 [node name="PlinthBase" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 0)
 mesh = SubResource("BoxMesh_plinth")
 
 [node name="CrownTop" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, 0)
 mesh = SubResource("BoxMesh_crown")
 
 [node name="InteractionArea" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
 collision_layer = 1
 collision_mask = 2
 
