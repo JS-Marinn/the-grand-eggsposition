@@ -1,28 +1,30 @@
-[gd_scene load_steps=5 format=3 uid="uid://ce1egg001scene"]
+[gd_scene load_steps=5 format=3 uid="uid://cp2egg001scene"]
 
 [ext_resource type="Script" path="res://scripts/environment/egg_actor.gd" id="1_egg_script"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_egg"]
-albedo_color = Color(0.18, 0.35, 0.72, 1)
-roughness = 0.25
-
 [sub_resource type="SphereMesh" id="SphereMesh_egg"]
-material = SubResource("StandardMaterial3D_egg")
-radius = 0.17
-height = 0.44
+radius = 0.115
+height = 0.3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lapis"]
+albedo_color = Color(0.12, 0.28, 0.65, 1)
+roughness = 0.25
+metallic = 0.1
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_egg"]
-radius = 0.17
-height = 0.44
+radius = 0.115
+height = 0.3
 
 [node name="EggActor" type="RigidBody3D"]
-collision_layer = 1
-collision_mask = 3
-mass = 12.0
+collision_layer = 4
+collision_mask = 5
+mass = 4.5
+continuous_cd = true
 script = ExtResource("1_egg_script")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("SphereMesh_egg")
+surface_material_override/0 = SubResource("StandardMaterial3D_lapis")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_egg")
