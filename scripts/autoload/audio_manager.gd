@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 ## ASMR Audio Manager for The Grand Eggsposition.
 ## Handles tactile velvet snaps, clicks, Lo-Fi music fading, and chime feedback.
@@ -8,9 +8,32 @@ var snap_stream: AudioStreamWAV
 var tap_stream: AudioStreamWAV
 var chime_stream: AudioStreamWAV
 var harp_stream: AudioStreamWAV
+var ui_hover_stream: AudioStreamWAV
+var ui_click_stream: AudioStreamWAV
 
 func _ready() -> void:
 	_generate_procedural_sounds()
+
+## Plays an ultra-soft wood tick on button hover
+func play_ui_hover() -> void:
+	var player: AudioStreamPlayer = AudioStreamPlayer.new()
+	player.stream = ui_hover_stream
+	player.bus = &"Master"
+	player.volume_db = -8.0
+	player.pitch_scale = randf_range(0.98, 1.02)
+	add_child(player)
+	player.play()
+	player.finished.connect(player.queue_free)
+
+## Plays a damped tactile velvet click on button press
+func play_ui_click() -> void:
+	var player: AudioStreamPlayer = AudioStreamPlayer.new()
+	player.stream = ui_click_stream
+	player.bus = &"Master"
+	player.volume_db = -4.0
+	add_child(player)
+	player.play()
+	player.finished.connect(player.queue_free)
 
 ## Plays the calibrated 180 Hz tactile velvet snap when an egg slots into a showcase.
 func play_snap(pos: Vector3 = Vector3.ZERO) -> void:
@@ -71,6 +94,8 @@ func _generate_procedural_sounds() -> void:
 	tap_stream = _create_damped_sine(440.0, 0.08, 0.6)
 	chime_stream = _create_damped_sine(880.0, 0.7, 0.5)
 	harp_stream = _create_arpeggio([523.25, 659.25, 783.99, 1046.5], 0.8)
+	ui_hover_stream = _create_damped_sine(587.33, 0.04, 0.35) # High gentle wood tick
+	ui_click_stream = _create_damped_sine(293.66, 0.08, 0.6)  # Soft tactile click
 
 func _create_damped_sine(freq: float, duration: float, volume: float) -> AudioStreamWAV:
 	var sample_rate: int = 44100

@@ -13,12 +13,13 @@ config_version=5
 config/name="The Grand Eggsposition"
 config/description="A wholesome tactile cozy sorting boutique game."
 config/version="0.1.0"
-run/main_scene="res://scenes/main/game.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
+SettingsManager="*res://scripts/autoload/settings_manager.gd"
 GameManager="*res://scripts/autoload/game_manager.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
 ProgressManager="*res://scripts/autoload/progress_manager.gd"

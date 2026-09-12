@@ -1,0 +1,214 @@
+[gd_scene load_steps=7 format=3 uid="uid://cmm001mainmenu"]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu_script"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_menu.tscn" id="2_settings_scene"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.08, 0.08, 0.11, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.12, 0.12, 0.16, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.72, 0.55, 0.32, 0.8)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_size = 8
+shadow_color = Color(0, 0, 0, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(0.18, 0.16, 0.22, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.55, 0.32, 0.6)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_bg"]
+bg_color = Color(0.04, 0.03, 0.05, 0.82)
+
+[node name="MainMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu_script")
+
+[node name="Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainCard" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(440, 480)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="Center/MainCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="Center/MainCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/MainCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
+theme_override_font_sizes/font_size = 32
+text = "GAME_TITLE"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/MainCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.74, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "GAME_SUBTITLE"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Center/MainCard/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BtnPlay" type="Button" parent="Center/MainCard/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "MENU_PLAY"
+
+[node name="BtnSettings" type="Button" parent="Center/MainCard/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "MENU_SETTINGS"
+
+[node name="BtnCredits" type="Button" parent="Center/MainCard/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.96, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "MENU_CREDITS"
+
+[node name="BtnQuit" type="Button" parent="Center/MainCard/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "MENU_QUIT"
+
+[node name="Footer" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.5, 0.48, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "The Grand Eggsposition · Godot 4.7.2 Forward+ · 3,600 Collectibles"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CreditsModal" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal_bg")
+
+[node name="Center" type="CenterContainer" parent="CreditsModal"]
+layout_mode = 2
+
+[node name="Card" type="PanelContainer" parent="CreditsModal/Center"]
+custom_minimum_size = Vector2(500, 360)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="CreditsModal/Center/Card"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="CreditsModal/Center/Card/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="CreditsModal/Center/Card/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.88, 0.62, 1)
+theme_override_font_sizes/font_size = 24
+text = "MENU_CREDITS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CreditsModal/Center/Card/Margin/VBox"]
+layout_mode = 2
+
+[node name="Body" type="Label" parent="CreditsModal/Center/Card/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.83, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "The Grand Eggsposition: Tidy Up Boutique\n\nA tranquil physics & organizational experience.\n\n• Engine: Godot 4.7.2 Forward+\n• Audio: Realtime Procedural ASMR synthesis\n• Mechanics: Raycast physics, MultiMesh vitrines, 3D egg inspection\n• Localization: Native bilingual EN / ES support\n\nCurated with care."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="CreditsModal/Center/Card/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BtnCloseCredits" type="Button" parent="CreditsModal/Center/Card/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "Close"
+
+[node name="SettingsMenu" parent="." instance=ExtResource("2_settings_scene")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1

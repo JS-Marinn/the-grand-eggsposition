@@ -23,9 +23,13 @@ func _setup_camera_and_raycast() -> void:
 	if not camera:
 		camera = Camera3D.new()
 		camera.position = Vector3(0, 1.65, 0)
-		camera.fov = 80.0
+		var sm = get_node_or_null("/root/SettingsManager")
+		camera.fov = sm.fov if (sm and "fov" in sm) else 80.0
 		add_child(camera)
 		
+	var sm = get_node_or_null("/root/SettingsManager")
+	if sm and "fov" in sm:
+		camera.fov = sm.fov
 	camera.current = true
 	camera_pitch = camera.rotation.x
 	if camera_pitch == 0.0:
@@ -48,8 +52,11 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
-	# Escape key toggles mouse capture
+	# Escape key: let PauseMenu handle it if present; fallback to mouse toggle if standalone
 	if event.is_action_pressed("ui_cancel"):
+		var pause_menu = get_tree().root.find_child("PauseMenu", true, false)
+		if pause_menu:
+			return # PauseMenu processes ui_cancel
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
@@ -61,8 +68,9 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		var should_rotate: bool = (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED) or (event.button_mask & MOUSE_BUTTON_MASK_RIGHT != 0)
 		if should_rotate:
-			rotate_y(-event.relative.x * mouse_sensitivity)
-			camera_pitch = clampf(camera_pitch - event.relative.y * mouse_sensitivity, -deg_to_rad(85), deg_to_rad(85))
+			var sens: float = _get_sensitivity()
+			rotate_y(-event.relative.x * sens)
+			camera_pitch = clampf(camera_pitch - event.relative.y * sens, -deg_to_rad(85), deg_to_rad(85))
 			if camera:
 				camera.rotation.x = camera_pitch
 
@@ -221,3 +229,9 @@ func _resolve_egg(collider: Object) -> EggActor:
 
 func _trigger_resonance() -> void:
 	AudioManager.play_chime(global_position)
+
+func _get_sensitivity() -> float:
+	var sm = get_node_or_null("/root/SettingsManager")
+	if sm and "mouse_sensitivity" in sm:
+		return sm.mouse_sensitivity
+	return mouse_sensitivity
