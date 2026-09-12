@@ -3,11 +3,16 @@
 [ext_resource type="Script" path="res://scripts/environment/showcase_unit.gd" id="1_showcase_script"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oak"]
-albedo_color = Color(0.72, 0.52, 0.32, 1)
+albedo_color = Color(0.58, 0.38, 0.20, 1)
+roughness = 0.38
+metallic = 0.02
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dark_oak"]
+albedo_color = Color(0.38, 0.24, 0.13, 1)
 roughness = 0.45
 
 [sub_resource type="BoxMesh" id="BoxMesh_back"]
-material = SubResource("StandardMaterial3D_oak")
+material = SubResource("StandardMaterial3D_dark_oak")
 size = Vector3(2.30, 2.10, 0.06)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
@@ -18,9 +23,13 @@ size = Vector3(0.10, 2.10, 0.68)
 material = SubResource("StandardMaterial3D_oak")
 size = Vector3(2.40, 0.48, 0.76)
 
+[sub_resource type="BoxMesh" id="BoxMesh_frieze"]
+material = SubResource("StandardMaterial3D_oak")
+size = Vector3(2.36, 0.10, 0.70)
+
 [sub_resource type="BoxMesh" id="BoxMesh_crown"]
 material = SubResource("StandardMaterial3D_oak")
-size = Vector3(2.40, 0.14, 0.72)
+size = Vector3(2.46, 0.08, 0.76)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_interaction"]
 size = Vector3(2.7, 2.7, 1.8)
@@ -44,8 +53,12 @@ mesh = SubResource("BoxMesh_pillar")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
 mesh = SubResource("BoxMesh_plinth")
 
+[node name="CrownFrieze" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.58, 0)
+mesh = SubResource("BoxMesh_frieze")
+
 [node name="CrownTop" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.67, 0)
 mesh = SubResource("BoxMesh_crown")
 
 [node name="DisplayLight_Upper" type="OmniLight3D" parent="."]
