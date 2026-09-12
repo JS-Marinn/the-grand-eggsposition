@@ -22,9 +22,9 @@ func _setup_camera_and_raycast() -> void:
 	camera = get_node_or_null("Camera3D")
 	if not camera:
 		camera = Camera3D.new()
-		camera.position = Vector3(0, 1.65, 0)
+		camera.position = Vector3(0, 1.70, 0)
 		var sm = get_node_or_null("/root/SettingsManager")
-		camera.fov = sm.fov if (sm and "fov" in sm) else 80.0
+		camera.fov = sm.fov if (sm and "fov" in sm) else 75.0
 		add_child(camera)
 		
 	var sm = get_node_or_null("/root/SettingsManager")
@@ -32,9 +32,6 @@ func _setup_camera_and_raycast() -> void:
 		camera.fov = sm.fov
 	camera.current = true
 	camera_pitch = camera.rotation.x
-	if camera_pitch == 0.0:
-		camera_pitch = deg_to_rad(-18.0) # Cozy downward boutique perspective
-		camera.rotation.x = camera_pitch
 
 	raycast = camera.get_node_or_null("RayCast3D")
 	if not raycast:

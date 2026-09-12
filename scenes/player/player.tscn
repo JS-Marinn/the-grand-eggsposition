@@ -16,11 +16,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_player")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.951056, 0.309017, 0, -0.309017, 0.951056, 0, 1.65, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 current = true
-fov = 80.0
+fov = 75.0
 
 [node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
-target_position = Vector3(0, 0, -2.8)
+target_position = Vector3(0, 0, -4.5)
 collide_with_areas = true
 collide_with_bodies = true
