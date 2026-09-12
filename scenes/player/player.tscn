@@ -1,4 +1,4 @@
-﻿[gd_scene load_steps=3 format=3 uid="uid://cp1player001scene"]
+[gd_scene load_steps=3 format=3 uid="uid://cp1player001scene"]
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player_script"]
 
@@ -14,3 +14,13 @@ script = ExtResource("1_player_script")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_player")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.951056, 0.309017, 0, -0.309017, 0.951056, 0, 1.65, 0)
+current = true
+fov = 80.0
+
+[node name="RayCast3D" type="RayCast3D" parent="Camera3D"]
+target_position = Vector3(0, 0, -2.8)
+collide_with_areas = true
+collide_with_bodies = true
