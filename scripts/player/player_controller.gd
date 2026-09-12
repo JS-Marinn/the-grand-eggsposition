@@ -13,6 +13,9 @@ extends CharacterBody3D
 var camera: Camera3D
 var raycast: RayCast3D
 var camera_pitch: float = 0.0
+var interact_hold_timer: float = 0.0
+const INTERACT_REPEAT_DELAY: float = 0.28
+const INTERACT_REPEAT_RATE: float = 0.12
 
 func _ready() -> void:
 	_setup_camera_and_raycast()
@@ -82,6 +85,16 @@ func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
 	_handle_keyboard_gamepad_look(delta)
 	_update_raycast_hover()
+	_handle_hold_interaction(delta)
+
+func _handle_hold_interaction(delta: float) -> void:
+	if Input.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		interact_hold_timer += delta
+		if interact_hold_timer >= INTERACT_REPEAT_DELAY:
+			_handle_interaction()
+			interact_hold_timer -= INTERACT_REPEAT_RATE
+	else:
+		interact_hold_timer = 0.0
 
 func _handle_movement(_delta: float) -> void:
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")

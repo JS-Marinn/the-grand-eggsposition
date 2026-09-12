@@ -209,6 +209,17 @@ func try_deposit() -> bool:
 				AudioManager.play_dozen_harp(global_position)
 				ProgressManager.add_wax_seals(1) # +1 Wax Seal per completed dozen
 				dozen_finished.emit(d)
+
+				# Check if the entire showcase is now complete (all 5 tiers full)
+				var all_tiers_full: bool = true
+				for check_d in range(1, DOZENS_COUNT + 1):
+					if GameManager.showcase_state[showcase_id].get(check_d, 0) < EGGS_PER_DOZEN:
+						all_tiers_full = false
+						break
+				if all_tiers_full:
+					AudioManager.play_chime(global_position)
+					ProgressManager.add_wax_seals(5) # Bonus 5 Wax Seals for completing the full vitrine
+					showcase_finished.emit()
 			return true
 	return false
 

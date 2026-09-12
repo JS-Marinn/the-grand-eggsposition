@@ -4,6 +4,7 @@ extends RigidBody3D
 ## Physical in-world collectible egg actor.
 ## Designed at goose egg scale (~8.5 cm tall by 6 cm diameter).
 
+@export var egg_id: int = 1
 @export var egg_data: EggData
 @export var is_golden_initial: bool = false
 
@@ -11,9 +12,11 @@ var mesh_instance: MeshInstance3D
 var collision_shape: CollisionShape3D
 
 func _ready() -> void:
-	# Default to Lapis Lazuli if not set in inspector
 	if not egg_data:
-		egg_data = GameManager.get_egg_data(1)
+		if egg_id > 0:
+			egg_data = GameManager.get_egg_data(egg_id)
+		if not egg_data:
+			egg_data = GameManager.get_egg_data(1)
 		
 	_setup_visuals_and_physics()
 
