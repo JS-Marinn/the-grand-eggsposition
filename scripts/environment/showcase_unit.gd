@@ -11,9 +11,9 @@ signal showcase_finished()
 @export var showcase_id: int = 1
 @export var showcase_title: String = "SHOWCASE_MINERALS_1"
 
-const DOZENS_COUNT: int = 10
+const DOZENS_COUNT: int = 6
 const EGGS_PER_DOZEN: int = 12
-const TOTAL_CAPACITY: int = 120
+const TOTAL_CAPACITY: int = 72
 
 var multimesh_instance: MultiMeshInstance3D
 var interaction_area: Area3D
@@ -34,7 +34,7 @@ func _setup_shelves() -> void:
 		add_child(shelves_container)
 
 		var shelf_mesh: BoxMesh = BoxMesh.new()
-		shelf_mesh.size = Vector3(3.30, 0.03, 0.46)
+		shelf_mesh.size = Vector3(5.70, 0.05, 0.70)
 
 		var velvet_mat: StandardMaterial3D = StandardMaterial3D.new()
 		velvet_mat.albedo_color = Color(0.12, 0.13, 0.18, 1.0) # Midnight navy velvet
@@ -44,7 +44,7 @@ func _setup_shelves() -> void:
 		for d in range(DOZENS_COUNT):
 			var mi: MeshInstance3D = MeshInstance3D.new()
 			mi.mesh = shelf_mesh
-			mi.position = Vector3(0, 0.42 + float(d) * 0.34, 0.0)
+			mi.position = Vector3(0, 0.55 + float(d) * 0.58, 0.0)
 			shelves_container.add_child(mi)
 
 func _setup_multimesh() -> void:
@@ -58,10 +58,10 @@ func _setup_multimesh() -> void:
 		multimesh.instance_count = TOTAL_CAPACITY
 		multimesh.visible_instance_count = 0
 
-		# Maximum record ostrich egg mesh (~22 cm height, 17 cm diameter)
+		# Double-scale giant ostrich egg mesh (~44 cm height, 34 cm diameter)
 		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = 0.085
-		sphere.height = 0.22
+		sphere.radius = 0.17
+		sphere.height = 0.44
 
 		var egg_mat: StandardMaterial3D = StandardMaterial3D.new()
 		egg_mat.vertex_color_use_as_albedo = true
@@ -79,9 +79,9 @@ func _setup_interaction_area() -> void:
 		interaction_area = Area3D.new()
 		var col: CollisionShape3D = CollisionShape3D.new()
 		var box: BoxShape3D = BoxShape3D.new()
-		box.size = Vector3(3.8, 4.0, 1.3) # Bounding box of the maximum vitrine
+		box.size = Vector3(6.3, 4.3, 1.8) # Bounding box of the 6-tier colossal vitrine
 		col.shape = box
-		col.position = Vector3(0, 2.05, 0)
+		col.position = Vector3(0, 2.20, 0)
 		interaction_area.add_child(col)
 		add_child(interaction_area)
 	interaction_area.set_meta("showcase_unit", self)
@@ -118,8 +118,8 @@ func _refresh_visuals() -> void:
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 
 		for s in range(count):
-			var shelf_y: float = 0.545 + float(d - 1) * 0.34
-			var slot_x: float = -1.43 + float(s) * 0.26
+			var shelf_y: float = 0.795 + float(d - 1) * 0.58
+			var slot_x: float = -2.53 + float(s) * 0.46
 			var egg_transform: Transform3D = Transform3D(Basis(), Vector3(slot_x, shelf_y, 0.02))
 			mm.set_instance_transform(placed_idx, egg_transform)
 			mm.set_instance_color(placed_idx, egg_col)

@@ -8,7 +8,7 @@ extends CharacterBody3D
 @export var sprint_speed: float = 6.8
 @export var mouse_sensitivity: float = 0.003
 @export var key_look_speed: float = 2.4
-@export var reach_distance: float = 2.8
+@export var reach_distance: float = 4.5
 
 var camera: Camera3D
 var raycast: RayCast3D

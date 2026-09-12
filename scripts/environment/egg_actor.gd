@@ -22,15 +22,15 @@ func _setup_visuals_and_physics() -> void:
 	can_sleep = true
 	linear_damp = 2.0
 	angular_damp = 3.0
-	mass = 2.6 # Record maximum ostrich egg weight (~2.6 kg)
+	mass = 12.0 # Double-scale giant ostrich egg weight (~12.0 kg)
 	
 	# Reuse existing mesh instance or create procedural egg-shaped mesh
 	mesh_instance = get_node_or_null("MeshInstance3D")
 	if not mesh_instance:
 		mesh_instance = MeshInstance3D.new()
 		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = 0.085 # 17 cm diameter
-		sphere.height = 0.22 # 22 cm height
+		sphere.radius = 0.17 # 34 cm diameter
+		sphere.height = 0.44 # 44 cm height
 		mesh_instance.mesh = sphere
 		add_child(mesh_instance)
 	
@@ -49,8 +49,8 @@ func _setup_visuals_and_physics() -> void:
 	if not collision_shape:
 		collision_shape = CollisionShape3D.new()
 		var capsule: CapsuleShape3D = CapsuleShape3D.new()
-		capsule.radius = 0.085
-		capsule.height = 0.22
+		capsule.radius = 0.17
+		capsule.height = 0.44
 		collision_shape.shape = capsule
 		add_child(collision_shape)
 

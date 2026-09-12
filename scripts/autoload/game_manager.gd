@@ -10,7 +10,7 @@ signal progress_updated(placed_count: int, total_count: int)
 const TOTAL_EGGS: int = 3600
 const TOTAL_TYPES: int = 300
 const EGGS_PER_DOZEN: int = 12
-const DOZENS_PER_SHOWCASE: int = 10
+const DOZENS_PER_SHOWCASE: int = 6
 
 ## Database of the 300 unique EggData definitions
 var egg_database: Dictionary = {} # egg_id -> EggData
