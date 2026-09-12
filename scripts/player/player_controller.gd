@@ -141,28 +141,83 @@ func _update_raycast_hover() -> void:
 		if hud:
 			hud.hide_prompt()
 		return
-	var collider = raycast.get_collider()
-	if collider is EggActor:
-		var egg: EggActor = collider as EggActor
+
+	var collider: Object = raycast.get_collider()
+	if not collider or not is_instance_valid(collider):
+		if hud:
+			hud.hide_prompt()
+		return
+
+	var egg: EggActor = _resolve_egg(collider)
+	if egg:
 		var egg_name: String = egg.egg_data.get_display_name() if egg.egg_data else tr("EGG_LAPIS_LAZULI")
 		if hud:
 			hud.show_prompt(tr("UI_PROMPT_PICK") + " • " + egg_name)
-	elif collider.get_parent() is ShowcaseUnit:
-		if hud:
-			hud.show_prompt(tr("UI_PROMPT_PLACE"))
-	else:
-		if hud:
-			hud.hide_prompt()
+		return
+
+	var showcase: ShowcaseUnit = _resolve_showcase(collider)
+	if showcase:
+		var title: String = tr(showcase.showcase_title)
+		if GameManager.has_matching_egg_for_showcase(showcase.showcase_id):
+			if hud:
+				hud.show_prompt(tr("UI_PROMPT_PLACE") + " • " + title)
+		elif GameManager.player_basket.is_empty():
+			if hud:
+				hud.show_prompt(title + " " + tr("UI_BASKET_EMPTY"))
+		else:
+			if hud:
+				hud.show_prompt(title)
+		return
+
+	if hud:
+		hud.hide_prompt()
 
 func _handle_interaction() -> void:
 	if not raycast or not raycast.is_colliding():
 		return
-	var collider = raycast.get_collider()
-	if collider is EggActor:
-		collider.pick_up()
-	elif collider.get_parent() is ShowcaseUnit:
-		var showcase: ShowcaseUnit = collider.get_parent() as ShowcaseUnit
+	var collider: Object = raycast.get_collider()
+	if not collider or not is_instance_valid(collider):
+		return
+
+	var egg: EggActor = _resolve_egg(collider)
+	if egg:
+		egg.pick_up()
+		return
+
+	var showcase: ShowcaseUnit = _resolve_showcase(collider)
+	if showcase:
 		showcase.try_deposit()
+
+## Safely resolves a ShowcaseUnit from a collider
+func _resolve_showcase(collider: Object) -> ShowcaseUnit:
+	if not collider or not is_instance_valid(collider):
+		return null
+	if collider is ShowcaseUnit:
+		return collider as ShowcaseUnit
+	if collider.has_meta("showcase_unit"):
+		var meta_unit = collider.get_meta("showcase_unit")
+		if meta_unit is ShowcaseUnit and is_instance_valid(meta_unit):
+			return meta_unit as ShowcaseUnit
+	if collider is Node:
+		var parent: Node = (collider as Node).get_parent()
+		if parent is ShowcaseUnit:
+			return parent as ShowcaseUnit
+		var owner_node: Node = (collider as Node).owner
+		if owner_node is ShowcaseUnit:
+			return owner_node as ShowcaseUnit
+	return null
+
+## Safely resolves an EggActor from a collider
+func _resolve_egg(collider: Object) -> EggActor:
+	if not collider or not is_instance_valid(collider):
+		return null
+	if collider is EggActor:
+		return collider as EggActor
+	if collider is Node:
+		var parent: Node = (collider as Node).get_parent()
+		if parent is EggActor:
+			return parent as EggActor
+	return null
 
 func _trigger_resonance() -> void:
 	AudioManager.play_chime(global_position)

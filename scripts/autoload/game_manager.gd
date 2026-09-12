@@ -90,3 +90,10 @@ func deposit_egg_into_showcase(showcase_id: int, dozen_idx: int) -> bool:
 ## Returns the active egg data by ID
 func get_egg_data(egg_id: int) -> EggData:
 	return egg_database.get(egg_id, null)
+
+## Returns true if the player carries an egg matching this showcase
+func has_matching_egg_for_showcase(showcase_id: int) -> bool:
+	for egg: EggData in player_basket:
+		if egg.showcase_id == showcase_id:
+			return true
+	return false

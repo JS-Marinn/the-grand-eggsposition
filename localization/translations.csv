@@ -1,4 +1,4 @@
-﻿keys,en,es
+keys,en,es
 GAME_TITLE,"The Grand Eggsposition","La Gran Exposición de Huevos"
 GAME_SUBTITLE,"Tidy Up Boutique","Boutique del Orden"
 UI_PROMPT_PICK,"[E / Click] Pick up","[E / Clic] Recoger"
@@ -8,6 +8,7 @@ UI_PROMPT_RESONANCE,"[Q] Resonance Chime","[Q] Campanilla de Resonancia"
 UI_PROMPT_SWEEP,"Hold [Click] to sweep identical eggs","Mantener [Clic] para aspirar lote"
 UI_PROMPT_JOURNAL,"[TAB] Curator's Journal","[TAB] Cuaderno del Conservador"
 UI_BASKET_CAPACITY,"Basket Capacity: %s / %s","Capacidad de Cesta: %s / %s"
+UI_BASKET_EMPTY,"(Basket Empty)","(Cesta Vacía)"
 UI_DOZEN_COMPLETED,"Dozen Completed! (12/12)","¡Docena Completada! (12/12)"
 UI_SHOWCASE_COMPLETED,"Showcase Complete! (+5 Wax Seals)","¡Vitrina Completada! (+5 Sellos de Cera)"
 UI_SEALS_LABEL,"Curator's Wax Seals:","Sellos de Cera del Conservador:"

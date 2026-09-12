@@ -1,4 +1,4 @@
-﻿class_name ShowcaseUnit
+class_name ShowcaseUnit
 extends Node3D
 
 ## Reusable Modular Showcase Unit.
@@ -40,14 +40,17 @@ func _setup_multimesh() -> void:
 	add_child(multimesh_instance)
 
 func _setup_interaction_area() -> void:
-	interaction_area = Area3D.new()
-	var col: CollisionShape3D = CollisionShape3D.new()
-	var box: BoxShape3D = BoxShape3D.new()
-	box.size = Vector3(2.4, 2.8, 0.8) # Bounding box of the showcase
-	col.shape = box
-	col.position = Vector3(0, 1.4, 0)
-	interaction_area.add_child(col)
-	add_child(interaction_area)
+	interaction_area = get_node_or_null("InteractionArea")
+	if not interaction_area:
+		interaction_area = Area3D.new()
+		var col: CollisionShape3D = CollisionShape3D.new()
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = Vector3(2.4, 2.8, 0.8) # Bounding box of the showcase
+		col.shape = box
+		col.position = Vector3(0, 1.4, 0)
+		interaction_area.add_child(col)
+		add_child(interaction_area)
+	interaction_area.set_meta("showcase_unit", self)
 
 ## Try to deposit an egg from the player's basket into this showcase
 func try_deposit() -> bool:
