@@ -38,37 +38,22 @@ func _setup_shelves() -> void:
 		var shelf_mesh: BoxMesh = BoxMesh.new()
 		shelf_mesh.size = Vector3(2.20, 0.035, 0.62)
 
-		# Elevated depth riser (5cm high step for the 6 back eggs)
-		var riser_mesh: BoxMesh = BoxMesh.new()
-		riser_mesh.size = Vector3(2.18, 0.05, 0.30)
-
 		var velvet_mat: StandardMaterial3D = StandardMaterial3D.new()
 		velvet_mat.albedo_color = Color(0.12, 0.14, 0.20, 1.0) # Midnight navy velvet
 		velvet_mat.roughness = 0.55
 		shelf_mesh.material = velvet_mat
 
-		var riser_mat: StandardMaterial3D = StandardMaterial3D.new()
-		riser_mat.albedo_color = Color(0.10, 0.11, 0.16, 1.0) # Deep navy velvet riser
-		riser_mat.roughness = 0.50
-		riser_mesh.material = riser_mat
-
-		# 5 tiers of display shelves (d = 0..4)
+		# 5 tiers of flat display shelves (d = 0..4) starting above 0.48m base
 		for d in range(DOZENS_COUNT):
-			var tier_base_y: float = 0.30 + float(d) * 0.43
+			var tier_base_y: float = 0.48 + float(d) * 0.42
 			
-			# Main shelf board
+			# Flat velvet shelf board (no additional step for back row)
 			var mi_shelf: MeshInstance3D = MeshInstance3D.new()
 			mi_shelf.mesh = shelf_mesh
 			mi_shelf.position = Vector3(0, tier_base_y, 0.0)
 			shelves_container.add_child(mi_shelf)
 
-			# Elevated depth riser for back 6 eggs
-			var mi_riser: MeshInstance3D = MeshInstance3D.new()
-			mi_riser.mesh = riser_mesh
-			mi_riser.position = Vector3(0, tier_base_y + 0.0425, -0.15)
-			shelves_container.add_child(mi_riser)
-
-		# Name / Category plaque integrated into the bottom wooden base (PlinthBase at Y = 0.15m, front at Z = 0.38m):
+		# Name / Category plaque integrated into the taller bottom wooden base (PlinthBase at Y = 0.24m, front at Z = 0.38m):
 		# 1. Subtle antique brass frame trim
 		var frame_mesh: BoxMesh = BoxMesh.new()
 		frame_mesh.size = Vector3(2.04, 0.20, 0.015)
@@ -80,7 +65,7 @@ func _setup_shelves() -> void:
 
 		var mi_frame: MeshInstance3D = MeshInstance3D.new()
 		mi_frame.mesh = frame_mesh
-		mi_frame.position = Vector3(0, 0.15, 0.382)
+		mi_frame.position = Vector3(0, 0.24, 0.382)
 		shelves_container.add_child(mi_frame)
 
 		# 2. Carved dark walnut / oak wooden plate
@@ -93,7 +78,7 @@ func _setup_shelves() -> void:
 
 		var mi_plaque: MeshInstance3D = MeshInstance3D.new()
 		mi_plaque.mesh = plaque_mesh
-		mi_plaque.position = Vector3(0, 0.15, 0.385)
+		mi_plaque.position = Vector3(0, 0.24, 0.385)
 		shelves_container.add_child(mi_plaque)
 
 		# 3. Gilded 3D Category Title Label on the wooden base
@@ -107,7 +92,7 @@ func _setup_shelves() -> void:
 		category_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		category_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		category_label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
-		category_label.position = Vector3(0, 0.15, 0.398)
+		category_label.position = Vector3(0, 0.24, 0.398)
 		shelves_container.add_child(category_label)
 	else:
 		category_label = shelves_container.get_node_or_null("CategoryLabel") as Label3D
@@ -185,22 +170,20 @@ func _refresh_visuals() -> void:
 		var egg_info: EggData = GameManager.get_egg_for_showcase_dozen(showcase_id, d)
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 
-		var tier_base_y: float = 0.30 + float(d - 1) * 0.43
+		var tier_base_y: float = 0.48 + float(d - 1) * 0.42
 
 		for s in range(count):
 			var slot_x: float
-			var slot_y: float
+			var slot_y: float = tier_base_y + 0.1675 # Superficie plana de la balda (sin escalón)
 			var slot_z: float
 
 			if s < 6:
-				# 6 huevos al fondo (elevados en el escalón de profundidad a Z = -0.14)
+				# 6 huevos al fondo (al mismo nivel plano a Z = -0.14)
 				slot_x = -0.85 + float(s) * 0.34
-				slot_y = tier_base_y + 0.2175 # Base 0.28 + Shelf 0.0175 + Riser 0.05 + Egg 0.15
 				slot_z = -0.14
 			else:
-				# 6 huevos de frente (en la base del estante a Z = +0.14)
+				# 6 huevos de frente (al mismo nivel plano a Z = +0.14)
 				slot_x = -0.85 + float(s - 6) * 0.34
-				slot_y = tier_base_y + 0.1675 # Base 0.28 + Shelf 0.0175 + Egg 0.15
 				slot_z = +0.14
 
 			var egg_transform: Transform3D = Transform3D(Basis(), Vector3(slot_x, slot_y, slot_z))
