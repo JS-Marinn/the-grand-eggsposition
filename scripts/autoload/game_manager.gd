@@ -7,10 +7,10 @@ signal egg_collected(egg_data: EggData)
 signal egg_placed(egg_data: EggData, showcase_id: int, dozen_idx: int)
 signal progress_updated(placed_count: int, total_count: int)
 
-const TOTAL_EGGS: int = 3600
+const TOTAL_EGGS: int = 1800
 const TOTAL_TYPES: int = 300
 const EGGS_PER_DOZEN: int = 12
-const DOZENS_PER_SHOWCASE: int = 6
+const DOZENS_PER_SHOWCASE: int = 5
 
 ## Database of the 300 unique EggData definitions
 var egg_database: Dictionary = {} # egg_id -> EggData
@@ -38,6 +38,7 @@ func _initialize_database() -> void:
 	_register_egg(2, "EGG_PURE_GOLD", EggData.EggSeries.MINERALS_GEMS, 1, 2, Color(0.95, 0.78, 0.2), 0.15, 0.95)
 	_register_egg(3, "EGG_PURE_SILVER", EggData.EggSeries.MINERALS_GEMS, 1, 3, Color(0.85, 0.88, 0.92), 0.1, 0.9)
 	_register_egg(4, "EGG_AMETHYST_GEODE", EggData.EggSeries.MINERALS_GEMS, 1, 4, Color(0.55, 0.18, 0.72), 0.3, 0.2)
+	_register_egg(11, "EGG_EMERALD", EggData.EggSeries.MINERALS_GEMS, 1, 5, Color(0.1, 0.72, 0.35), 0.2, 0.3)
 	_register_egg(5, "EGG_PASTRY_CHEF", EggData.EggSeries.JOBS_SOCIETY, 2, 1, Color(0.96, 0.92, 0.86), 0.4, 0.0)
 	_register_egg(6, "EGG_FIREFIGHTER", EggData.EggSeries.JOBS_SOCIETY, 2, 2, Color(0.85, 0.15, 0.12), 0.3, 0.0)
 	_register_egg(7, "EGG_SUPERHERO", EggData.EggSeries.POP_CULTURE, 3, 1, Color(0.1, 0.3, 0.8), 0.3, 0.0)

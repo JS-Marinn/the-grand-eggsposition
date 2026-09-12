@@ -36,10 +36,11 @@ func _setup_camera_and_raycast() -> void:
 	raycast = camera.get_node_or_null("RayCast3D")
 	if not raycast:
 		raycast = RayCast3D.new()
-		raycast.target_position = Vector3(0, 0, -reach_distance)
-		raycast.collide_with_areas = true
-		raycast.collide_with_bodies = true
 		camera.add_child(raycast)
+	raycast.target_position = Vector3(0, 0, -reach_distance)
+	raycast.collision_mask = 7
+	raycast.collide_with_areas = true
+	raycast.collide_with_bodies = true
 
 func _input(event: InputEvent) -> void:
 	# Click window to capture cursor

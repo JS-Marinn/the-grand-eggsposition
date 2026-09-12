@@ -39,6 +39,11 @@ func _update_hud() -> void:
 	if basket_label:
 		basket_label.text = tr("UI_BASKET_CAPACITY") % [GameManager.player_basket.size(), GameManager.max_basket_capacity]
 	if progress_label:
-		progress_label.text = tr("UI_TOTAL_PROGRESS") % [GameManager.total_placed_eggs]
+		var raw_text: String = tr("UI_TOTAL_PROGRESS")
+		if "%s /" in raw_text:
+			raw_text = raw_text.replace("3,600", "1,800").replace("3.600", "1.800")
+			progress_label.text = raw_text % [GameManager.total_placed_eggs]
+		else:
+			progress_label.text = "%d / %d" % [GameManager.total_placed_eggs, GameManager.TOTAL_EGGS]
 	if seals_label:
 		seals_label.text = "%s %d" % [tr("UI_SEALS_LABEL"), ProgressManager.wax_seals]
