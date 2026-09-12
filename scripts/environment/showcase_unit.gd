@@ -19,8 +19,16 @@ var multimesh_instance: MultiMeshInstance3D
 var interaction_area: Area3D
 var shelves_container: Node3D
 var category_label: Label3D
+var in_flight_container: Node3D
+var in_flight_slots: Dictionary = {}
 
 func _ready() -> void:
+	in_flight_container = get_node_or_null("EggsInFlight")
+	if not in_flight_container:
+		in_flight_container = Node3D.new()
+		in_flight_container.name = "EggsInFlight"
+		add_child(in_flight_container)
+
 	_setup_shelves()
 	_setup_multimesh()
 	_setup_interaction_area()
@@ -196,32 +204,147 @@ func _setup_interaction_area() -> void:
 		add_child(interaction_area)
 	interaction_area.set_meta("showcase_unit", self)
 
+## Returns local coordinate of slot index s (0..11) in dozen tier d (1..5)
+func get_slot_local_position(d: int, s: int) -> Vector3:
+	var tier_base_y: float = 0.48 + float(d - 1) * 0.42
+	var slot_y: float = tier_base_y + 0.1675
+	var slot_x: float
+	var slot_z: float
+
+	if s < 6:
+		# 6 huevos al fondo (al mismo nivel plano a Z = -0.14)
+		slot_x = -0.85 + float(s) * 0.34
+		slot_z = -0.14
+	else:
+		# 6 huevos de frente (al mismo nivel plano a Z = +0.14)
+		slot_x = -0.85 + float(s - 6) * 0.34
+		slot_z = +0.14
+
+	return Vector3(slot_x, slot_y, slot_z)
+
 ## Try to deposit an egg from the player's basket into this showcase
-func try_deposit() -> bool:
+func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -> bool:
 	for d in range(1, DOZENS_COUNT + 1):
+		# Find first egg in basket matching this showcase and dozen
+		var egg_info: EggData = null
+		for egg in GameManager.player_basket:
+			if egg.showcase_id == showcase_id and egg.dozen_group == d:
+				egg_info = egg
+				break
+		if not egg_info:
+			continue
+
+		var current_count: int = GameManager.showcase_state[showcase_id].get(d, 0)
+		if current_count >= EGGS_PER_DOZEN:
+			continue
+
+		var slot_idx: int = current_count
+		var slot_key: String = str(d) + "_" + str(slot_idx)
+
+		if animate:
+			in_flight_slots[slot_key] = true
+
 		if GameManager.deposit_egg_into_showcase(showcase_id, d):
-			AudioManager.play_snap(global_position)
-			_refresh_visuals()
-
-			# Check if that dozen just hit 12/12
-			var count: int = GameManager.showcase_state[showcase_id][d]
-			if count == EGGS_PER_DOZEN:
-				AudioManager.play_dozen_harp(global_position)
-				ProgressManager.add_wax_seals(1) # +1 Wax Seal per completed dozen
-				dozen_finished.emit(d)
-
-				# Check if the entire showcase is now complete (all 5 tiers full)
-				var all_tiers_full: bool = true
-				for check_d in range(1, DOZENS_COUNT + 1):
-					if GameManager.showcase_state[showcase_id].get(check_d, 0) < EGGS_PER_DOZEN:
-						all_tiers_full = false
-						break
-				if all_tiers_full:
-					AudioManager.play_chime(global_position)
-					ProgressManager.add_wax_seals(5) # Bonus 5 Wax Seals for completing the full vitrine
-					showcase_finished.emit()
+			if not animate:
+				AudioManager.play_snap(global_position)
+				_refresh_visuals()
+				_check_completion(d)
+			else:
+				_animate_egg_flight(egg_info, d, slot_idx, from_global_pos)
 			return true
 	return false
+
+func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_pos: Vector3) -> void:
+	var slot_key: String = str(d) + "_" + str(slot_idx)
+	var local_slot_pos: Vector3 = get_slot_local_position(d, slot_idx)
+	var target_global_pos: Vector3 = to_global(local_slot_pos)
+	var target_global_basis: Basis = global_transform.basis
+
+	# Default from_global_pos if not provided
+	if from_global_pos == Vector3.INF:
+		var player = get_tree().root.find_child("Player", true, false)
+		if player and "camera" in player and player.camera:
+			from_global_pos = player.camera.global_position + player.camera.global_basis * Vector3(0.2, -0.25, -0.45)
+		else:
+			from_global_pos = to_global(Vector3(0, 1.2, 1.4))
+
+	# Refresh visuals so MultiMesh knows this slot is in-flight (scaled to zero)
+	_refresh_visuals()
+
+	# Create model-agnostic visual proxy
+	var proxy: Node3D = egg_info.instantiate_visual_node()
+	if not in_flight_container:
+		in_flight_container = get_node_or_null("EggsInFlight")
+		if not in_flight_container:
+			in_flight_container = Node3D.new()
+			in_flight_container.name = "EggsInFlight"
+			add_child(in_flight_container)
+
+	in_flight_container.add_child(proxy)
+	proxy.global_position = from_global_pos
+
+	var start_basis: Basis = target_global_basis
+	var dir: Vector3 = (target_global_pos - from_global_pos).normalized()
+	if dir.length_squared() > 0.001:
+		start_basis = Basis.looking_at(dir, Vector3.UP)
+	proxy.global_basis = start_basis
+
+	var flight_duration: float = 0.32
+	var flight_tween: Tween = create_tween()
+	var start_pos: Vector3 = from_global_pos
+	var start_quat: Quaternion = Quaternion(start_basis)
+	var target_quat: Quaternion = Quaternion(target_global_basis)
+	var arc_height: float = maxf(0.24, absf(target_global_pos.y - start_pos.y) * 0.35 + 0.20)
+
+	flight_tween.tween_method(func(t: float):
+		if not is_instance_valid(proxy):
+			return
+		var cur_pos: Vector3 = start_pos.lerp(target_global_pos, t)
+		cur_pos.y += 4.0 * arc_height * t * (1.0 - t)
+		proxy.global_position = cur_pos
+		proxy.global_basis = Basis(start_quat.slerp(target_quat, t))
+	, 0.0, 1.0, flight_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	flight_tween.tween_callback(func():
+		if not is_instance_valid(proxy):
+			in_flight_slots.erase(slot_key)
+			_refresh_visuals()
+			return
+
+		proxy.global_position = target_global_pos
+		proxy.global_basis = target_global_basis
+		AudioManager.play_snap(target_global_pos)
+
+		# Tactile velvet cushion squash and rebound
+		var bounce_tween: Tween = create_tween()
+		bounce_tween.tween_property(proxy, "scale", Vector3(1.10, 0.80, 1.10), 0.05).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		bounce_tween.tween_property(proxy, "scale", Vector3(1.0, 1.0, 1.0), 0.10).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		bounce_tween.tween_callback(func():
+			in_flight_slots.erase(slot_key)
+			_refresh_visuals()
+			if is_instance_valid(proxy):
+				proxy.queue_free()
+			_check_completion(d)
+		)
+	)
+
+func _check_completion(d: int) -> void:
+	var count: int = GameManager.showcase_state[showcase_id].get(d, 0)
+	if count == EGGS_PER_DOZEN:
+		AudioManager.play_dozen_harp(global_position)
+		ProgressManager.add_wax_seals(1) # +1 Wax Seal per completed dozen
+		dozen_finished.emit(d)
+
+		# Check if the entire showcase is now complete (all 5 tiers full)
+		var all_tiers_full: bool = true
+		for check_d in range(1, DOZENS_COUNT + 1):
+			if GameManager.showcase_state[showcase_id].get(check_d, 0) < EGGS_PER_DOZEN:
+				all_tiers_full = false
+				break
+		if all_tiers_full:
+			AudioManager.play_chime(global_position)
+			ProgressManager.add_wax_seals(5) # Bonus 5 Wax Seals for completing the full vitrine
+			showcase_finished.emit()
 
 func _on_egg_placed(_egg_data: EggData, target_showcase: int, _dozen: int) -> void:
 	if target_showcase == showcase_id:
@@ -241,23 +364,17 @@ func _refresh_visuals() -> void:
 		var egg_info: EggData = GameManager.get_egg_for_showcase_dozen(showcase_id, d)
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 
-		var tier_base_y: float = 0.48 + float(d - 1) * 0.42
-
 		for s in range(count):
-			var slot_x: float
-			var slot_y: float = tier_base_y + 0.1675 # Superficie plana de la balda (sin escalón)
-			var slot_z: float
+			var slot_pos: Vector3 = get_slot_local_position(d, s)
+			var slot_key: String = str(d) + "_" + str(s)
+			var egg_transform: Transform3D
 
-			if s < 6:
-				# 6 huevos al fondo (al mismo nivel plano a Z = -0.14)
-				slot_x = -0.85 + float(s) * 0.34
-				slot_z = -0.14
+			if in_flight_slots.has(slot_key):
+				# While in flight, scale to zero in MultiMesh so the flying proxy is visible
+				egg_transform = Transform3D(Basis().scaled(Vector3.ZERO), slot_pos)
 			else:
-				# 6 huevos de frente (al mismo nivel plano a Z = +0.14)
-				slot_x = -0.85 + float(s - 6) * 0.34
-				slot_z = +0.14
+				egg_transform = Transform3D(Basis(), slot_pos)
 
-			var egg_transform: Transform3D = Transform3D(Basis(), Vector3(slot_x, slot_y, slot_z))
 			mm.set_instance_transform(placed_idx, egg_transform)
 			mm.set_instance_color(placed_idx, egg_col)
 			placed_idx += 1

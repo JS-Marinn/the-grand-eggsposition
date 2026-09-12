@@ -67,17 +67,34 @@ horizontal_alignment = 1
 [node name="TopLeft" type="MarginContainer" parent="."]
 layout_mode = 1
 offset_right = 280.0
-offset_bottom = 70.0
+offset_bottom = 90.0
 mouse_filter = 2
 theme_override_constants/margin_left = 30
 theme_override_constants/margin_top = 25
 
-[node name="BasketLabel" type="Label" parent="TopLeft"]
+[node name="VBox" type="VBoxContainer" parent="TopLeft"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="BasketLabel" type="Label" parent="TopLeft/VBox"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.95, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 18
 text = "Basket: 0 / 12"
+
+[node name="FPSLabel" type="Label" parent="TopLeft/VBox"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.65, 0.95, 0.65, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.75)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "60 FPS"
 
 [node name="TopRight" type="VBoxContainer" parent="."]
 layout_mode = 1

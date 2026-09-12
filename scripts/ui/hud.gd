@@ -7,15 +7,31 @@ extends Control
 @onready var reticle: ColorRect = $Reticle
 @onready var prompt_label: Label = $PromptContainer/PromptLabel
 @onready var prompt_container: PanelContainer = $PromptContainer
-@onready var basket_label: Label = $TopLeft/BasketLabel
+@onready var basket_label: Label = $TopLeft/VBox/BasketLabel
+@onready var fps_label: Label = $TopLeft/VBox/FPSLabel
 @onready var progress_label: Label = $TopRight/ProgressLabel
 @onready var seals_label: Label = $TopRight/SealsLabel
+
+var _fps_timer: float = 0.0
 
 func _ready() -> void:
 	GameManager.egg_collected.connect(_on_inventory_changed)
 	GameManager.egg_placed.connect(_on_egg_placed)
 	ProgressManager.wax_seals_changed.connect(_on_seals_changed)
+	SettingsManager.settings_applied.connect(_on_settings_applied)
+	_on_settings_applied()
 	_update_hud()
+
+func _process(delta: float) -> void:
+	if fps_label and fps_label.visible:
+		_fps_timer += delta
+		if _fps_timer >= 0.1:
+			_fps_timer = 0.0
+			fps_label.text = "%d FPS" % Engine.get_frames_per_second()
+
+func _on_settings_applied() -> void:
+	if fps_label:
+		fps_label.visible = SettingsManager.show_fps
 
 func show_prompt(text: String) -> void:
 	if prompt_label and prompt_container:

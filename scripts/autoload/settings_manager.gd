@@ -16,6 +16,7 @@ var fov: float:
 	get: return camera_fov
 	set(v): camera_fov = v
 var aa_enabled: bool = true
+var show_fps: bool = false
 
 # Audio (Linear 0.0 to 1.0)
 var master_volume: float = 1.0
@@ -106,6 +107,7 @@ func save_settings() -> void:
 	cfg.set_value("video", "vsync", vsync_enabled)
 	cfg.set_value("video", "fov", camera_fov)
 	cfg.set_value("video", "aa", aa_enabled)
+	cfg.set_value("video", "show_fps", show_fps)
 	
 	# Audio
 	cfg.set_value("audio", "master", master_volume)
@@ -139,6 +141,7 @@ func load_settings() -> void:
 	vsync_enabled = cfg.get_value("video", "vsync", vsync_enabled)
 	camera_fov = cfg.get_value("video", "fov", camera_fov)
 	aa_enabled = cfg.get_value("video", "aa", aa_enabled)
+	show_fps = cfg.get_value("video", "show_fps", show_fps)
 	
 	# Audio
 	master_volume = cfg.get_value("audio", "master", master_volume)

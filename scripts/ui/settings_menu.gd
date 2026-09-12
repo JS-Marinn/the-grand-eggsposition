@@ -9,6 +9,7 @@ signal closed()
 @onready var window_mode_opt: OptionButton = %WindowModeOpt
 @onready var res_opt: OptionButton = %ResolutionOpt
 @onready var vsync_check: CheckBox = %VSyncCheck
+@onready var show_fps_check: CheckBox = %ShowFPSCheck
 @onready var fov_slider: HSlider = %FOVSlider
 @onready var fov_val_label: Label = %FOVValLabel
 
@@ -62,6 +63,9 @@ func _sync_from_manager() -> void:
 
 	if vsync_check:
 		vsync_check.button_pressed = SettingsManager.vsync_enabled
+
+	if show_fps_check:
+		show_fps_check.button_pressed = SettingsManager.show_fps
 
 	if fov_slider:
 		fov_slider.value = SettingsManager.camera_fov
@@ -129,6 +133,9 @@ func _on_apply_pressed() -> void:
 
 	if vsync_check:
 		SettingsManager.vsync_enabled = vsync_check.button_pressed
+
+	if show_fps_check:
+		SettingsManager.show_fps = show_fps_check.button_pressed
 
 	if fov_slider:
 		SettingsManager.camera_fov = fov_slider.value

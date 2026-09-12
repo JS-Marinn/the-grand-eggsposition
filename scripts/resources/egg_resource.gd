@@ -1,4 +1,4 @@
-﻿class_name EggData
+class_name EggData
 extends Resource
 
 ## Data container representing a unique collectible egg type.
@@ -30,6 +30,44 @@ enum EggSeries {
 @export var is_secret_mini: bool = false   ## One of Barnaby's 144 white mini-eggs
 @export var is_luxury_egg: bool = false    ## One of the 12 legendary climax eggs
 
+@export_group("Model Overrides")
+@export var custom_mesh: Mesh = null
+@export var custom_scene: PackedScene = null
+
 ## Returns the localized display name for the HUD and Journal.
 func get_display_name() -> String:
 	return tr(egg_name_key)
+
+## Instantiates a model-agnostic visual Node3D representation of this egg.
+## Supports any future custom scene, custom mesh, or procedural default.
+func instantiate_visual_node() -> Node3D:
+	if custom_scene:
+		var scene_instance = custom_scene.instantiate()
+		if scene_instance is Node3D:
+			return scene_instance as Node3D
+			
+	var node: Node3D = Node3D.new()
+	var mi: MeshInstance3D = MeshInstance3D.new()
+	
+	if custom_mesh:
+		mi.mesh = custom_mesh
+	else:
+		var sphere: SphereMesh = SphereMesh.new()
+		sphere.radius = 0.115
+		sphere.height = 0.30
+		mi.mesh = sphere
+
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.albedo_color = albedo_color
+	mat.roughness = roughness
+	mat.metallic = metallic
+	if metallic > 0.5:
+		mat.metallic_specular = 0.9
+	if emission_energy > 0.0:
+		mat.emission_enabled = true
+		mat.emission = emission_color
+		mat.emission_energy_multiplier = emission_energy
+
+	mi.material_override = mat
+	node.add_child(mi)
+	return node

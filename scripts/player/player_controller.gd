@@ -205,7 +205,10 @@ func _handle_interaction() -> void:
 
 	var showcase: ShowcaseUnit = _resolve_showcase(collider)
 	if showcase:
-		showcase.try_deposit()
+		var spawn_pos: Vector3 = Vector3.INF
+		if camera:
+			spawn_pos = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45)
+		showcase.try_deposit(spawn_pos)
 
 ## Safely resolves a ShowcaseUnit from a collider
 func _resolve_showcase(collider: Object) -> ShowcaseUnit:

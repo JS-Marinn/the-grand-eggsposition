@@ -134,6 +134,15 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "LABEL_VSYNC"
 
+[node name="FPSRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox"]
+layout_mode = 2
+
+[node name="ShowFPSCheck" type="CheckBox" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/FPSRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LABEL_SHOW_FPS"
+
 [node name="FOVRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox"]
 layout_mode = 2
 
