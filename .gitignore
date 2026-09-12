@@ -1,0 +1,24 @@
+﻿# Godot 4 .gitignore
+.godot/
+*.translation
+
+# Mono / C# specific (if used)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Builds and binaries
+build/
+bin/
+*.apk
+*.aab
+*.exe
+*.zip
+*.pck
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.tmp
+.vscode/
+.idea/
