@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 ## Network Manager for 2-Player Co-op (Solo / Duo).
 ## Built on Godot's high-level MultiplayerAPI and prepared for Steam Datagram Relay (SDR).
@@ -44,7 +44,7 @@ func _on_peer_disconnected(id: int) -> void:
 	player_disconnected.emit(id)
 
 ## RPC: Request by Client to pick up an egg from the boutique floor
-@rpc("any_peer", "call_reliable")
+@rpc("any_peer", "reliable")
 func request_pick_egg(egg_path: NodePath) -> void:
 	if not is_host:
 		return
@@ -54,7 +54,7 @@ func request_pick_egg(egg_path: NodePath) -> void:
 		egg_node.despawn_for_collection(sender_id)
 
 ## RPC: Notify both players that an egg has snapped into a showcase
-@rpc("call_local", "call_reliable")
+@rpc("call_local", "reliable")
 func broadcast_egg_placed(showcase_id: int, dozen_idx: int) -> void:
 	GameManager.showcase_state[showcase_id][dozen_idx] += 1
 	GameManager.total_placed_eggs += 1

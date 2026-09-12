@@ -1,4 +1,4 @@
-﻿class_name PlayerController
+class_name PlayerController
 extends CharacterBody3D
 
 ## First-person tactile player controller for The Grand Eggsposition.
@@ -21,6 +21,8 @@ func _setup_camera_and_raycast() -> void:
 	camera = Camera3D.new()
 	camera.position = Vector3(0, 1.65, 0) # Eye level
 	camera.fov = 80.0
+	camera_pitch = deg_to_rad(-18.0) # Cozy downward boutique perspective
+	camera.rotation.x = camera_pitch
 	add_child(camera)
 	
 	raycast = RayCast3D.new()
@@ -74,14 +76,23 @@ func _handle_movement(_delta: float) -> void:
 	move_and_slide()
 
 func _update_raycast_hover() -> void:
+	var hud: HUD = get_tree().root.find_child("HUD", true, false) as HUD
 	if not raycast.is_colliding():
-		# Clear HUD prompt
+		if hud:
+			hud.hide_prompt()
 		return
 	var collider = raycast.get_collider()
 	if collider is EggActor:
-		pass # Target is egg
+		var egg: EggActor = collider as EggActor
+		var egg_name: String = egg.egg_data.get_display_name() if egg.egg_data else tr("EGG_LAPIS_LAZULI")
+		if hud:
+			hud.show_prompt(tr("UI_PROMPT_PICK") + " • " + egg_name)
 	elif collider.get_parent() is ShowcaseUnit:
-		pass # Target is showcase
+		if hud:
+			hud.show_prompt(tr("UI_PROMPT_PLACE"))
+	else:
+		if hud:
+			hud.hide_prompt()
 
 func _handle_interaction() -> void:
 	if not raycast.is_colliding():
@@ -95,3 +106,4 @@ func _handle_interaction() -> void:
 
 func _trigger_resonance() -> void:
 	AudioManager.play_chime(global_position)
+

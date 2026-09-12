@@ -1,4 +1,4 @@
-﻿class_name EggActor
+class_name EggActor
 extends RigidBody3D
 
 ## Physical in-world collectible egg actor.
@@ -23,15 +23,17 @@ func _setup_visuals_and_physics() -> void:
 	linear_damp = 2.0
 	angular_damp = 3.0
 	
-	# Procedural egg-shaped mesh scaled to exact goose egg dimensions
-	mesh_instance = MeshInstance3D.new()
-	var sphere: SphereMesh = SphereMesh.new()
-	sphere.radius = 0.03 # 6 cm diameter
-	sphere.height = 0.085 # 8.5 cm height
-	mesh_instance.mesh = sphere
-	add_child(mesh_instance)
+	# Reuse existing mesh instance or create procedural egg-shaped mesh
+	mesh_instance = get_node_or_null("MeshInstance3D")
+	if not mesh_instance:
+		mesh_instance = MeshInstance3D.new()
+		var sphere: SphereMesh = SphereMesh.new()
+		sphere.radius = 0.03 # 6 cm diameter
+		sphere.height = 0.085 # 8.5 cm height
+		mesh_instance.mesh = sphere
+		add_child(mesh_instance)
 	
-	# Create tactile material matching the EggData specs
+	# Apply tactile material matching the EggData specs
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	if egg_data:
 		mat.albedo_color = egg_data.albedo_color
@@ -41,13 +43,15 @@ func _setup_visuals_and_physics() -> void:
 			mat.metallic_specular = 0.9
 	mesh_instance.material_override = mat
 	
-	# Collision capsule for interaction raycast
-	collision_shape = CollisionShape3D.new()
-	var capsule: CapsuleShape3D = CapsuleShape3D.new()
-	capsule.radius = 0.03
-	capsule.height = 0.085
-	collision_shape.shape = capsule
-	add_child(collision_shape)
+	# Reuse existing collision shape or create collision capsule
+	collision_shape = get_node_or_null("CollisionShape3D")
+	if not collision_shape:
+		collision_shape = CollisionShape3D.new()
+		var capsule: CapsuleShape3D = CapsuleShape3D.new()
+		capsule.radius = 0.03
+		capsule.height = 0.085
+		collision_shape.shape = capsule
+		add_child(collision_shape)
 
 ## Collect the egg into the player's basket
 func pick_up() -> bool:

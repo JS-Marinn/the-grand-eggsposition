@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 ## Central Game Manager for The Grand Eggsposition.
 ## Coordinates egg state, inventory management, and save/load persistence.
@@ -26,6 +26,8 @@ var player_basket: Array[EggData] = []
 var max_basket_capacity: int = 12 # Upgraded via Basket Mastery skill
 
 func _ready() -> void:
+	# Human-crafted English in-game experience with built-in i18n support
+	TranslationServer.set_locale("en")
 	_initialize_database()
 	_initialize_showcase_state()
 

@@ -8,8 +8,6 @@
 
 config_version=5
 
-"ï»¿config_version"=5
-
 [application]
 
 config/name="The Grand Eggsposition"
@@ -94,7 +92,7 @@ open_journal={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://localization/translations.csv")
+locale/translations=PackedStringArray("res://localization/translations.en.translation", "res://localization/translations.es.translation")
 
 [rendering]
 

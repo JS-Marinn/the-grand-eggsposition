@@ -1,15 +1,15 @@
-﻿class_name HUD
+class_name HUD
 extends Control
 
 ## Ghost HUD system for The Grand Eggsposition.
 ## Unobtrusive, high-contrast pills with dynamic smart reticle and i18n support.
 
-@onready var reticle: ColorRect = 
-@onready var prompt_label: Label = /PromptLabel
-@onready var prompt_container: PanelContainer = 
-@onready var basket_label: Label = /BasketLabel
-@onready var progress_label: Label = /ProgressLabel
-@onready var seals_label: Label = /SealsLabel
+@onready var reticle: ColorRect = $Reticle
+@onready var prompt_label: Label = $PromptContainer/PromptLabel
+@onready var prompt_container: PanelContainer = $PromptContainer
+@onready var basket_label: Label = $TopLeft/BasketLabel
+@onready var progress_label: Label = $TopRight/ProgressLabel
+@onready var seals_label: Label = $TopRight/SealsLabel
 
 func _ready() -> void:
 	GameManager.egg_collected.connect(_on_inventory_changed)
