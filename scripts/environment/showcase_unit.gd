@@ -34,6 +34,7 @@ var _current_holo_slot: int = -1
 var _holo_tween: Tween = null
 
 func _ready() -> void:
+	add_to_group("showcases")
 	in_flight_container = get_node_or_null("EggsInFlight")
 	if not in_flight_container:
 		in_flight_container = Node3D.new()
@@ -245,6 +246,14 @@ func get_slot_local_position(d: int, s: int) -> Vector3:
 		slot_z = +0.14
 
 	return Vector3(slot_x, slot_y, slot_z)
+
+## Returns global world position where player stands to approach this showcase
+func get_approach_global_position() -> Vector3:
+	return to_global(Vector3(0.0, 0.05, 1.35))
+
+## Returns global world position of slot s (0..11) in tier d (1..5)
+func get_slot_global_position(d: int, s: int) -> Vector3:
+	return to_global(get_slot_local_position(d, s))
 
 ## Sets up the translucent placement preview hologram
 func _setup_hologram() -> void:

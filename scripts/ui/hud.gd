@@ -61,6 +61,13 @@ func _update_skills_overlay() -> void:
 		var tier = ProgressManager.get_skill_tier("cascade_deposit")
 		active_tags.append("Cascade R%d" % tier)
 
+	if ProgressManager.is_skill_unlocked("wayfinder"):
+		var wayfinder = get_tree().get_first_node_in_group("wayfinder")
+		if wayfinder and wayfinder.has_method("is_active") and wayfinder.is_active():
+			active_tags.append("Wayfinder: Active [G]")
+		else:
+			active_tags.append("Wayfinder: [G]")
+
 	skills_label.text = " • ".join(active_tags)
 
 func _on_skill_upgraded(_skill_id: String, _tier: int) -> void:

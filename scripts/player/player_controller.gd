@@ -105,6 +105,9 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("resonance_chime"):
 		_trigger_resonance()
 
+	if event.is_action_pressed("wayfinder_guidance") or (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_G):
+		_trigger_wayfinder()
+
 	# Velvet Dash: Double-tap Space or dedicated V key
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_SPACE:
@@ -456,6 +459,45 @@ func _trigger_resonance() -> void:
 		if egg_actor.global_position.distance_to(global_position) <= radius:
 			if target_ids.is_empty() or target_ids.has(egg_actor.egg_data.egg_id):
 				egg_actor.trigger_resonance_highlight(duration)
+
+## Wayfinder Navigation Guidance: Projects luminous guide trail to target showcase
+func _trigger_wayfinder() -> bool:
+	if not ProgressManager.is_skill_unlocked("wayfinder"):
+		return false
+	return trigger_wayfinder_override()
+
+func trigger_wayfinder_override(egg_data: EggData = null) -> bool:
+	var wayfinder = get_tree().get_first_node_in_group("wayfinder")
+	if not wayfinder or not is_instance_valid(wayfinder):
+		return false
+
+	if wayfinder.has_method("is_active") and wayfinder.is_active():
+		wayfinder.dismiss_guidance()
+		return true
+
+	var target_egg: EggData = egg_data
+
+	# Priority 1: Egg in player basket
+	if not target_egg and not GameManager.player_basket.is_empty():
+		target_egg = GameManager.player_basket[0]
+
+	# Priority 2: Targeted egg on floor via raycast
+	if not target_egg and raycast and raycast.is_colliding():
+		var egg_actor: EggActor = _resolve_egg(raycast.get_collider())
+		if egg_actor and egg_actor.egg_data:
+			target_egg = egg_actor.egg_data
+
+	# Fallback Priority 3: Default showcase egg
+	if not target_egg:
+		target_egg = GameManager.get_egg_for_showcase_dozen(1, 1)
+
+	if not target_egg:
+		return false
+
+	var ok: bool = wayfinder.activate_guidance_for_egg(target_egg)
+	if ok:
+		AudioManager.play_chime(global_position)
+	return ok
 
 ## Sweep Suction: Draws in all loose eggs of the same type within suction radius
 func _try_sweep_suction(target_override: EggActor = null) -> bool:

@@ -23,6 +23,7 @@ func _ready() -> void:
 	_check_core_scenes()
 	_check_localization()
 	_check_placement_hologram()
+	_check_wayfinder_system()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -380,3 +381,101 @@ func _check_placement_hologram() -> void:
 		gm.player_basket.clear()
 
 	showcase.queue_free()
+
+## 7. Verify Wayfinder Guidance System
+func _check_wayfinder_system() -> void:
+	print("\n7. Wayfinder Navigational Guidance System:")
+	var wayfinder_script = load("res://scripts/systems/wayfinder_system.gd")
+	var game_scene = load("res://scenes/main/game.tscn").instantiate()
+	add_child(game_scene)
+
+	var wf = game_scene.get_node_or_null("WayfinderSystem")
+	if not wf or not is_instance_valid(wf) or wf.get_script() != wayfinder_script:
+		_fail("WayfinderSystem node missing or invalid script in game.tscn")
+		game_scene.queue_free()
+		return
+	_pass("WayfinderSystem node instantiated in Game scene")
+
+	# Check sub-nodes and shaders
+	if wf.trail_mesh_instance and wf.trail_mesh is ImmediateMesh:
+		_pass("Wayfinder trail ribbon configured with ImmediateMesh and trail shader")
+	else:
+		_fail("Wayfinder trail mesh instance or ImmediateMesh missing")
+
+	if wf.ground_beacon_instance and wf.ground_beacon_material:
+		_pass("Wayfinder ground reticle beacon configured with animated ripple shader")
+	else:
+		_fail("Wayfinder ground beacon missing")
+
+	if wf.shelf_beacon_instance and wf.shelf_beacon_material:
+		_pass("Wayfinder shelf slot target beacon configured")
+	else:
+		_fail("Wayfinder shelf beacon missing")
+
+	# Trajectory generation: Tier 1 (showcase approach) and Tier 2 (shelf climb)
+	var p0 = Vector3(0, 0, 0)
+	var forward = Vector3(0, 0, -1)
+	var showcase = game_scene.get_node_or_null("Showcase_Minerals_1")
+	if not showcase:
+		_fail("Showcase_Minerals_1 not found in game scene")
+		game_scene.queue_free()
+		return
+
+	var approach_pos = showcase.get_approach_global_position()
+	var slot_pos = showcase.get_slot_global_position(1, 0)
+	var front_dir = showcase.global_transform.basis.z
+
+	var pts_tier1 = wf._compute_trajectory(p0, forward, approach_pos, front_dir, slot_pos, false)
+	var pts_tier2 = wf._compute_trajectory(p0, forward, approach_pos, front_dir, slot_pos, true)
+
+	if pts_tier1.size() == wf.sample_points and pts_tier2.size() == wf.sample_points:
+		_pass("Trajectory generates smooth %d-point Bézier path for both Tier 1 and Tier 2" % wf.sample_points)
+	else:
+		_fail("Trajectory point count mismatch: Tier1=%d, Tier2=%d" % [pts_tier1.size(), pts_tier2.size()])
+
+	# Ribbon mesh generation
+	wf._generate_ribbon_mesh(pts_tier1)
+	if wf.trail_mesh.get_surface_count() == 1:
+		_pass("Ribbon mesh dynamically generates smooth 3D triangle strip surface (surface_count = 1)")
+	else:
+		_fail("Ribbon mesh failed to generate surface")
+
+	# Real egg guidance test
+	var gm = get_node_or_null("/root/GameManager")
+	var copper_egg = gm.get_egg_for_showcase_dozen(1, 4) if gm else null
+	if copper_egg:
+		var activated = wf.activate_guidance_for_egg(copper_egg, 2.0)
+		if activated and wf.is_active() and wf.get_active_showcase_id() == 1 and wf.get_active_tier() == 4:
+			_pass("Wayfinder successfully activates guidance for Pure Copper egg targeting Showcase 1 Tier 4")
+		else:
+			_fail("Failed to activate guidance for copper egg")
+
+		# Clear / dismiss
+		wf.clear_guidance()
+		if not wf.is_active() and wf.trail_mesh.get_surface_count() == 0:
+			_pass("Wayfinder clear_guidance resets active state and clears GPU mesh surfaces")
+		else:
+			_fail("clear_guidance failed to clean up wayfinder state")
+	else:
+		_fail("Could not find Pure Copper egg definition in GameManager")
+
+	# Player input trigger test
+	var player = game_scene.get_node_or_null("Player")
+	if player and player.has_method("trigger_wayfinder_override"):
+		var pm = get_node_or_null("/root/ProgressManager")
+		if pm:
+			pm.set_skill_tier("wayfinder", 1)
+			var triggered = player._trigger_wayfinder()
+			if triggered and wf.is_active():
+				_pass("PlayerController triggers Wayfinder when skill tier >= 1")
+			else:
+				_fail("PlayerController failed to trigger Wayfinder with skill unlocked")
+			wf.clear_guidance()
+			pm.set_skill_tier("wayfinder", 0) # reset
+		else:
+			_fail("ProgressManager not found")
+	else:
+		_fail("PlayerController missing wayfinder trigger methods")
+
+	game_scene.queue_free()
+

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cm1main001scene"]
+[gd_scene load_steps=14 format=3 uid="uid://cm1main001scene"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2_hud_scene"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/props/egg_actor.tscn" id="4_egg_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="5_pause_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/journal_menu.tscn" id="6_journal_scene"]
+[ext_resource type="Script" path="res://scripts/systems/wayfinder_system.gd" id="7_wayfinder_script"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_atrium"]
 sky_top_color = Color(0.45, 0.65, 0.85, 1)
@@ -325,3 +326,7 @@ egg_id = 11
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause_scene")]
 
 [node name="JournalMenu" parent="." instance=ExtResource("6_journal_scene")]
+ 
+[node name="WayfinderSystem" type="Node3D" parent="."]
+script = ExtResource("7_wayfinder_script")
+

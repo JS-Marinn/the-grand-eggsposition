@@ -152,3 +152,12 @@ func get_egg_for_showcase_dozen(showcase: int, dozen: int) -> EggData:
 		if egg.showcase_id == showcase and egg.dozen_group == dozen:
 			return egg
 	return null
+
+## Finds a showcase unit in the scene tree matching target_showcase_id
+func get_showcase_unit(target_showcase_id: int) -> ShowcaseUnit:
+	var showcases = get_tree().get_nodes_in_group("showcases")
+	for s in showcases:
+		if is_instance_valid(s) and s is ShowcaseUnit and s.showcase_id == target_showcase_id:
+			return s
+	return null
+
