@@ -16,6 +16,7 @@ const EGGS_PER_DOZEN: int = 12
 const TOTAL_CAPACITY: int = 60
 const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
 const HOLOGRAM_SHADER: Shader = preload("res://assets/shaders/egg_hologram.gdshader")
+const SHOWCASE_EGG_SHADER: Shader = preload("res://assets/shaders/showcase_egg.gdshader")
 const HOLO_COLOR_VALID: Color = Color(0.18, 1.0, 0.42, 0.85)   # Luminous green
 const HOLO_COLOR_INVALID: Color = Color(1.0, 0.22, 0.25, 0.85) # Luminous red
 
@@ -191,14 +192,13 @@ func _setup_multimesh() -> void:
 		var multimesh: MultiMesh = MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_colors = true
+		multimesh.use_custom_data = true
 		multimesh.instance_count = TOTAL_CAPACITY
 		multimesh.visible_instance_count = TOTAL_CAPACITY
 
-		# 30cm height, 23cm diameter canonical egg mesh
-		var egg_mat: StandardMaterial3D = StandardMaterial3D.new()
-		egg_mat.vertex_color_use_as_albedo = true
-		egg_mat.roughness = 0.25
-		egg_mat.metallic = 0.2
+		# PBR ShaderMaterial that reflects authentic egg roughness, metallic, specular, and emission
+		var egg_mat: ShaderMaterial = ShaderMaterial.new()
+		egg_mat.shader = SHOWCASE_EGG_SHADER
 		multimesh_instance.material_override = egg_mat
 
 		multimesh.mesh = BASE_EGG_MESH
@@ -210,6 +210,7 @@ func _setup_multimesh() -> void:
 				var slot_pos: Vector3 = get_slot_local_position(d, s)
 				multimesh.set_instance_transform(idx, Transform3D(Basis().scaled(Vector3.ZERO), slot_pos))
 				multimesh.set_instance_color(idx, Color.WHITE)
+				multimesh.set_instance_custom_data(idx, Color(0.3, 0.0, 0.5, 0.0))
 
 		multimesh_instance.multimesh = multimesh
 		add_child(multimesh_instance)
@@ -616,6 +617,11 @@ func _refresh_visuals() -> void:
 		var count: int = GameManager.showcase_state[showcase_id].get(d, 0)
 		var egg_info: EggData = GameManager.get_egg_for_showcase_dozen(showcase_id, d)
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
+		var roughness: float = egg_info.roughness if egg_info else 0.3
+		var metallic: float = egg_info.metallic if egg_info else 0.0
+		var specular: float = 0.9 if metallic > 0.5 else 0.5
+		var emission: float = egg_info.emission_energy if egg_info else 0.0
+		var custom_data: Color = Color(roughness, metallic, specular, emission)
 		var is_custom: bool = (egg_info != null and (egg_info.custom_scene != null or egg_info.custom_mesh != null))
 
 		for s in range(EGGS_PER_DOZEN):
@@ -637,6 +643,7 @@ func _refresh_visuals() -> void:
 				else:
 					mm.set_instance_transform(slot_idx, Transform3D(Basis(), slot_pos))
 					mm.set_instance_color(slot_idx, egg_col)
+					mm.set_instance_custom_data(slot_idx, custom_data)
 			else:
 				mm.set_instance_transform(slot_idx, Transform3D(Basis().scaled(Vector3.ZERO), slot_pos))
 				if custom_shelved_container:

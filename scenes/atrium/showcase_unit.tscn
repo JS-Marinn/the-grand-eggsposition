@@ -62,18 +62,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.67, 0)
 mesh = SubResource("BoxMesh_crown")
 
 [node name="DisplayLight_Upper" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0.18)
 light_color = Color(1, 0.95, 0.88, 1)
-light_energy = 1.3
-omni_range = 3.0
-omni_attenuation = 1.1
+light_energy = 0.35
+light_specular = 0.4
+omni_range = 2.2
+omni_attenuation = 1.8
 
 [node name="DisplayLight_Lower" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.30, 0.18)
 light_color = Color(1, 0.95, 0.88, 1)
-light_energy = 1.1
-omni_range = 2.6
-omni_attenuation = 1.1
+light_energy = 0.25
+light_specular = 0.3
+omni_range = 1.8
+omni_attenuation = 1.8
 
 [node name="InteractionArea" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40, 0)

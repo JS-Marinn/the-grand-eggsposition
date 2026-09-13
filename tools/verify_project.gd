@@ -324,6 +324,21 @@ func _check_placement_hologram() -> void:
 		else:
 			_fail("MultiMesh instance count mismatch")
 
+		# Test Requirement 5: Per-egg PBR shading and soft display lighting
+		var mm = showcase.multimesh_instance.multimesh
+		var mat = showcase.multimesh_instance.material_override as ShaderMaterial
+		var light_upper = showcase.get_node_or_null("DisplayLight_Upper") as Light3D
+		var light_lower = showcase.get_node_or_null("DisplayLight_Lower") as Light3D
+		var lights_ok = light_upper and light_lower and light_upper.light_energy <= 0.5 and light_lower.light_energy <= 0.5
+		var shader_ok = mat != null and mat.shader != null and mat.shader.resource_path == "res://assets/shaders/showcase_egg.gdshader"
+		var test_egg = gm.get_egg_for_showcase_dozen(showcase.showcase_id, 3)
+		var egg_pbr_ok = test_egg != null and test_egg.metallic >= 0.85 and test_egg.roughness <= 0.15
+
+		if mm.use_custom_data and shader_ok and lights_ok and egg_pbr_ok:
+			_pass("MultiMesh uses showcase PBR shader with custom_data, soft lights (upper: %.2f, lower: %.2f), and authentic metallic PBR (metallic: %.2f, roughness: %.2f)" % [light_upper.light_energy, light_lower.light_energy, test_egg.metallic, test_egg.roughness])
+		else:
+			_fail("Showcase PBR or lighting validation failed: use_custom_data=%s, shader=%s, lights_ok=%s, egg_pbr_ok=%s" % [str(mm.use_custom_data), str(shader_ok), str(lights_ok), str(egg_pbr_ok)])
+
 		gm.player_basket.clear()
 
 	showcase.queue_free()
