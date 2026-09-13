@@ -26,6 +26,7 @@ func _ready() -> void:
 	_check_wayfinder_system()
 	_check_held_egg_viewmodel()
 	_check_hud_basket_stack()
+	_check_floor_egg_stability_and_respawn()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -645,3 +646,82 @@ func _check_hud_basket_stack() -> void:
 
 	gm.player_basket.clear()
 	hud.queue_free()
+
+## 10. Verify Floor Egg Stability, Boundary, and Out-of-Bounds Respawn
+func _check_floor_egg_stability_and_respawn() -> void:
+	print("\n10. Floor Egg Physics, Boundary Barrier & Respawn System:")
+	
+	# 1. Verify EggActor physical damping and respawn capabilities
+	var egg_scene: PackedScene = load("res://scenes/props/egg_actor.tscn")
+	if egg_scene:
+		var egg: EggActor = egg_scene.instantiate() as EggActor
+		add_child(egg)
+		egg.global_position = Vector3(2.0, 0.25, -2.0)
+		egg._spawn_transform = egg.global_transform
+		
+		if egg.can_sleep and egg.linear_damp >= 3.0 and egg.angular_damp >= 6.0:
+			_pass("EggActor configured with auto-sleep and high tactile rolling damping (linear=%.1f, angular=%.1f)" % [egg.linear_damp, egg.angular_damp])
+		else:
+			_fail("EggActor damping or sleep insufficient: linear=%.1f, angular=%.1f" % [egg.linear_damp, egg.angular_damp])
+		
+		# Test out-of-bounds detection when falling into void Y < -1.0
+		egg.global_position = Vector3(2.0, -2.5, -2.0)
+		egg._physics_process(0.016)
+		if egg._needs_respawn:
+			_pass("EggActor triggers automatic respawn when falling out of bounds (Y < -1.0)")
+		else:
+			_fail("EggActor failed to flag respawn after dropping below floor threshold")
+			
+		# Test perimeter out-of-bounds detection when rolling past R > 15.5m
+		egg._needs_respawn = false
+		egg.global_position = Vector3(16.5, 0.25, 0.0)
+		egg._physics_process(0.016)
+		if egg._needs_respawn:
+			_pass("EggActor triggers automatic respawn when rolling past perimeter boundary (R > 15.5m)")
+		else:
+			_fail("EggActor failed to flag respawn when exceeding perimeter distance")
+			
+		egg.queue_free()
+	else:
+		_fail("Could not load res://scenes/props/egg_actor.tscn")
+		
+	# 2. Verify Game scene AtriumBoundary barrier wall
+	var game_scene: PackedScene = load("res://scenes/main/game.tscn")
+	if game_scene:
+		var game = game_scene.instantiate()
+		var boundary = game.find_child("AtriumBoundary", true, false)
+		if boundary and boundary is StaticBody3D:
+			var segment_count: int = boundary.get_child_count()
+			if segment_count >= 16:
+				_pass("AtriumBoundary configured with %d collision wall segments preventing map escape" % segment_count)
+			else:
+				_fail("AtriumBoundary has insufficient segments: %d" % segment_count)
+		else:
+			_fail("AtriumBoundary StaticBody3D node missing from Game scene")
+			
+		# 3. Verify zero overlaps across all 60 floor eggs in Game scene
+		var eggs_node = game.find_child("EggsOnFloor", true, false)
+		if eggs_node:
+			var eggs = eggs_node.get_children()
+			var overlaps: int = 0
+			var min_dist: float = 999.0
+			for i in range(eggs.size()):
+				var p1 = eggs[i].transform.origin
+				for j in range(i + 1, eggs.size()):
+					var p2 = eggs[j].transform.origin
+					var d = p1.distance_to(p2)
+					if d < min_dist:
+						min_dist = d
+					if d < 0.24: # Egg diameter is 0.23m
+						overlaps += 1
+			if eggs.size() == 60 and overlaps == 0 and min_dist >= 0.30:
+				_pass("All %d floor eggs placed with safe non-overlapping clearance (min_dist=%.2fm, 0 overlaps)" % [eggs.size(), min_dist])
+			else:
+				_fail("Floor eggs overlap or spacing invalid: %d eggs, %d overlaps, min_dist=%.2fm" % [eggs.size(), overlaps, min_dist])
+		else:
+			_fail("EggsOnFloor node missing from Game scene")
+			
+		game.queue_free()
+	else:
+		_fail("Could not load res://scenes/main/game.tscn")
+

@@ -13,8 +13,13 @@ const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
 var mesh_instance: MeshInstance3D
 var collision_shape: CollisionShape3D
 
+## Initial resting transform in world space for safety recovery
+var _spawn_transform: Transform3D
+var _needs_respawn: bool = false
+
 func _ready() -> void:
 	add_to_group("eggs")
+	_spawn_transform = global_transform
 	if not egg_data:
 		if egg_id > 0:
 			egg_data = GameManager.get_egg_data(egg_id)
@@ -24,11 +29,19 @@ func _ready() -> void:
 	_setup_visuals_and_physics()
 
 func _setup_visuals_and_physics() -> void:
-	# Enable auto-sleeping to save CPU cycles
+	# Enable auto-sleeping and tactile rolling damping
 	can_sleep = true
-	linear_damp = 2.0
-	angular_damp = 3.0
+	sleeping = true
+	linear_damp = 4.0
+	angular_damp = 8.0 # Egg shape rolling resistance prevents endless rolling
 	mass = 4.5 # Double-scale giant ostrich egg weight (~12.0 kg)
+	
+	if not physics_material_override:
+		var phys_mat := PhysicsMaterial.new()
+		phys_mat.friction = 0.95
+		phys_mat.rough = true
+		phys_mat.bounce = 0.02
+		physics_material_override = phys_mat
 	
 	mesh_instance = get_node_or_null("MeshInstance3D")
 	if egg_data and egg_data.custom_scene:
@@ -70,6 +83,29 @@ func _setup_visuals_and_physics() -> void:
 		capsule.height = 0.30
 		collision_shape.shape = capsule
 		add_child(collision_shape)
+
+## Automatically checks boundaries and recovers eggs that roll or fall out of the atrium
+func _physics_process(_delta: float) -> void:
+	if is_being_suctioned or freeze:
+		return
+	
+	# Check if egg fell off the atrium floor (Y < -1.0) or rolled past map perimeter (R > 15.5m)
+	var flat_pos := Vector2(global_position.x, global_position.z)
+	if global_position.y < -1.0 or flat_pos.length() > 15.5:
+		respawn_to_initial_position()
+
+## Restores the egg to its initial spawn transform with zero velocity and sleeping state
+func respawn_to_initial_position() -> void:
+	_needs_respawn = true
+
+func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+	if _needs_respawn:
+		_needs_respawn = false
+		state.transform = _spawn_transform
+		state.linear_velocity = Vector3.ZERO
+		state.angular_velocity = Vector3.ZERO
+		state.sleeping = true
+		call_deferred("trigger_resonance_highlight", 1.5)
 
 var is_being_suctioned: bool = false
 var _resonance_tween: Tween
