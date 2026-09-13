@@ -41,8 +41,8 @@ func _initialize_database() -> void:
 	_register_egg(4, "EGG_AMETHYST_GEODE", EggData.EggSeries.MINERALS_GEMS, 1, 4, Color(0.55, 0.18, 0.72), 0.3, 0.2)
 	_register_egg(11, "EGG_EMERALD", EggData.EggSeries.MINERALS_GEMS, 1, 5, Color(0.1, 0.72, 0.35), 0.2, 0.3)
 
-	# Showcase 2: Minerals & Gemstones II (5 tiers)
-	_register_egg(12, "EGG_RUBY", EggData.EggSeries.MINERALS_GEMS, 2, 1, Color(0.85, 0.08, 0.22), 0.18, 0.3)
+	# Showcase 2: Pop Culture & Vault Lore (5 tiers)
+	_register_egg(20, "EGG_FALLOUT", EggData.EggSeries.POP_CULTURE, 2, 1, Color(0.95, 0.78, 0.22), 0.7, 0.05, preload("res://scenes/props/fallout_egg_model.tscn"))
 	_register_egg(13, "EGG_SAPPHIRE", EggData.EggSeries.MINERALS_GEMS, 2, 2, Color(0.06, 0.18, 0.62), 0.15, 0.4)
 	_register_egg(14, "EGG_ROSE_QUARTZ", EggData.EggSeries.MINERALS_GEMS, 2, 3, Color(0.94, 0.68, 0.76), 0.28, 0.05)
 	_register_egg(15, "EGG_OBSIDIAN", EggData.EggSeries.MINERALS_GEMS, 2, 4, Color(0.12, 0.12, 0.14), 0.12, 0.8)
@@ -56,7 +56,7 @@ func _initialize_database() -> void:
 	_register_egg(9, "EGG_PANDA", EggData.EggSeries.WILDLIFE_COSMOS, 7, 1, Color(0.95, 0.95, 0.95), 0.4, 0.0)
 	_register_egg(10, "EGG_DRAGON_SCALE", EggData.EggSeries.FANTASY_MYTH, 8, 1, Color(0.15, 0.55, 0.35), 0.2, 0.3)
 
-func _register_egg(id: int, key: String, series: EggData.EggSeries, showcase: int, dozen: int, col: Color, rough: float, metal: float) -> void:
+func _register_egg(id: int, key: String, series: EggData.EggSeries, showcase: int, dozen: int, col: Color, rough: float, metal: float, scene: PackedScene = null) -> EggData:
 	var egg: EggData = EggData.new()
 	egg.egg_id = id
 	egg.egg_name_key = key
@@ -66,7 +66,9 @@ func _register_egg(id: int, key: String, series: EggData.EggSeries, showcase: in
 	egg.albedo_color = col
 	egg.roughness = rough
 	egg.metallic = metal
+	egg.custom_scene = scene
 	egg_database[id] = egg
+	return egg
 
 func _initialize_showcase_state() -> void:
 	for s_id in range(1, TOTAL_SHOWCASES + 1):
@@ -93,7 +95,7 @@ func get_series_for_showcase(s_id: int) -> EggData.EggSeries:
 func get_showcase_title(s_id: int) -> String:
 	match s_id:
 		1: return tr("SHOWCASE_MINERALS_1")
-		2: return tr("SHOWCASE_MINERALS_2")
+		2: return tr("SHOWCASE_FALLOUT")
 		3: return tr("SHOWCASE_FABERGE")
 		4: return tr("SHOWCASE_CHEFS")
 		5: return tr("SHOWCASE_FIREFIGHTERS")

@@ -28,25 +28,36 @@ func _setup_visuals_and_physics() -> void:
 	angular_damp = 3.0
 	mass = 4.5 # Double-scale giant ostrich egg weight (~12.0 kg)
 	
-	# Reuse existing mesh instance or create procedural egg-shaped mesh
 	mesh_instance = get_node_or_null("MeshInstance3D")
-	if not mesh_instance:
-		mesh_instance = MeshInstance3D.new()
-		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = 0.115 # 34 cm diameter
-		sphere.height = 0.30 # 44 cm height
-		mesh_instance.mesh = sphere
-		add_child(mesh_instance)
-	
-	# Apply tactile material matching the EggData specs
-	var mat: StandardMaterial3D = StandardMaterial3D.new()
-	if egg_data:
-		mat.albedo_color = egg_data.albedo_color
-		mat.roughness = egg_data.roughness
-		mat.metallic = egg_data.metallic
-		if egg_data.metallic > 0.5:
-			mat.metallic_specular = 0.9
-	mesh_instance.material_override = mat
+	if egg_data and egg_data.custom_scene:
+		if mesh_instance:
+			mesh_instance.visible = false
+		var custom_visual: Node3D = egg_data.custom_scene.instantiate() as Node3D
+		custom_visual.name = "CustomVisual"
+		add_child(custom_visual)
+		var inner_mesh = custom_visual.find_child("SM_Egg_Standard", true, false) as MeshInstance3D
+		if not inner_mesh:
+			inner_mesh = custom_visual.find_child("*Mesh*", true, false) as MeshInstance3D
+		if inner_mesh:
+			mesh_instance = inner_mesh
+	else:
+		if not mesh_instance:
+			mesh_instance = MeshInstance3D.new()
+			var sphere: SphereMesh = SphereMesh.new()
+			sphere.radius = 0.115 # 23 cm diameter
+			sphere.height = 0.30 # 30 cm height
+			mesh_instance.mesh = sphere
+			add_child(mesh_instance)
+		
+		# Apply tactile material matching the EggData specs
+		var mat: StandardMaterial3D = StandardMaterial3D.new()
+		if egg_data:
+			mat.albedo_color = egg_data.albedo_color
+			mat.roughness = egg_data.roughness
+			mat.metallic = egg_data.metallic
+			if egg_data.metallic > 0.5:
+				mat.metallic_specular = 0.9
+		mesh_instance.material_override = mat
 	
 	# Reuse existing collision shape or create collision capsule
 	collision_shape = get_node_or_null("CollisionShape3D")

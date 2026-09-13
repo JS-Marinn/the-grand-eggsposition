@@ -21,6 +21,7 @@ var shelves_container: Node3D
 var category_label: Label3D
 var in_flight_container: Node3D
 var in_flight_slots: Dictionary = {}
+var custom_shelved_container: Node3D
 
 func _ready() -> void:
 	in_flight_container = get_node_or_null("EggsInFlight")
@@ -28,6 +29,12 @@ func _ready() -> void:
 		in_flight_container = Node3D.new()
 		in_flight_container.name = "EggsInFlight"
 		add_child(in_flight_container)
+
+	custom_shelved_container = get_node_or_null("CustomShelvedEggs")
+	if not custom_shelved_container:
+		custom_shelved_container = Node3D.new()
+		custom_shelved_container.name = "CustomShelvedEggs"
+		add_child(custom_shelved_container)
 
 	_setup_shelves()
 	_setup_multimesh()
@@ -383,10 +390,17 @@ func _refresh_visuals() -> void:
 	var placed_idx: int = 0
 	var mm: MultiMesh = multimesh_instance.multimesh
 
+	# Clear previously shelved custom models before rebuilding
+	if custom_shelved_container:
+		for child in custom_shelved_container.get_children():
+			custom_shelved_container.remove_child(child)
+			child.queue_free()
+
 	for d in range(1, DOZENS_COUNT + 1):
 		var count: int = GameManager.showcase_state[showcase_id].get(d, 0)
 		var egg_info: EggData = GameManager.get_egg_for_showcase_dozen(showcase_id, d)
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
+		var is_custom: bool = (egg_info != null and (egg_info.custom_scene != null or egg_info.custom_mesh != null))
 
 		for s in range(count):
 			var slot_pos: Vector3 = get_slot_local_position(d, s)
@@ -396,6 +410,13 @@ func _refresh_visuals() -> void:
 			if in_flight_slots.has(slot_key):
 				# While in flight, scale to zero in MultiMesh so the flying proxy is visible
 				egg_transform = Transform3D(Basis().scaled(Vector3.ZERO), slot_pos)
+			elif is_custom:
+				# Hide MultiMesh instance and spawn actual 3D custom model
+				egg_transform = Transform3D(Basis().scaled(Vector3.ZERO), slot_pos)
+				if custom_shelved_container:
+					var model_node = egg_info.instantiate_visual_node()
+					model_node.position = slot_pos
+					custom_shelved_container.add_child(model_node)
 			else:
 				egg_transform = Transform3D(Basis(), slot_pos)
 
