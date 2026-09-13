@@ -59,11 +59,6 @@ func _setup_visuals_and_physics() -> void:
 				mat.albedo_texture = egg_data.albedo_texture
 			mat.roughness = egg_data.roughness
 			mat.metallic = egg_data.metallic
-			if egg_data.metallic > 0.5:
-				mat.metallic_specular = 0.95
-				mat.rim_enabled = true
-				mat.rim = 0.45
-				mat.rim_tint = 0.75
 		mesh_instance.material_override = mat
 	
 	# Reuse existing collision shape or create collision capsule

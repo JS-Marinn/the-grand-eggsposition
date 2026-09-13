@@ -668,7 +668,7 @@ func _refresh_visuals() -> void:
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 		var roughness: float = egg_info.roughness if egg_info else 0.3
 		var metallic: float = egg_info.metallic if egg_info else 0.0
-		var specular: float = 0.9 if metallic > 0.5 else 0.5
+		var specular: float = 0.5
 		var emission: float = egg_info.emission_energy if egg_info else 0.0
 		var custom_data: Color = Color(roughness, metallic, specular, emission)
 		var is_custom: bool = (egg_info != null and (egg_info.custom_scene != null or egg_info.custom_mesh != null))
