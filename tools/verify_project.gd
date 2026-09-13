@@ -25,6 +25,7 @@ func _ready() -> void:
 	_check_placement_hologram()
 	_check_wayfinder_system()
 	_check_held_egg_viewmodel()
+	_check_hud_basket_stack()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -573,4 +574,74 @@ func _check_held_egg_viewmodel() -> void:
 
 	player.queue_free()
 
+## 9. Verify HUD BasketStack widget (isolated – no Player in scene)
+func _check_hud_basket_stack() -> void:
+	print("\n9. HUD BasketStack Egg List & Chevron Indicator:")
 
+	var hud_scene: PackedScene = load("res://scenes/ui/hud.tscn")
+	if not hud_scene:
+		_fail("Could not load res://scenes/ui/hud.tscn")
+		return
+
+	var hud = hud_scene.instantiate()
+	add_child(hud)
+
+	var gm = get_node_or_null("/root/GameManager")
+	if not gm:
+		_fail("GameManager not found")
+		hud.queue_free()
+		return
+
+	var egg1 = gm.get_egg_data(1)           # Gold
+	var egg4 = gm.get_egg_for_showcase_dozen(1, 4) # Pure Copper
+	if not egg1 or not egg4:
+		_fail("Could not retrieve sample eggs")
+		hud.queue_free()
+		return
+
+	# --- 2 eggs, selection = 0 ---
+	gm.player_basket.clear()
+	gm.player_basket.append(egg1)
+	gm.player_basket.append(egg4)
+	hud._override_selected_idx = 0
+	hud._update_basket_stack()
+
+	var rows = hud.basket_item_list.get_children()
+	if rows.size() == 2:
+		_pass("HUD BasketStack displays exactly 2 rows matching carried eggs")
+	else:
+		_fail("HUD BasketStack row count mismatch: expected 2, got %d" % rows.size())
+
+	var r0chev = rows[0].get_node("ChevronLabel").text if rows.size() > 0 else "?"
+	var r1chev = rows[1].get_node("ChevronLabel").text if rows.size() > 1 else "?"
+	if r0chev == ">" and r1chev == "":
+		_pass("HUD BasketStack shows chevron '>' on selected egg index 0")
+	else:
+		_fail("HUD BasketStack chevron mismatch at index 0: row0='%s', row1='%s'" % [r0chev, r1chev])
+
+	if hud.capacity_current.text == "2" and hud.capacity_max.text == str(gm.max_basket_capacity):
+		_pass("HUD BasketStack capacity counter shows 2/%d" % gm.max_basket_capacity)
+	else:
+		_fail("HUD BasketStack capacity mismatch: %s/%s" % [hud.capacity_current.text, hud.capacity_max.text])
+
+	# --- cycle to selection = 1 ---
+	hud._override_selected_idx = 1
+	hud._update_basket_stack()
+	var rows2 = hud.basket_item_list.get_children()
+	var r0chev2 = rows2[0].get_node("ChevronLabel").text if rows2.size() > 0 else "?"
+	var r1chev2 = rows2[1].get_node("ChevronLabel").text if rows2.size() > 1 else "?"
+	if r0chev2 == "" and r1chev2 == ">":
+		_pass("HUD BasketStack moves chevron '>' to selected egg index 1 on wheel cycle")
+	else:
+		_fail("HUD BasketStack chevron failed to move on cycle: row0='%s', row1='%s'" % [r0chev2, r1chev2])
+
+	# --- empty basket ---
+	gm.player_basket.clear()
+	hud._update_basket_stack()
+	if hud.basket_item_list.get_child_count() == 0 and hud.capacity_current.text == "0":
+		_pass("HUD BasketStack clears rows and resets counter to 0 on empty basket")
+	else:
+		_fail("HUD BasketStack failed to clear rows on empty basket")
+
+	gm.player_basket.clear()
+	hud.queue_free()

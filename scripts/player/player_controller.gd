@@ -47,6 +47,7 @@ var _held_egg_base_scale: Vector3 = Vector3(0.65, 0.65, 0.65)
 var _held_egg_tween: Tween = null
 
 func _ready() -> void:
+	add_to_group("player")
 	_setup_camera_and_raycast()
 	_setup_held_egg_view()
 	GameManager.egg_collected.connect(_on_egg_collected)

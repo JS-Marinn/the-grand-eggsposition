@@ -13,7 +13,14 @@ extends Control
 @onready var progress_label: Label = $TopRight/ProgressLabel
 @onready var seals_label: Label = $TopRight/SealsLabel
 
+@onready var basket_stack: Control = get_node_or_null("BasketStack")
+@onready var basket_item_list: VBoxContainer = get_node_or_null("BasketStack/VBox/ItemList")
+@onready var capacity_current: Label = get_node_or_null("BasketStack/VBox/CapacityContainer/CapacityCurrent")
+@onready var capacity_slash: Label = get_node_or_null("BasketStack/VBox/CapacityContainer/CapacitySlash")
+@onready var capacity_max: Label = get_node_or_null("BasketStack/VBox/CapacityContainer/CapacityMax")
+
 var _fps_timer: float = 0.0
+var _override_selected_idx: int = -1  ## Set by tests when no Player node is in scene
 
 func _ready() -> void:
 	GameManager.egg_collected.connect(_on_inventory_changed)
@@ -112,3 +119,94 @@ func _update_hud() -> void:
 			progress_label.text = "%d / %d" % [GameManager.total_placed_eggs, GameManager.TOTAL_EGGS]
 	if seals_label:
 		seals_label.text = "%s %d" % [tr("UI_SEALS_LABEL"), ProgressManager.wax_seals]
+	_update_basket_stack()
+
+func _update_basket_stack() -> void:
+	if not basket_stack or not basket_item_list or not capacity_current or not capacity_max:
+		return
+
+	var basket_size: int = GameManager.player_basket.size()
+	var max_cap: int = GameManager.max_basket_capacity
+
+	capacity_current.text = str(basket_size)
+	capacity_max.text = str(max_cap)
+
+	if basket_size == 0:
+		capacity_current.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 0.45))
+		if capacity_slash:
+			capacity_slash.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.45))
+		capacity_max.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85, 0.45))
+	else:
+		capacity_current.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+		if capacity_slash:
+			capacity_slash.add_theme_color_override("font_color", Color(0.9, 0.9, 0.9, 0.85))
+		capacity_max.add_theme_color_override("font_color", Color(0.85, 0.85, 0.85, 0.75))
+
+	# _override_selected_idx takes priority (set by tests or animation code).
+	# Falls back to Player node in scene tree, then to 0.
+	var selected_idx: int
+	if _override_selected_idx >= 0:
+		selected_idx = _override_selected_idx
+	else:
+		var player = get_tree().root.find_child("Player", true, false)
+		selected_idx = player.selected_held_index if (player and "selected_held_index" in player) else 0
+
+	# Remove surplus rows synchronously so child count is accurate immediately
+	while basket_item_list.get_child_count() > basket_size:
+		var last_node = basket_item_list.get_child(basket_item_list.get_child_count() - 1)
+		basket_item_list.remove_child(last_node)
+		last_node.queue_free()
+
+	var current_children: Array = basket_item_list.get_children()
+
+	# Add missing rows
+	while current_children.size() < basket_size:
+		var row: HBoxContainer = HBoxContainer.new()
+		row.alignment = BoxContainer.ALIGNMENT_END
+		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		row.add_theme_constant_override("separation", 8)
+
+		var name_lbl: Label = Label.new()
+		name_lbl.name = "NameLabel"
+		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		name_lbl.add_theme_font_size_override("font_size", 16)
+		name_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+		name_lbl.add_theme_constant_override("outline_size", 4)
+		row.add_child(name_lbl)
+
+		var chevron_lbl: Label = Label.new()
+		chevron_lbl.name = "ChevronLabel"
+		chevron_lbl.custom_minimum_size = Vector2(24, 0)
+		chevron_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		chevron_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		chevron_lbl.add_theme_font_size_override("font_size", 22)
+		chevron_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+		chevron_lbl.add_theme_constant_override("outline_size", 4)
+		row.add_child(chevron_lbl)
+
+		basket_item_list.add_child(row)
+		current_children.append(row)
+
+	# Update all rows
+	for i in range(basket_size):
+		var row: HBoxContainer = current_children[i] as HBoxContainer
+		var egg: EggData = GameManager.player_basket[i]
+		var is_selected: bool = (i == selected_idx)
+
+		var name_lbl: Label = row.get_node_or_null("NameLabel") as Label
+		var chevron_lbl: Label = row.get_node_or_null("ChevronLabel") as Label
+
+		if name_lbl and egg:
+			name_lbl.text = egg.get_display_name()
+			if is_selected:
+				name_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+			else:
+				name_lbl.add_theme_color_override("font_color", Color(0.88, 0.88, 0.92, 0.45))
+
+		if chevron_lbl:
+			if is_selected:
+				chevron_lbl.text = ">"
+				chevron_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+			else:
+				chevron_lbl.text = ""
