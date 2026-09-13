@@ -250,4 +250,49 @@ func _check_placement_hologram() -> void:
 	else:
 		_fail("Hologram failed to hide")
 
+	# Test Requirement 1: Aiming at matching tier vs non-matching tier
+	var gm = get_node_or_null("/root/GameManager")
+	if gm:
+		gm.player_basket.clear()
+		gm.player_basket.append(dummy_egg) # egg for showcase 1, tier 1
+
+		# Aiming at tier 1 (matching egg exists -> green)
+		var target_tier1 = showcase.get_target_for_tier(1)
+		if target_tier1.get("is_valid") == true:
+			_pass("Aiming at matching tier yields valid green target")
+		else:
+			_fail("Aiming at matching tier failed to yield valid target")
+
+		# Aiming at tier 3 (no egg for tier 3 -> red)
+		var target_tier3 = showcase.get_target_for_tier(3)
+		if target_tier3.get("is_valid") == false and target_tier3.get("dozen") == 3:
+			_pass("Aiming at non-matching tier yields red target on aimed tier")
+		else:
+			_fail("Aiming at non-matching tier failed to yield red target on that tier")
+
+		# Test Requirement 2: Teleport when tier changes
+		showcase.update_placement_hologram(dummy_egg, true, 1, 0)
+		var pos_tier1 = showcase.hologram_mesh_instance.position
+		showcase.update_placement_hologram(dummy_egg, false, 3, 0)
+		var pos_tier3 = showcase.hologram_mesh_instance.position
+		if pos_tier1 != pos_tier3 and showcase._holo_tween == null:
+			_pass("Switching between shelf levels teleports instantly without drift tween")
+		else:
+			_fail("Switching levels did not teleport properly")
+
+		# Test Requirement 3: Smooth animation when advancing slot on same tier
+		showcase.update_placement_hologram(dummy_egg, true, 3, 1)
+		if showcase._holo_tween != null and showcase._holo_tween.is_valid():
+			_pass("Advancing slot on same level triggers smooth glide tween animation")
+		else:
+			_fail("Advancing slot on same level failed to trigger smooth animation")
+
+		# Test Requirement 4: Fixed MultiMesh indexing for zero-tremor stability
+		if showcase.multimesh_instance.multimesh.visible_instance_count == ShowcaseUnit.TOTAL_CAPACITY:
+			_pass("MultiMesh uses fixed slot indexing (60 instances) preventing egg trembling")
+		else:
+			_fail("MultiMesh instance count mismatch")
+
+		gm.player_basket.clear()
+
 	showcase.queue_free()

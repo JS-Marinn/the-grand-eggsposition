@@ -28,6 +28,9 @@ var in_flight_slots: Dictionary = {}
 var custom_shelved_container: Node3D
 var hologram_mesh_instance: MeshInstance3D
 var hologram_material: ShaderMaterial
+var _current_holo_tier: int = -1
+var _current_holo_slot: int = -1
+var _holo_tween: Tween = null
 
 func _ready() -> void:
 	in_flight_container = get_node_or_null("EggsInFlight")
@@ -184,11 +187,12 @@ func _setup_multimesh() -> void:
 	if not multimesh_instance:
 		multimesh_instance = MultiMeshInstance3D.new()
 		multimesh_instance.name = "MultiMeshInstance3D"
+		multimesh_instance.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		var multimesh: MultiMesh = MultiMesh.new()
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_colors = true
 		multimesh.instance_count = TOTAL_CAPACITY
-		multimesh.visible_instance_count = 0
+		multimesh.visible_instance_count = TOTAL_CAPACITY
 
 		# 30cm height, 23cm diameter canonical egg mesh
 		var egg_mat: StandardMaterial3D = StandardMaterial3D.new()
@@ -198,6 +202,15 @@ func _setup_multimesh() -> void:
 		multimesh_instance.material_override = egg_mat
 
 		multimesh.mesh = BASE_EGG_MESH
+
+		# Initialize all 60 instance transforms to scaled zero at their permanent slot positions
+		for d in range(1, DOZENS_COUNT + 1):
+			for s in range(EGGS_PER_DOZEN):
+				var idx: int = (d - 1) * EGGS_PER_DOZEN + s
+				var slot_pos: Vector3 = get_slot_local_position(d, s)
+				multimesh.set_instance_transform(idx, Transform3D(Basis().scaled(Vector3.ZERO), slot_pos))
+				multimesh.set_instance_color(idx, Color.WHITE)
+
 		multimesh_instance.multimesh = multimesh
 		add_child(multimesh_instance)
 
@@ -249,6 +262,40 @@ func _setup_hologram() -> void:
 	hologram_mesh_instance.visible = false
 	add_child(hologram_mesh_instance)
 
+## Returns the deposit target for a specific tier aimed at by the player.
+## If the player has an egg matching this showcase and this tier, is_valid is true (Green).
+## If the player does not have an egg for this tier, is_valid is false (Red).
+func get_target_for_tier(aimed_tier: int) -> Dictionary:
+	var tier_clamped: int = clampi(aimed_tier, 1, DOZENS_COUNT)
+
+	var matching_egg: EggData = null
+	for egg in GameManager.player_basket:
+		if egg.showcase_id == showcase_id and egg.dozen_group == tier_clamped:
+			matching_egg = egg
+			break
+
+	var current_count: int = GameManager.showcase_state[showcase_id].get(tier_clamped, 0)
+
+	if matching_egg and current_count < EGGS_PER_DOZEN:
+		return {
+			"egg": matching_egg,
+			"dozen": tier_clamped,
+			"slot": current_count,
+			"is_valid": true
+		}
+	else:
+		var preview_egg: EggData = matching_egg
+		if not preview_egg and not GameManager.player_basket.is_empty():
+			preview_egg = GameManager.player_basket[0]
+		
+		var slot_to_show: int = mini(current_count, EGGS_PER_DOZEN - 1)
+		return {
+			"egg": preview_egg,
+			"dozen": tier_clamped,
+			"slot": slot_to_show,
+			"is_valid": false
+		}
+
 ## Evaluates what egg and slot would be targeted next by try_deposit
 func get_next_deposit_target() -> Dictionary:
 	# 1. Check if the player carries an egg matching a tier with open slots
@@ -285,28 +332,86 @@ func get_next_deposit_target() -> Dictionary:
 	# Showcase is 100% full
 	return {}
 
-## Shows or updates the placement hologram preview
+## Shows or updates the placement hologram preview.
+## Requirement 2: Teleports instantly when switching between different levels.
+## Requirement 3: Smoothly animates to the next slot when advancing on the same level.
 func update_placement_hologram(egg_to_preview: EggData, is_valid: bool, d: int, s: int) -> void:
 	if not hologram_mesh_instance:
 		_setup_hologram()
+
+	var target_pos: Vector3 = get_slot_local_position(d, s)
+	var target_color: Color = HOLO_COLOR_VALID if is_valid else HOLO_COLOR_INVALID
+
+	if hologram_material:
+		hologram_material.set_shader_parameter("hologram_color", target_color)
 
 	if egg_to_preview and egg_to_preview.custom_mesh:
 		hologram_mesh_instance.mesh = egg_to_preview.custom_mesh
 	else:
 		hologram_mesh_instance.mesh = BASE_EGG_MESH
 
-	var target_color: Color = HOLO_COLOR_VALID if is_valid else HOLO_COLOR_INVALID
-	if hologram_material:
-		hologram_material.set_shader_parameter("hologram_color", target_color)
+	var tier_changed: bool = (d != _current_holo_tier)
+	var slot_advanced_on_same_tier: bool = (not tier_changed and s != _current_holo_slot and _current_holo_slot != -1)
 
-	var slot_pos: Vector3 = get_slot_local_position(d, s)
-	hologram_mesh_instance.position = slot_pos
+	if tier_changed or not hologram_mesh_instance.visible:
+		# Teleport instantly when aiming at another level or first shown
+		if _holo_tween and _holo_tween.is_valid():
+			_holo_tween.kill()
+		hologram_mesh_instance.position = target_pos
+		hologram_mesh_instance.scale = Vector3.ONE
+	elif slot_advanced_on_same_tier:
+		# Smooth glide animation when advancing to the next slot on the same level
+		if _holo_tween and _holo_tween.is_valid():
+			_holo_tween.kill()
+		_holo_tween = create_tween()
+		_holo_tween.set_parallel(true)
+		_holo_tween.tween_property(hologram_mesh_instance, "position", target_pos, 0.18).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		hologram_mesh_instance.scale = Vector3(1.18, 0.82, 1.18)
+		_holo_tween.tween_property(hologram_mesh_instance, "scale", Vector3.ONE, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+	_current_holo_tier = d
+	_current_holo_slot = s
 	hologram_mesh_instance.visible = true
 
 ## Hides the placement preview hologram
 func hide_placement_hologram() -> void:
+	_current_holo_tier = -1
+	_current_holo_slot = -1
+	if _holo_tween and _holo_tween.is_valid():
+		_holo_tween.kill()
 	if hologram_mesh_instance:
 		hologram_mesh_instance.visible = false
+
+## Attempt to deposit an egg directly into the aimed tier
+func try_deposit_at_tier(aimed_tier: int, from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -> bool:
+	var tier_clamped: int = clampi(aimed_tier, 1, DOZENS_COUNT)
+	var egg_info: EggData = null
+	for egg in GameManager.player_basket:
+		if egg.showcase_id == showcase_id and egg.dozen_group == tier_clamped:
+			egg_info = egg
+			break
+	if not egg_info:
+		return false
+
+	var current_count: int = GameManager.showcase_state[showcase_id].get(tier_clamped, 0)
+	if current_count >= EGGS_PER_DOZEN:
+		return false
+
+	var slot_idx: int = current_count
+	var slot_key: String = str(tier_clamped) + "_" + str(slot_idx)
+
+	if animate:
+		in_flight_slots[slot_key] = true
+
+	if GameManager.deposit_egg_into_showcase(showcase_id, tier_clamped):
+		if not animate:
+			AudioManager.play_snap(global_position)
+			_refresh_visuals()
+			_check_completion(tier_clamped)
+		else:
+			_animate_egg_flight(egg_info, tier_clamped, slot_idx, from_global_pos, 0.0)
+		return true
+	return false
 
 ## Try to deposit an egg from the player's basket into this showcase
 func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -> bool:
@@ -466,14 +571,7 @@ func _refresh_visuals() -> void:
 
 	if not multimesh_instance or not multimesh_instance.multimesh:
 		return
-	var placed_idx: int = 0
 	var mm: MultiMesh = multimesh_instance.multimesh
-
-	# Clear previously shelved custom models before rebuilding
-	if custom_shelved_container:
-		for child in custom_shelved_container.get_children():
-			custom_shelved_container.remove_child(child)
-			child.queue_free()
 
 	for d in range(1, DOZENS_COUNT + 1):
 		var count: int = GameManager.showcase_state[showcase_id].get(d, 0)
@@ -481,26 +579,28 @@ func _refresh_visuals() -> void:
 		var egg_col: Color = egg_info.albedo_color if egg_info else Color(0.15, 0.35, 0.75)
 		var is_custom: bool = (egg_info != null and (egg_info.custom_scene != null or egg_info.custom_mesh != null))
 
-		for s in range(count):
+		for s in range(EGGS_PER_DOZEN):
+			var slot_idx: int = (d - 1) * EGGS_PER_DOZEN + s
 			var slot_pos: Vector3 = get_slot_local_position(d, s)
 			var slot_key: String = str(d) + "_" + str(s)
-			var egg_transform: Transform3D
+			var node_name: String = "CustomEgg_" + slot_key
 
-			if in_flight_slots.has(slot_key):
-				# While in flight, scale to zero in MultiMesh so the flying proxy is visible
-				egg_transform = Transform3D(Basis().scaled(Vector3.ZERO), slot_pos)
-			elif is_custom:
-				# Hide MultiMesh instance and spawn actual 3D custom model
-				egg_transform = Transform3D(Basis().scaled(Vector3.ZERO), slot_pos)
-				if custom_shelved_container:
-					var model_node = egg_info.instantiate_visual_node()
-					model_node.position = slot_pos
-					custom_shelved_container.add_child(model_node)
+			if s < count and not in_flight_slots.has(slot_key):
+				if is_custom:
+					mm.set_instance_transform(slot_idx, Transform3D(Basis().scaled(Vector3.ZERO), slot_pos))
+					if custom_shelved_container:
+						var existing_node = custom_shelved_container.get_node_or_null(node_name)
+						if not existing_node:
+							var model_node = egg_info.instantiate_visual_node()
+							model_node.name = node_name
+							model_node.position = slot_pos
+							custom_shelved_container.add_child(model_node)
+				else:
+					mm.set_instance_transform(slot_idx, Transform3D(Basis(), slot_pos))
+					mm.set_instance_color(slot_idx, egg_col)
 			else:
-				egg_transform = Transform3D(Basis(), slot_pos)
-
-			mm.set_instance_transform(placed_idx, egg_transform)
-			mm.set_instance_color(placed_idx, egg_col)
-			placed_idx += 1
-
-	mm.visible_instance_count = placed_idx
+				mm.set_instance_transform(slot_idx, Transform3D(Basis().scaled(Vector3.ZERO), slot_pos))
+				if custom_shelved_container:
+					var existing_node = custom_shelved_container.get_node_or_null(node_name)
+					if existing_node:
+						existing_node.queue_free()

@@ -299,13 +299,14 @@ func _update_raycast_hover() -> void:
 			if hud:
 				hud.show_prompt(title + " " + tr("UI_BASKET_EMPTY"))
 		else:
-			var target: Dictionary = showcase.get_next_deposit_target()
+			var aimed_tier: int = _get_aimed_tier(showcase)
+			var target: Dictionary = showcase.get_target_for_tier(aimed_tier)
 			if not target.is_empty():
 				var is_valid: bool = target.get("is_valid", false)
 				showcase.update_placement_hologram(
 					target.get("egg"),
 					is_valid,
-					target.get("dozen", 1),
+					target.get("dozen", aimed_tier),
 					target.get("slot", 0)
 				)
 				if is_valid:
@@ -327,6 +328,16 @@ func _update_raycast_hover() -> void:
 	if hud:
 		hud.hide_prompt()
 
+## Calculates which shelf tier (1..5) the player is aiming at on the showcase
+func _get_aimed_tier(showcase: ShowcaseUnit) -> int:
+	if not raycast or not raycast.is_colliding() or not showcase:
+		return 1
+	var hit_pos: Vector3 = raycast.get_collision_point()
+	var local_pos: Vector3 = showcase.to_local(hit_pos)
+	# Shelf display tiers start at local y = 0.48 with 0.42m height increments per tier
+	var tier_idx: int = int(floor((local_pos.y - 0.48) / 0.42)) + 1
+	return clampi(tier_idx, 1, 5)
+
 func _handle_interaction() -> void:
 	if not raycast or not raycast.is_colliding():
 		return
@@ -344,7 +355,9 @@ func _handle_interaction() -> void:
 		var spawn_pos: Vector3 = Vector3.INF
 		if camera:
 			spawn_pos = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45)
-		showcase.try_deposit(spawn_pos)
+		var aimed_tier: int = _get_aimed_tier(showcase)
+		# Deposit directly into the aimed shelf tier
+		showcase.try_deposit_at_tier(aimed_tier, spawn_pos)
 
 ## Safely resolves a ShowcaseUnit from a collider
 func _resolve_showcase(collider: Object) -> ShowcaseUnit:
