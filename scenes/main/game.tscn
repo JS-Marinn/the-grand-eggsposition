@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" path="res://scenes/atrium/showcase_unit.tscn" id="3_showcase_scene"]
 [ext_resource type="PackedScene" path="res://scenes/props/egg_actor.tscn" id="4_egg_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="5_pause_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/journal_menu.tscn" id="6_journal_scene"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_atrium"]
 sky_top_color = Color(0.45, 0.65, 0.85, 1)
@@ -318,3 +319,5 @@ egg_id = 11
 [node name="HUD" parent="." instance=ExtResource("2_hud_scene")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause_scene")]
+
+[node name="JournalMenu" parent="." instance=ExtResource("6_journal_scene")]

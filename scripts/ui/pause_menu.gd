@@ -37,6 +37,10 @@ func _connect_signals() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
+		var journal = get_tree().root.find_child("JournalMenu", true, false)
+		if journal and journal.visible:
+			return
+
 		if visible:
 			if settings_menu and settings_menu.visible:
 				settings_menu.visible = false

@@ -12,6 +12,7 @@ var mesh_instance: MeshInstance3D
 var collision_shape: CollisionShape3D
 
 func _ready() -> void:
+	add_to_group("eggs")
 	if not egg_data:
 		if egg_id > 0:
 			egg_data = GameManager.get_egg_data(egg_id)
@@ -57,6 +58,12 @@ func _setup_visuals_and_physics() -> void:
 		collision_shape.shape = capsule
 		add_child(collision_shape)
 
+var is_being_suctioned: bool = false
+var _resonance_tween: Tween
+var _orig_emission_enabled: bool = false
+var _orig_emission: Color = Color.BLACK
+var _orig_emission_energy: float = 0.0
+
 ## Collect the egg into the player's basket
 func pick_up() -> bool:
 	if not egg_data:
@@ -66,3 +73,62 @@ func pick_up() -> bool:
 		queue_free()
 		return true
 	return false
+
+## Emits a golden resonance pulse and vertical beacon when scanned via Resonance Chime [Q]
+func trigger_resonance_highlight(duration: float = 4.0) -> void:
+	if not mesh_instance or not mesh_instance.material_override:
+		return
+	var mat: StandardMaterial3D = mesh_instance.material_override as StandardMaterial3D
+	if not mat:
+		return
+		
+	if _resonance_tween and _resonance_tween.is_valid():
+		_resonance_tween.kill()
+		
+	_orig_emission_enabled = mat.emission_enabled
+	_orig_emission = mat.emission
+	_orig_emission_energy = mat.emission_energy_multiplier
+	
+	mat.emission_enabled = true
+	mat.emission = Color(1.0, 0.84, 0.25) # Warm golden resonance
+	
+	_resonance_tween = create_tween()
+	# Pulse emission between 1.5 and 4.5 for the duration
+	var pulses: int = clampi(int(duration * 2.0), 2, 14)
+	for i in range(pulses):
+		_resonance_tween.tween_property(mat, "emission_energy_multiplier", 4.5, 0.25).set_trans(Tween.TRANS_SINE)
+		_resonance_tween.tween_property(mat, "emission_energy_multiplier", 1.2, 0.25).set_trans(Tween.TRANS_SINE)
+		
+	_resonance_tween.tween_callback(func():
+		if is_instance_valid(mat):
+			mat.emission_enabled = _orig_emission_enabled
+			mat.emission = _orig_emission
+			mat.emission_energy_multiplier = _orig_emission_energy
+	)
+
+## Smoothly glides the egg towards the player's basket during Sweep Suction
+func suction_glide_to(target_pos: Vector3, duration: float = 0.35) -> void:
+	if is_being_suctioned:
+		return
+	is_being_suctioned = true
+	freeze = true
+	if collision_shape:
+		collision_shape.disabled = true
+		
+	var start_pos: Vector3 = global_position
+	var tween: Tween = create_tween()
+	
+	# Parabolic suction arc lifting slightly then swooping into basket
+	tween.tween_method(func(t: float):
+		if not is_instance_valid(self):
+			return
+		var linear_pos: Vector3 = start_pos.lerp(target_pos, t)
+		var arc_h: float = 0.45 * sin(t * PI)
+		global_position = linear_pos + Vector3(0, arc_h, 0)
+		scale = Vector3.ONE.lerp(Vector3(0.65, 0.65, 0.65), t)
+	, 0.0, 1.0, duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	
+	tween.tween_callback(func():
+		if is_instance_valid(self):
+			pick_up()
+	)

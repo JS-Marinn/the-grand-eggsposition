@@ -7,15 +7,16 @@ signal egg_collected(egg_data: EggData)
 signal egg_placed(egg_data: EggData, showcase_id: int, dozen_idx: int)
 signal progress_updated(placed_count: int, total_count: int)
 
-const TOTAL_EGGS: int = 1800
+const TOTAL_SHOWCASES: int = 60
+const DOZENS_PER_SHOWCASE: int = 5
 const TOTAL_TYPES: int = 300
 const EGGS_PER_DOZEN: int = 12
-const DOZENS_PER_SHOWCASE: int = 5
+const TOTAL_EGGS: int = 3600
 
 ## Database of the 300 unique EggData definitions
 var egg_database: Dictionary = {} # egg_id -> EggData
 
-## Placement state: showcase_id (1..30) -> Dictionary(dozen_idx -> count placed)
+## Placement state: showcase_id (1..60) -> Dictionary(dozen_idx -> count placed)
 var showcase_state: Dictionary = {}
 
 ## Placed count across the entire boutique
@@ -68,10 +69,46 @@ func _register_egg(id: int, key: String, series: EggData.EggSeries, showcase: in
 	egg_database[id] = egg
 
 func _initialize_showcase_state() -> void:
-	for s_id in range(1, 31):
+	for s_id in range(1, TOTAL_SHOWCASES + 1):
 		showcase_state[s_id] = {}
 		for d_id in range(1, DOZENS_PER_SHOWCASE + 1):
 			showcase_state[s_id][d_id] = 0
+
+## Returns the EggSeries enum associated with a showcase (1..60)
+func get_series_for_showcase(s_id: int) -> EggData.EggSeries:
+	if s_id <= 10:
+		return EggData.EggSeries.MINERALS_GEMS
+	elif s_id <= 20:
+		return EggData.EggSeries.JOBS_SOCIETY
+	elif s_id <= 30:
+		return EggData.EggSeries.POP_CULTURE
+	elif s_id <= 40:
+		return EggData.EggSeries.FANTASY_MYTH
+	elif s_id <= 50:
+		return EggData.EggSeries.DELICATESSEN
+	else:
+		return EggData.EggSeries.WILDLIFE_COSMOS
+
+## Returns the localized display title for any of the 60 showcases
+func get_showcase_title(s_id: int) -> String:
+	match s_id:
+		1: return tr("SHOWCASE_MINERALS_1")
+		2: return tr("SHOWCASE_MINERALS_2")
+		3: return tr("SHOWCASE_FABERGE")
+		4: return tr("SHOWCASE_CHEFS")
+		5: return tr("SHOWCASE_FIREFIGHTERS")
+		_:
+			var series_name: String = ""
+			var series_enum: EggData.EggSeries = get_series_for_showcase(s_id)
+			match series_enum:
+				EggData.EggSeries.MINERALS_GEMS: series_name = tr("SERIES_MINERALS")
+				EggData.EggSeries.JOBS_SOCIETY: series_name = tr("SERIES_JOBS")
+				EggData.EggSeries.POP_CULTURE: series_name = tr("SERIES_POP_CULTURE")
+				EggData.EggSeries.FANTASY_MYTH: series_name = tr("SERIES_FANTASY")
+				EggData.EggSeries.DELICATESSEN: series_name = tr("SERIES_DELICATESSEN")
+				EggData.EggSeries.WILDLIFE_COSMOS: series_name = tr("SERIES_WILDLIFE")
+			var unit_in_series: int = ((s_id - 1) % 10) + 1
+			return "%s (%s %d)" % [series_name, tr("UI_SHOWCASE_NUM"), unit_in_series]
 
 ## Attempt to add an egg to the player's basket
 func add_to_basket(egg: EggData) -> bool:

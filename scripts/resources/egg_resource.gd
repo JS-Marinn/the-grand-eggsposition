@@ -16,8 +16,8 @@ enum EggSeries {
 @export var egg_id: int = 1
 @export var egg_name_key: String = "EGG_LAPIS_LAZULI"
 @export var series: EggSeries = EggSeries.MINERALS_GEMS
-@export var showcase_id: int = 1         ## Belongs to showcase 1 through 30
-@export var dozen_group: int = 1         ## Dozen slot 1 through 10 in the showcase
+@export var showcase_id: int = 1         ## Belongs to showcase 1 through 60
+@export var dozen_group: int = 1         ## Dozen slot 1 through 5 in the showcase
 
 @export_group("Visuals")
 @export var albedo_color: Color = Color(0.2, 0.4, 0.8, 1.0)

@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 
 ## Progress and Skill Manager for The Grand Eggsposition.
 ## Tracks Curator's Wax Seals currency and unlocks for the 8 core abilities.
@@ -61,6 +61,59 @@ func upgrade_skill(skill_id: String) -> bool:
 		return true
 		
 	return false
+
+## Directly sets a skill tier (used for testing, saves, and dev cheats)
+func set_skill_tier(skill_id: String, tier: int) -> void:
+	if skill_tiers.has(skill_id):
+		skill_tiers[skill_id] = tier
+		_apply_skill_effects(skill_id, tier)
+		skill_upgraded.emit(skill_id, tier)
+
+func get_skill_tier(skill_id: String) -> int:
+	return skill_tiers.get(skill_id, 0)
+
+func is_skill_unlocked(skill_id: String) -> bool:
+	return get_skill_tier(skill_id) > 0
+
+## Helper getters for gameplay abilities
+func get_sweep_suction_radius() -> float:
+	var tier: int = get_skill_tier("sweep_suction")
+	if tier <= 0: return 0.0
+	return 1.5 if tier == 1 else 3.5
+
+func get_sweep_suction_duration() -> float:
+	var tier: int = get_skill_tier("sweep_suction")
+	return 0.40 if tier <= 1 else 0.20
+
+func get_swift_stride_multiplier() -> float:
+	var tier: int = get_skill_tier("swift_stride")
+	match tier:
+		1: return 1.15
+		2: return 1.30
+		3: return 1.45
+		_: return 1.0
+
+func get_velvet_dash_cooldown() -> float:
+	var tier: int = get_skill_tier("velvet_dash")
+	return 4.0 if tier <= 1 else 2.0
+
+func get_resonance_chime_duration() -> float:
+	var tier: int = get_skill_tier("resonance_chime")
+	return 4.0 if tier <= 1 else 7.0
+
+func get_resonance_chime_cooldown() -> float:
+	var tier: int = get_skill_tier("resonance_chime")
+	return 12.0 if tier <= 1 else 8.0
+
+func get_resonance_chime_radius() -> float:
+	return 20.0
+
+func get_cascade_repeat_rate() -> float:
+	var tier: int = get_skill_tier("cascade_deposit")
+	return 0.10 if tier >= 1 else 0.28
+
+func can_use_harmonic_snap() -> bool:
+	return get_skill_tier("cascade_deposit") >= 2
 
 ## Applies immediate game balance changes when a skill is leveled
 func _apply_skill_effects(skill_id: String, tier: int) -> void:

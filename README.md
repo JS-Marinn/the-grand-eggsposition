@@ -1,12 +1,12 @@
-﻿# The Grand Eggsposition: Tidy Up Boutique
+# The Grand Eggsposition: Tidy Up Boutique
 
 A wholesome, tactile cozy sorting and collecting game built in **Godot Engine 4.7.2 (Forward+ Vulkan)**.
 
 ## Overview
 
-Step into **The Grand Eggsposition**, a sun-drenched, circular conservatory boutique where 3,600 unique themed collectible eggs (goose egg scale, roughly 8.5 cm) must be organized across 30 modular showcases.
+Step into **The Grand Eggsposition**, a sun-drenched, circular conservatory boutique where 3,600 unique themed collectible eggs (goose egg scale, roughly 8.5 cm) must be organized across 60 modular showcases.
 
-* **Exact Dozen Symmetry:** 3,600 Total Eggs = 300 Distinct Themed Types × 12 Identical Units per type (1 exact dozen per type, 10 dozens per modular showcase).
+* **Exact Dozen Symmetry:** 3,600 Total Eggs = 300 Distinct Themed Types × 12 Identical Units per type (1 exact dozen per type, 5 dozens per modular showcase across 60 showcases).
 * **Tactile ASMR Audio:** Calibrated 180 Hz velvet snap sounds, dry polished wood taps, and Celtic harp chords upon dozen completions.
 * **Cozy Progression (Anti-Automation):** No passive auto-sort spells. Abilities enhance mobility, basket capacity, resonance detection, and cascade batch deposition while preserving the tactile joy of physical placement.
 * **1 to 2 Players (Solo or Duo Co-op):** 100% playable and balanced in single-player; seamless Peer-to-Peer cooperative mode for couples and friends via Steamworks SDR and Steam Remote Play Together.

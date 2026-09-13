@@ -1,0 +1,251 @@
+[gd_scene format=3 uid="uid://bry7ro0d61yq5"]
+
+[ext_resource type="Script" path="res://scripts/ui/journal_menu.gd" id="1_journal_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_backdrop"]
+bg_color = Color(0.06, 0.04, 0.02, 0.75)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_leather_book"]
+bg_color = Color(0.24, 0.15, 0.08, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.68, 0.54, 0.28, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_parchment"]
+bg_color = Color(0.96, 0.93, 0.86, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="JournalMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_journal_script")
+
+[node name="Backdrop" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_backdrop")
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BookPanel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(1060, 660)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_leather_book")
+
+[node name="ParchmentMargin" type="MarginContainer" parent="Center/BookPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Parchment" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_parchment")
+
+[node name="InnerMargin" type="MarginContainer" parent="Center/BookPanel/ParchmentMargin/Parchment"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="MainVBox" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HeaderHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_colors/font_outline_color = Color(0.68, 0.54, 0.28, 0.8)
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 24
+text = "THE CURATOR'S JOURNAL"
+
+[node name="CloseBtn" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/HeaderHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "✕"
+
+[node name="TabBarHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TabBtnCatalog" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "📖 Catálogo de Colección"
+
+[node name="TabBtnSkills" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "⚜ Maestría del Conservador"
+
+[node name="TabBtnSecrets" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "🔑 Secretos de Barnaby"
+
+[node name="HSeparator" type="HSeparator" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox"]
+layout_mode = 2
+
+[node name="ContentContainer" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelCatalog" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CatalogControlsHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ShowcaseSelectLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog/CatalogControlsHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.16, 0.08, 1)
+theme_override_font_sizes/font_size = 15
+text = "Seleccionar Vitrina:"
+
+[node name="ShowcaseOpt" type="OptionButton" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog/CatalogControlsHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 32)
+layout_mode = 2
+
+[node name="ShowcaseProgressLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog/CatalogControlsHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.45, 0.35, 0.20, 1)
+theme_override_font_sizes/font_size = 15
+text = "Progreso de Vitrina: 0 / 60 Huevos"
+horizontal_alignment = 2
+
+[node name="TiersScroll" type="ScrollContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TiersContainer" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCatalog/TiersScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="PanelSkills" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SkillsHeaderHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSkills"]
+layout_mode = 2
+
+[node name="SkillsNoticeLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSkills/SkillsHeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.40, 0.30, 0.20, 1)
+theme_override_font_sizes/font_size = 14
+text = "Estampa lacre caliente con tus Sellos de Cera para potenciar tus habilidades:"
+
+[node name="SealsBalanceLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSkills/SkillsHeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.20, 0.15, 1)
+theme_override_font_sizes/font_size = 16
+text = "Sellos de Cera Disponibles: 0"
+
+[node name="SkillsScroll" type="ScrollContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSkills"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SkillsGrid" type="GridContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSkills/SkillsScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 14
+columns = 2
+
+[node name="PanelSecrets" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="BarnabyTitle" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 18
+text = "El Mercader Barnaby y la Colección de Lujo Real"
+
+[node name="BarnabyDesc" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.30, 0.25, 1)
+theme_override_font_sizes/font_size = 14
+text = "Barnaby atiende en el quiosco de latón en la rotonda central del Gran Atrio. Por cada lote de 12 mini-huevos blancos rescatados de los rincones, te entregará uno de los 12 Huevos de Lujo Legendarios para exponer bajo la campana de cristal de la Vitrina de Honor."
+autowrap_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+layout_mode = 2
+
+[node name="MiniEggsLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.20, 0.45, 0.25, 1)
+theme_override_font_sizes/font_size = 16
+text = "Mini-Huevos Blancos Ocultos de Barnaby: 0 / 144"
+
+[node name="LuxuryEggsLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.70, 0.55, 0.10, 1)
+theme_override_font_sizes/font_size = 16
+text = "Huevos de Lujo en Vitrina Central: 0 / 12"
+
+[node name="SecretsTipsLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelSecrets"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.50, 0.45, 0.40, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pista del Conservador: Emplea la Campana de Resonancia [Q] al alcanzar el Rango 3 (Oído Absoluto) para detectar el tintineo de los huevitos blancos a menos de 15 metros."
+autowrap_mode = 2

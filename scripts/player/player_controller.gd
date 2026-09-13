@@ -17,6 +17,15 @@ var interact_hold_timer: float = 0.0
 const INTERACT_REPEAT_DELAY: float = 0.28
 const INTERACT_REPEAT_RATE: float = 0.12
 
+var space_double_tap_timer: float = 0.0
+var velvet_dash_cooldown: float = 0.0
+var resonance_cooldown: float = 0.0
+var is_dashing: bool = false
+var _dash_timer: float = 0.0
+var _dash_dir: Vector3 = Vector3.ZERO
+const DASH_DURATION: float = 0.22
+const DASH_SPEED: float = 4.0 / 0.22 # ~18.18 m/s
+
 func _ready() -> void:
 	_setup_camera_and_raycast()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -75,13 +84,53 @@ func _input(event: InputEvent) -> void:
 			if camera:
 				camera.rotation.x = camera_pitch
 
+	if event.is_action_pressed("open_journal"):
+		var journal = get_tree().root.find_child("JournalMenu", true, false)
+		if journal and journal.has_method("toggle_journal"):
+			journal.toggle_journal()
+			get_viewport().set_input_as_handled()
+			return
+
 	if event.is_action_pressed("resonance_chime"):
 		_trigger_resonance()
+
+	# Velvet Dash: Double-tap Space or dedicated V key
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.physical_keycode == KEY_SPACE:
+			if space_double_tap_timer > 0.0:
+				space_double_tap_timer = 0.0
+				_perform_velvet_dash()
+			else:
+				space_double_tap_timer = 0.30
+		elif event.physical_keycode == KEY_V:
+			_perform_velvet_dash()
+
+		# Dev Cheats / Test Hotkeys: F1 to F8 to upgrade skills on the fly
+		match event.physical_keycode:
+			KEY_F1: ProgressManager.upgrade_skill("basket_mastery")
+			KEY_F2: ProgressManager.upgrade_skill("sweep_suction")
+			KEY_F3: ProgressManager.upgrade_skill("swift_stride")
+			KEY_F4: ProgressManager.upgrade_skill("velvet_dash")
+			KEY_F5: ProgressManager.upgrade_skill("resonance_chime")
+			KEY_F6: ProgressManager.upgrade_skill("wayfinder")
+			KEY_F7: ProgressManager.upgrade_skill("cascade_deposit")
+			KEY_F8: ProgressManager.upgrade_skill("egg_toss")
 
 	if event.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_handle_interaction()
 
 func _physics_process(delta: float) -> void:
+	if space_double_tap_timer > 0.0:
+		space_double_tap_timer = maxf(0.0, space_double_tap_timer - delta)
+	if velvet_dash_cooldown > 0.0:
+		velvet_dash_cooldown = maxf(0.0, velvet_dash_cooldown - delta)
+	if resonance_cooldown > 0.0:
+		resonance_cooldown = maxf(0.0, resonance_cooldown - delta)
+	if _dash_timer > 0.0:
+		_dash_timer -= delta
+		if _dash_timer <= 0.0:
+			is_dashing = false
+
 	_handle_movement(delta)
 	_handle_keyboard_gamepad_look(delta)
 	_update_raycast_hover()
@@ -90,24 +139,30 @@ func _physics_process(delta: float) -> void:
 func _handle_hold_interaction(delta: float) -> void:
 	if Input.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		interact_hold_timer += delta
+		var repeat_rate: float = ProgressManager.get_cascade_repeat_rate()
 		if interact_hold_timer >= INTERACT_REPEAT_DELAY:
-			_handle_interaction()
-			interact_hold_timer -= INTERACT_REPEAT_RATE
+			if not _try_sweep_suction():
+				_handle_interaction()
+			interact_hold_timer -= repeat_rate
 	else:
 		interact_hold_timer = 0.0
 
 func _handle_movement(_delta: float) -> void:
+	if is_dashing:
+		velocity.x = _dash_dir.x * DASH_SPEED
+		velocity.z = _dash_dir.z * DASH_SPEED
+		velocity.y = 0.0
+		move_and_slide()
+		return
+
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
 	var is_sprinting: bool = Input.is_action_pressed("sprint")
 	var speed: float = sprint_speed if is_sprinting else move_speed
 	
-	# Apply swift stride skill speed buffs
-	var stride_tier: int = ProgressManager.skill_tiers.get("swift_stride", 0)
-	if stride_tier == 1: speed *= 1.15
-	elif stride_tier == 2: speed *= 1.30
-	elif stride_tier == 3: speed *= 1.45
+	# Apply swift stride skill speed multiplier
+	speed *= ProgressManager.get_swift_stride_multiplier()
 	
 	if direction:
 		velocity.x = direction.x * speed
@@ -241,8 +296,125 @@ func _resolve_egg(collider: Object) -> EggActor:
 			return parent as EggActor
 	return null
 
+## Velvet Dash: 4-meter smooth carpet slide forward with camera FOV punch
+func _perform_velvet_dash() -> void:
+	if not ProgressManager.is_skill_unlocked("velvet_dash"):
+		return
+	if velvet_dash_cooldown > 0.0 or is_dashing:
+		return
+
+	velvet_dash_cooldown = ProgressManager.get_velvet_dash_cooldown()
+	is_dashing = true
+
+	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	if input_dir != Vector2.ZERO:
+		_dash_dir = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	else:
+		_dash_dir = -transform.basis.z.normalized()
+	_dash_dir.y = 0.0
+	_dash_dir = _dash_dir.normalized()
+	_dash_timer = DASH_DURATION
+
+	AudioManager.play_velvet_slide(global_position)
+
+	# Subtle camera FOV expansion punch
+	if camera:
+		var orig_fov: float = camera.fov
+		var fov_tween: Tween = create_tween()
+		fov_tween.tween_property(camera, "fov", orig_fov + 4.5, 0.07).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		fov_tween.tween_property(camera, "fov", orig_fov, 0.15).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+## Resonance Chime: Scans matching loose eggs within 20m and illuminates them
 func _trigger_resonance() -> void:
+	if not ProgressManager.is_skill_unlocked("resonance_chime"):
+		return
+	if resonance_cooldown > 0.0:
+		return
+
+	resonance_cooldown = ProgressManager.get_resonance_chime_cooldown()
 	AudioManager.play_chime(global_position)
+
+	var radius: float = ProgressManager.get_resonance_chime_radius()
+	var duration: float = ProgressManager.get_resonance_chime_duration()
+
+	# Determine targeted egg IDs from basket
+	var target_ids: Array[int] = []
+	for carried in GameManager.player_basket:
+		if carried and not target_ids.has(carried.egg_id):
+			target_ids.append(carried.egg_id)
+
+	# If basket is empty, check targeted egg from raycast
+	if target_ids.is_empty() and raycast and raycast.is_colliding():
+		var targeted_egg: EggActor = _resolve_egg(raycast.get_collider())
+		if targeted_egg and targeted_egg.egg_data:
+			target_ids.append(targeted_egg.egg_data.egg_id)
+
+	var eggs = get_tree().get_nodes_in_group("eggs")
+	for egg in eggs:
+		if not is_instance_valid(egg) or not egg is EggActor or not egg.egg_data:
+			continue
+		var egg_actor: EggActor = egg as EggActor
+		if egg_actor.global_position.distance_to(global_position) <= radius:
+			if target_ids.is_empty() or target_ids.has(egg_actor.egg_data.egg_id):
+				egg_actor.trigger_resonance_highlight(duration)
+
+## Sweep Suction: Draws in all loose eggs of the same type within suction radius
+func _try_sweep_suction(target_override: EggActor = null) -> bool:
+	var radius: float = ProgressManager.get_sweep_suction_radius()
+	if radius <= 0.0:
+		return false
+
+	var target_egg: EggActor = target_override
+	if not target_egg:
+		if not raycast or not raycast.is_colliding():
+			return false
+		target_egg = _resolve_egg(raycast.get_collider())
+
+	if not target_egg or not target_egg.egg_data or target_egg.is_being_suctioned:
+		return false
+
+	var target_id: int = target_egg.egg_data.egg_id
+	var origin: Vector3 = target_egg.global_position
+	var duration: float = ProgressManager.get_sweep_suction_duration()
+	var basket_pos: Vector3 = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45) if camera else global_position + Vector3(0, 1.2, 0)
+
+	var eggs = get_tree().get_nodes_in_group("eggs")
+	var candidates: Array[EggActor] = []
+
+	# Always include the targeted egg first
+	candidates.append(target_egg)
+
+	for egg in eggs:
+		if not is_instance_valid(egg) or not egg is EggActor or egg == target_egg:
+			continue
+		var egg_actor: EggActor = egg as EggActor
+		if egg_actor.is_being_suctioned or not egg_actor.egg_data:
+			continue
+		if egg_actor.egg_data.egg_id == target_id:
+			if egg_actor.global_position.distance_to(origin) <= radius:
+				candidates.append(egg_actor)
+
+	if candidates.is_empty():
+		return false
+
+	AudioManager.play_suction_swirl(origin)
+
+	# Calculate how many eggs basket can accept
+	var remaining_cap: int = GameManager.max_basket_capacity - GameManager.player_basket.size()
+	var to_take: int = mini(candidates.size(), remaining_cap)
+
+	for i in range(to_take):
+		var egg_to_pull: EggActor = candidates[i]
+		var stagger: float = float(i) * 0.04
+		if stagger > 0.0:
+			get_tree().create_timer(stagger).timeout.connect(func():
+				if is_instance_valid(egg_to_pull):
+					egg_to_pull.suction_glide_to(basket_pos, duration)
+			)
+		else:
+			egg_to_pull.suction_glide_to(basket_pos, duration)
+
+	return true
 
 func _get_sensitivity() -> float:
 	var sm = get_node_or_null("/root/SettingsManager")

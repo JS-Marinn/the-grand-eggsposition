@@ -227,17 +227,38 @@ func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -
 	for d in range(1, DOZENS_COUNT + 1):
 		# Find first egg in basket matching this showcase and dozen
 		var egg_info: EggData = null
+		var matching_count: int = 0
 		for egg in GameManager.player_basket:
 			if egg.showcase_id == showcase_id and egg.dozen_group == d:
-				egg_info = egg
-				break
+				if not egg_info:
+					egg_info = egg
+				matching_count += 1
 		if not egg_info:
 			continue
 
 		var current_count: int = GameManager.showcase_state[showcase_id].get(d, 0)
-		if current_count >= EGGS_PER_DOZEN:
+		var slots_needed: int = EGGS_PER_DOZEN - current_count
+		if slots_needed <= 0:
 			continue
 
+		# Cascade Deposit R2: Harmonic Snap (deposit all matching eggs simultaneously if >= 2)
+		if ProgressManager.can_use_harmonic_snap() and matching_count > 1:
+			var to_deposit: int = mini(matching_count, slots_needed)
+			for i in range(to_deposit):
+				var slot_idx: int = current_count + i
+				var slot_key: String = str(d) + "_" + str(slot_idx)
+				if animate:
+					in_flight_slots[slot_key] = true
+				GameManager.deposit_egg_into_showcase(showcase_id, d)
+				if not animate:
+					AudioManager.play_snap(global_position)
+					_refresh_visuals()
+					_check_completion(d)
+				else:
+					_animate_egg_flight(egg_info, d, slot_idx, from_global_pos, float(i) * 0.035)
+			return true
+
+		# Standard single egg deposit
 		var slot_idx: int = current_count
 		var slot_key: String = str(d) + "_" + str(slot_idx)
 
@@ -250,11 +271,11 @@ func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -
 				_refresh_visuals()
 				_check_completion(d)
 			else:
-				_animate_egg_flight(egg_info, d, slot_idx, from_global_pos)
+				_animate_egg_flight(egg_info, d, slot_idx, from_global_pos, 0.0)
 			return true
 	return false
 
-func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_pos: Vector3) -> void:
+func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_pos: Vector3, delay: float = 0.0) -> void:
 	var slot_key: String = str(d) + "_" + str(slot_idx)
 	var local_slot_pos: Vector3 = get_slot_local_position(d, slot_idx)
 	var target_global_pos: Vector3 = to_global(local_slot_pos)
@@ -295,6 +316,9 @@ func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_p
 	var start_quat: Quaternion = Quaternion(start_basis)
 	var target_quat: Quaternion = Quaternion(target_global_basis)
 	var arc_height: float = maxf(0.24, absf(target_global_pos.y - start_pos.y) * 0.35 + 0.20)
+
+	if delay > 0.0:
+		flight_tween.tween_interval(delay)
 
 	flight_tween.tween_method(func(t: float):
 		if not is_instance_valid(proxy):
