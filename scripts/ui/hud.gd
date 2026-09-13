@@ -164,25 +164,25 @@ func _update_basket_stack() -> void:
 		var row: HBoxContainer = HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_END
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		row.add_theme_constant_override("separation", 8)
+		row.add_theme_constant_override("separation", 6)
 
 		var name_lbl: Label = Label.new()
 		name_lbl.name = "NameLabel"
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		name_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		name_lbl.add_theme_font_size_override("font_size", 16)
-		name_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-		name_lbl.add_theme_constant_override("outline_size", 4)
+		name_lbl.add_theme_font_size_override("font_size", 14)
+		name_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+		name_lbl.add_theme_constant_override("outline_size", 6)
 		row.add_child(name_lbl)
 
 		var chevron_lbl: Label = Label.new()
 		chevron_lbl.name = "ChevronLabel"
-		chevron_lbl.custom_minimum_size = Vector2(24, 0)
+		chevron_lbl.custom_minimum_size = Vector2(18, 0)
 		chevron_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		chevron_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		chevron_lbl.add_theme_font_size_override("font_size", 22)
-		chevron_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-		chevron_lbl.add_theme_constant_override("outline_size", 4)
+		chevron_lbl.add_theme_font_size_override("font_size", 16)
+		chevron_lbl.add_theme_color_override("font_outline_color", Color(0, 0, 0, 1.0))
+		chevron_lbl.add_theme_constant_override("outline_size", 6)
 		row.add_child(chevron_lbl)
 
 		basket_item_list.add_child(row)
@@ -200,13 +200,17 @@ func _update_basket_stack() -> void:
 		if name_lbl and egg:
 			name_lbl.text = egg.get_display_name()
 			if is_selected:
+				name_lbl.add_theme_font_size_override("font_size", 15)
 				name_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
 			else:
-				name_lbl.add_theme_color_override("font_color", Color(0.88, 0.88, 0.92, 0.45))
+				name_lbl.add_theme_font_size_override("font_size", 13)
+				name_lbl.add_theme_color_override("font_color", Color(0.88, 0.88, 0.92, 0.38))
 
 		if chevron_lbl:
 			if is_selected:
 				chevron_lbl.text = ">"
-				chevron_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
+				chevron_lbl.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55, 1.0))
 			else:
 				chevron_lbl.text = ""
+
+
