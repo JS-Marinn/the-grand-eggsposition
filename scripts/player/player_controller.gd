@@ -162,18 +162,20 @@ func _handle_smooth_look(delta: float) -> void:
 	if camera:
 		camera.rotation.x = camera_pitch
 
-## Subtle, organic camera kinematics: ultra-light strafe lean, dynamic FOV, and whisper-light walking float
+## Subtle, organic camera kinematics: ultra-light strafe lean, dynamic FOV, and configurable walking float
 func _handle_camera_dynamics(delta: float) -> void:
 	if not camera:
 		return
 
-	# 1. Very subtle strafe lean (0.4 degree)
+	var sm = get_node_or_null("/root/SettingsManager")
+	var bob_intensity: float = sm.head_bob_intensity if (sm and "head_bob_intensity" in sm) else 0.20
+
+	# 1. Very subtle strafe lean (scaled by bob_intensity, default 20% -> ~0.08 deg)
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-	var target_roll: float = -input_dir.x * deg_to_rad(0.4)
+	var target_roll: float = -input_dir.x * deg_to_rad(0.4) * bob_intensity
 	camera.rotation.z = lerpf(camera.rotation.z, target_roll, delta * 6.0)
 
 	# 2. Dynamic FOV based on movement speed
-	var sm = get_node_or_null("/root/SettingsManager")
 	var base_fov: float = sm.fov if (sm and "fov" in sm) else 75.0
 	var target_fov: float = base_fov
 	if is_dashing:
@@ -182,14 +184,14 @@ func _handle_camera_dynamics(delta: float) -> void:
 		target_fov += 2.5
 	camera.fov = lerpf(camera.fov, target_fov, delta * 6.0)
 
-	# 3. Ultra-light, whisper-soft walking float (~4mm vertical, ~1.5mm horizontal)
+	# 3. Ultra-light, whisper-soft walking float (at default 20%: ~1.0mm vertical, ~0.4mm horizontal)
 	var horizontal_speed: float = Vector2(velocity.x, velocity.z).length()
-	var is_moving: bool = is_on_floor() and horizontal_speed > 0.3
+	var is_moving: bool = is_on_floor() and horizontal_speed > 0.3 and bob_intensity > 0.001
 	if is_moving:
 		var bob_rate: float = 8.5 if Input.is_action_pressed("sprint") else 6.0
 		_bob_phase += delta * bob_rate
-		var bob_y: float = sin(_bob_phase) * 0.004
-		var bob_x: float = cos(_bob_phase * 0.5) * 0.0015
+		var bob_y: float = sin(_bob_phase) * (0.005 * bob_intensity)
+		var bob_x: float = cos(_bob_phase * 0.5) * (0.002 * bob_intensity)
 		camera.position.y = lerpf(camera.position.y, _base_cam_y + bob_y, delta * 8.0)
 		camera.position.x = lerpf(camera.position.x, bob_x, delta * 8.0)
 	else:

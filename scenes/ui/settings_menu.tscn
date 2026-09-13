@@ -166,6 +166,30 @@ layout_mode = 2
 text = "80 deg"
 horizontal_alignment = 2
 
+[node name="HeadBobRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/HeadBobRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LABEL_HEAD_BOB"
+
+[node name="HeadBobSlider" type="HSlider" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/HeadBobRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 5.0
+value = 20.0
+
+[node name="HeadBobValLabel" type="Label" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/HeadBobRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "20%"
+horizontal_alignment = 2
+
 [node name="Audio" type="MarginContainer" parent="Center/Panel/Margin/VBox/TabContainer"]
 visible = false
 layout_mode = 2

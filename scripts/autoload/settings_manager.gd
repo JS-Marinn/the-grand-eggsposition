@@ -17,6 +17,7 @@ var fov: float:
 	set(v): camera_fov = v
 var aa_enabled: bool = true
 var show_fps: bool = false
+var head_bob_intensity: float = 0.20 # Linear 0.0 (off) to 1.0 (max), default 0.20 (ultra-light)
 
 # Audio (Linear 0.0 to 1.0)
 var master_volume: float = 1.0
@@ -108,6 +109,7 @@ func save_settings() -> void:
 	cfg.set_value("video", "fov", camera_fov)
 	cfg.set_value("video", "aa", aa_enabled)
 	cfg.set_value("video", "show_fps", show_fps)
+	cfg.set_value("video", "head_bob", head_bob_intensity)
 	
 	# Audio
 	cfg.set_value("audio", "master", master_volume)
@@ -142,6 +144,7 @@ func load_settings() -> void:
 	camera_fov = cfg.get_value("video", "fov", camera_fov)
 	aa_enabled = cfg.get_value("video", "aa", aa_enabled)
 	show_fps = cfg.get_value("video", "show_fps", show_fps)
+	head_bob_intensity = cfg.get_value("video", "head_bob", head_bob_intensity)
 	
 	# Audio
 	master_volume = cfg.get_value("audio", "master", master_volume)

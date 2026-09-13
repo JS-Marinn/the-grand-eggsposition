@@ -12,6 +12,8 @@ signal closed()
 @onready var show_fps_check: CheckBox = %ShowFPSCheck
 @onready var fov_slider: HSlider = %FOVSlider
 @onready var fov_val_label: Label = %FOVValLabel
+@onready var head_bob_slider: HSlider = %HeadBobSlider
+@onready var head_bob_val_label: Label = %HeadBobValLabel
 
 @onready var master_slider: HSlider = %MasterSlider
 @onready var sfx_slider: HSlider = %SFXSlider
@@ -71,6 +73,10 @@ func _sync_from_manager() -> void:
 		fov_slider.value = SettingsManager.camera_fov
 		_on_fov_slider_value_changed(SettingsManager.camera_fov)
 
+	if head_bob_slider:
+		head_bob_slider.value = SettingsManager.head_bob_intensity * 100.0
+		_on_head_bob_slider_value_changed(head_bob_slider.value)
+
 	if master_slider:
 		master_slider.value = SettingsManager.master_volume * 100.0
 
@@ -96,6 +102,9 @@ func _connect_signals() -> void:
 	if fov_slider and not fov_slider.value_changed.is_connected(_on_fov_slider_value_changed):
 		fov_slider.value_changed.connect(_on_fov_slider_value_changed)
 
+	if head_bob_slider and not head_bob_slider.value_changed.is_connected(_on_head_bob_slider_value_changed):
+		head_bob_slider.value_changed.connect(_on_head_bob_slider_value_changed)
+
 	if btn_apply and not btn_apply.pressed.is_connected(_on_apply_pressed):
 		btn_apply.pressed.connect(_on_apply_pressed)
 		btn_apply.mouse_entered.connect(AudioManager.play_ui_hover)
@@ -110,6 +119,13 @@ func _connect_signals() -> void:
 func _on_fov_slider_value_changed(val: float) -> void:
 	if fov_val_label:
 		fov_val_label.text = "%d deg" % int(val)
+
+func _on_head_bob_slider_value_changed(val: float) -> void:
+	if head_bob_val_label:
+		if is_zero_approx(val):
+			head_bob_val_label.text = "0% (" + tr("OPTION_OFF") + ")"
+		else:
+			head_bob_val_label.text = "%d%%" % int(val)
 
 func _on_language_selected(index: int) -> void:
 	AudioManager.play_ui_click()
@@ -139,6 +155,9 @@ func _on_apply_pressed() -> void:
 
 	if fov_slider:
 		SettingsManager.camera_fov = fov_slider.value
+
+	if head_bob_slider:
+		SettingsManager.head_bob_intensity = head_bob_slider.value / 100.0
 
 	# Save audio settings
 	if master_slider:
