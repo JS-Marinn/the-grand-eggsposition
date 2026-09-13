@@ -320,55 +320,6 @@ egg_id = 11
 [node name="Egg_Emerald_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.27, -3.3)
 egg_id = 11
-
-[node name="Egg_Fallout_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.27, -2.1)
-egg_id = 20
-
-[node name="Egg_Fallout_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.27, -2.0)
-egg_id = 20
-
-[node name="Egg_Fallout_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.27, -2.2)
-egg_id = 20
-
-[node name="Egg_Fallout_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7, 0.27, -2.5)
-egg_id = 20
-
-[node name="Egg_Fallout_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.27, -2.4)
-egg_id = 20
-
-[node name="Egg_Fallout_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.27, -2.6)
-egg_id = 20
-
-[node name="Egg_Fallout_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 0.27, -2.5)
-egg_id = 20
-
-[node name="Egg_Fallout_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0.27, -2.9)
-egg_id = 20
-
-[node name="Egg_Fallout_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.27, -2.8)
-egg_id = 20
-
-[node name="Egg_Fallout_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0.27, -3.0)
-egg_id = 20
-
-[node name="Egg_Fallout_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 0.27, -3.2)
-egg_id = 20
-
-[node name="Egg_Fallout_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.27, -3.3)
-egg_id = 20
-
 [node name="HUD" parent="." instance=ExtResource("2_hud_scene")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause_scene")]

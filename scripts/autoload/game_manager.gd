@@ -42,7 +42,6 @@ func _initialize_database() -> void:
 	_register_egg(11, "EGG_EMERALD", EggData.EggSeries.MINERALS_GEMS, 1, 5, Color(0.1, 0.72, 0.35), 0.2, 0.3)
 
 	# Showcase 2: Pop Culture & Vault Lore (5 tiers)
-	_register_egg(20, "EGG_FALLOUT", EggData.EggSeries.POP_CULTURE, 2, 1, Color(0.95, 0.78, 0.22), 0.7, 0.05)
 	_register_egg(13, "EGG_SAPPHIRE", EggData.EggSeries.MINERALS_GEMS, 2, 2, Color(0.06, 0.18, 0.62), 0.15, 0.4)
 	_register_egg(14, "EGG_ROSE_QUARTZ", EggData.EggSeries.MINERALS_GEMS, 2, 3, Color(0.94, 0.68, 0.76), 0.28, 0.05)
 	_register_egg(15, "EGG_OBSIDIAN", EggData.EggSeries.MINERALS_GEMS, 2, 4, Color(0.12, 0.12, 0.14), 0.12, 0.8)
