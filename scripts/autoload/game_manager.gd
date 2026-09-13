@@ -37,7 +37,7 @@ func _initialize_database() -> void:
 	# Showcase 1: Minerals & Gemstones I (5 tiers)
 	_register_egg(1, "EGG_LAPIS_LAZULI", EggData.EggSeries.MINERALS_GEMS, 1, 1, Color(0.12, 0.28, 0.65), 0.25, 0.1)
 	_register_egg(2, "EGG_PURE_GOLD", EggData.EggSeries.MINERALS_GEMS, 1, 2, Color(0.95, 0.78, 0.2), 0.15, 0.95)
-	_register_egg(3, "EGG_PURE_SILVER", EggData.EggSeries.MINERALS_GEMS, 1, 3, Color(0.85, 0.88, 0.92), 0.1, 0.9)
+	_register_egg(3, "EGG_PURE_SILVER", EggData.EggSeries.MINERALS_GEMS, 1, 3, Color(0.85, 0.88, 0.92), 0.1, 0.9, preload("res://scenes/props/silver_egg_model.tscn"))
 	_register_egg(4, "EGG_AMETHYST_GEODE", EggData.EggSeries.MINERALS_GEMS, 1, 4, Color(0.55, 0.18, 0.72), 0.3, 0.2)
 	_register_egg(11, "EGG_EMERALD", EggData.EggSeries.MINERALS_GEMS, 1, 5, Color(0.1, 0.72, 0.35), 0.2, 0.3)
 
