@@ -125,6 +125,8 @@ func _update_basket_stack() -> void:
 	if not basket_stack or not basket_item_list or not capacity_current or not capacity_max:
 		return
 
+	const MAX_ROWS: int = 6  # Maximum visible rows at a time
+
 	var basket_size: int = GameManager.player_basket.size()
 	var max_cap: int = GameManager.max_basket_capacity
 
@@ -151,8 +153,12 @@ func _update_basket_stack() -> void:
 		var player = get_tree().root.find_child("Player", true, false)
 		selected_idx = player.selected_held_index if (player and "selected_held_index" in player) else 0
 
-	# Remove surplus rows synchronously so child count is accurate immediately
-	while basket_item_list.get_child_count() > basket_size:
+	# Compute sliding window: clamp so selected_idx stays visible
+	var visible_count: int = mini(basket_size, MAX_ROWS)
+	var win_start: int = clampi(selected_idx - MAX_ROWS / 2, 0, maxi(0, basket_size - MAX_ROWS))
+
+	# Sync row count to visible_count
+	while basket_item_list.get_child_count() > visible_count:
 		var last_node = basket_item_list.get_child(basket_item_list.get_child_count() - 1)
 		basket_item_list.remove_child(last_node)
 		last_node.queue_free()
@@ -160,7 +166,7 @@ func _update_basket_stack() -> void:
 	var current_children: Array = basket_item_list.get_children()
 
 	# Add missing rows
-	while current_children.size() < basket_size:
+	while current_children.size() < visible_count:
 		var row: HBoxContainer = HBoxContainer.new()
 		row.alignment = BoxContainer.ALIGNMENT_END
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -188,11 +194,12 @@ func _update_basket_stack() -> void:
 		basket_item_list.add_child(row)
 		current_children.append(row)
 
-	# Update all rows
-	for i in range(basket_size):
-		var row: HBoxContainer = current_children[i] as HBoxContainer
-		var egg: EggData = GameManager.player_basket[i]
-		var is_selected: bool = (i == selected_idx)
+	# Update visible rows with windowed basket slice
+	for row_i in range(visible_count):
+		var basket_i: int = win_start + row_i
+		var row: HBoxContainer = current_children[row_i] as HBoxContainer
+		var egg: EggData = GameManager.player_basket[basket_i]
+		var is_selected: bool = (basket_i == selected_idx)
 
 		var name_lbl: Label = row.get_node_or_null("NameLabel") as Label
 		var chevron_lbl: Label = row.get_node_or_null("ChevronLabel") as Label
@@ -212,5 +219,6 @@ func _update_basket_stack() -> void:
 				chevron_lbl.add_theme_color_override("font_color", Color(1.0, 0.92, 0.55, 1.0))
 			else:
 				chevron_lbl.text = ""
+
 
 
