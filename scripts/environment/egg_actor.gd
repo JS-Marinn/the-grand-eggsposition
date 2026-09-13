@@ -55,6 +55,8 @@ func _setup_visuals_and_physics() -> void:
 		var mat: StandardMaterial3D = StandardMaterial3D.new()
 		if egg_data:
 			mat.albedo_color = egg_data.albedo_color
+			if egg_data.albedo_texture:
+				mat.albedo_texture = egg_data.albedo_texture
 			mat.roughness = egg_data.roughness
 			mat.metallic = egg_data.metallic
 			if egg_data.metallic > 0.5:

@@ -21,6 +21,7 @@ enum EggSeries {
 
 @export_group("Visuals")
 @export var albedo_color: Color = Color(0.2, 0.4, 0.8, 1.0)
+@export var albedo_texture: Texture2D = null
 @export var roughness: float = 0.3
 @export var metallic: float = 0.0
 @export var emission_color: Color = Color.BLACK
@@ -58,6 +59,8 @@ func instantiate_visual_node() -> Node3D:
 
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = albedo_color
+	if albedo_texture:
+		mat.albedo_texture = albedo_texture
 	mat.roughness = roughness
 	mat.metallic = metallic
 	if metallic > 0.5:

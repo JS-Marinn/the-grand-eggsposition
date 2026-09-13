@@ -18,7 +18,7 @@ func _ready() -> void:
 	print("=======================================================\n")
 	
 	_check_canonical_egg_mesh()
-	_check_3d_models_budget()
+	_check_canonical_compliance()
 	_check_egg_resource_architecture()
 	_check_core_scenes()
 	_check_localization()
@@ -89,30 +89,41 @@ func _check_canonical_egg_mesh() -> void:
 	else:
 		_warn("High polygon count: %d triangles (Budget: <= 2,500 tris)" % tris)
 
-## 2. Verify other 3D models in assets/models
-func _check_3d_models_budget() -> void:
-	print("\n2. Additional 3D Models in Assets:")
-	var models: Array = [
-		{"path": "res://assets/models/silverEgg.glb", "name": "Silver Egg GLB"},
-		{"path": "res://assets/models/falloutEgg.glb", "name": "Fallout Egg GLB"}
+## 2. Verify Canonical Compliance Across All Eggs
+func _check_canonical_compliance() -> void:
+	print("\n2. Canonical Compliance Across All Eggs:")
+	var deprecated_paths: Array = [
+		"res://assets/models/silverEgg.glb",
+		"res://assets/models/falloutEgg.glb",
+		"res://scenes/props/silver_egg_model.tscn",
+		"res://scenes/props/fallout_egg_model.tscn"
 	]
-	
-	for m_info in models:
-		if FileAccess.file_exists(m_info.path):
-			var scene: PackedScene = load(m_info.path) as PackedScene
-			if scene:
-				var inst: Node = scene.instantiate()
-				var mi: MeshInstance3D = inst.find_child("*", true, false) as MeshInstance3D
-				if mi and mi.mesh:
-					var aabb = mi.mesh.get_aabb()
-					_pass("%s loads successfully. AABB: %s" % [m_info.name, str(aabb.size)])
-				else:
-					_pass("%s loads successfully." % m_info.name)
-				inst.free()
-			else:
-				_warn("Could not instantiate %s" % m_info.path)
+	var found_deprecated: bool = false
+	for dp in deprecated_paths:
+		if FileAccess.file_exists(dp):
+			found_deprecated = true
+			_fail("Deprecated non-canonical file still exists: %s" % dp)
+	if not found_deprecated:
+		_pass("All deprecated non-canonical egg files removed successfully")
+
+	var gm = get_node_or_null("/root/GameManager")
+	if gm:
+		var non_conforming: Array = []
+		for egg_id in gm.egg_database:
+			var egg: EggData = gm.egg_database[egg_id]
+			var visual: Node3D = egg.instantiate_visual_node()
+			if not visual:
+				non_conforming.append("Egg %d (null visual)" % egg_id)
+				continue
+			var mi: MeshInstance3D = visual.find_child("*", true, false) as MeshInstance3D
+			if not mi or not mi.mesh or mi.mesh.resource_path != CANONICAL_MESH_PATH:
+				non_conforming.append("Egg %d (%s)" % [egg_id, egg.egg_name_key])
+			visual.free()
+		
+		if non_conforming.is_empty():
+			_pass("All %d registered eggs strictly build on canonical model (%s)" % [gm.egg_database.size(), CANONICAL_MESH_PATH])
 		else:
-			_warn("Optional asset %s not found" % m_info.path)
+			_fail("Non-conforming eggs found: %s" % str(non_conforming))
 
 ## 3. Verify EggData fallback visual node
 func _check_egg_resource_architecture() -> void:
@@ -154,8 +165,6 @@ func _check_core_scenes() -> void:
 	var scenes: Array = [
 		{"path": "res://scenes/props/base_egg_model.tscn", "name": "Base Egg Scene"},
 		{"path": "res://scenes/props/egg_actor.tscn", "name": "Floor Egg Actor"},
-		{"path": "res://scenes/props/silver_egg_model.tscn", "name": "Silver Egg Scene"},
-		{"path": "res://scenes/props/fallout_egg_model.tscn", "name": "Fallout Egg Scene"},
 		{"path": "res://scenes/atrium/showcase_unit.tscn", "name": "Showcase Unit Scene"},
 		{"path": "res://scenes/ui/main_menu.tscn", "name": "Main Menu Scene"},
 		{"path": "res://scenes/main/game.tscn", "name": "Main Game Atrium Scene"}
