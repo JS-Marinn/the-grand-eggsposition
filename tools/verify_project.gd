@@ -331,11 +331,17 @@ func _check_placement_hologram() -> void:
 		var light_lower = showcase.get_node_or_null("DisplayLight_Lower") as Light3D
 		var lights_ok = light_upper and light_lower and light_upper.light_energy <= 0.5 and light_lower.light_energy <= 0.5
 		var shader_ok = mat != null and mat.shader != null and mat.shader.resource_path == "res://assets/shaders/showcase_egg.gdshader"
-		var test_egg = gm.get_egg_for_showcase_dozen(showcase.showcase_id, 3)
-		var egg_pbr_ok = test_egg != null and test_egg.metallic >= 0.85 and test_egg.roughness <= 0.15
+		var silver_egg = gm.get_egg_for_showcase_dozen(showcase.showcase_id, 3)
+		var copper_egg = gm.get_egg_for_showcase_dozen(showcase.showcase_id, 4)
+		var bronze_egg = gm.get_egg_for_showcase_dozen(showcase.showcase_id, 5)
+		var metals_pbr_ok = silver_egg and copper_egg and bronze_egg \
+			and silver_egg.metallic >= 0.85 and copper_egg.metallic >= 0.85 and bronze_egg.metallic >= 0.85 \
+			and silver_egg.roughness <= 0.25 and copper_egg.roughness <= 0.25 and bronze_egg.roughness <= 0.25
 
-		if mm.use_custom_data and shader_ok and lights_ok and egg_pbr_ok:
-			_pass("MultiMesh uses showcase PBR shader with custom_data, soft lights (upper: %.2f, lower: %.2f), and authentic metallic PBR (metallic: %.2f, roughness: %.2f)" % [light_upper.light_energy, light_lower.light_energy, test_egg.metallic, test_egg.roughness])
+		if mm.use_custom_data and shader_ok and lights_ok and metals_pbr_ok:
+			_pass("Showcase 1 features stylized metal suite (Gold, Silver, Copper, Bronze) with PBR shader and soft lights")
+		else:
+			_fail("Showcase PBR or metal suite validation failed: use_custom_data=%s, shader=%s, lights_ok=%s, metals_pbr_ok=%s" % [str(mm.use_custom_data), str(shader_ok), str(lights_ok), str(metals_pbr_ok)])
 		# Test Requirement 6: Collision-free egg placement trajectory
 		if showcase.has_method("get_flight_trajectory_point") and showcase.has_method("get_flight_trajectory_basis"):
 			var trajectory_clips: int = 0

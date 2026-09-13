@@ -64,7 +64,10 @@ func instantiate_visual_node() -> Node3D:
 	mat.roughness = roughness
 	mat.metallic = metallic
 	if metallic > 0.5:
-		mat.metallic_specular = 0.9
+		mat.metallic_specular = 0.95
+		mat.rim_enabled = true
+		mat.rim = 0.45
+		mat.rim_tint = 0.75
 	if emission_energy > 0.0:
 		mat.emission_enabled = true
 		mat.emission = emission_color

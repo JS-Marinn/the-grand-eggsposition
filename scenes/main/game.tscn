@@ -225,99 +225,99 @@ egg_id = 3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.27, -1.4)
 egg_id = 3
 
-[node name="Egg_Amethyst_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.27, -2.1)
 egg_id = 4
 
-[node name="Egg_Amethyst_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.27, -2.3)
 egg_id = 4
 
-[node name="Egg_Amethyst_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 0.27, -2.5)
 egg_id = 4
 
-[node name="Egg_Amethyst_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 0.27, -2.6)
 egg_id = 4
 
-[node name="Egg_Amethyst_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.27, -2.8)
 egg_id = 4
 
-[node name="Egg_Amethyst_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.27, -3)
 egg_id = 4
 
-[node name="Egg_Amethyst_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.27, -3.2)
 egg_id = 4
 
-[node name="Egg_Amethyst_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.27, -2.2)
 egg_id = 4
 
-[node name="Egg_Amethyst_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 0.27, -2)
 egg_id = 4
 
-[node name="Egg_Amethyst_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 0.27, -3.3)
 egg_id = 4
 
-[node name="Egg_Amethyst_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7, 0.27, -2.4)
 egg_id = 4
 
-[node name="Egg_Amethyst_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Copper_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.27, -2.8)
 egg_id = 4
 
-[node name="Egg_Emerald_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.27, -2.3)
 egg_id = 11
 
-[node name="Egg_Emerald_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27, -2.2)
 egg_id = 11
 
-[node name="Egg_Emerald_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.27, -2.4)
 egg_id = 11
 
-[node name="Egg_Emerald_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0.27, -2.6)
 egg_id = 11
 
-[node name="Egg_Emerald_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0.27, -2.6)
 egg_id = 11
 
-[node name="Egg_Emerald_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.27, -2.8)
 egg_id = 11
 
-[node name="Egg_Emerald_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.27, -2.9)
 egg_id = 11
 
-[node name="Egg_Emerald_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.27, -2.9)
 egg_id = 11
 
-[node name="Egg_Emerald_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.27, -3.1)
 egg_id = 11
 
-[node name="Egg_Emerald_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0.27, -3.2)
 egg_id = 11
 
-[node name="Egg_Emerald_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.27, -2.5)
 egg_id = 11
 
-[node name="Egg_Emerald_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Bronze_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.27, -3.3)
 egg_id = 11
 [node name="HUD" parent="." instance=ExtResource("2_hud_scene")]
