@@ -269,31 +269,49 @@ func get_target_for_tier(aimed_tier: int) -> Dictionary:
 	var tier_clamped: int = clampi(aimed_tier, 1, DOZENS_COUNT)
 
 	var matching_egg: EggData = null
+	var matching_count_in_basket: int = 0
 	for egg in GameManager.player_basket:
 		if egg.showcase_id == showcase_id and egg.dozen_group == tier_clamped:
-			matching_egg = egg
-			break
+			if not matching_egg:
+				matching_egg = egg
+			matching_count_in_basket += 1
 
 	var current_count: int = GameManager.showcase_state[showcase_id].get(tier_clamped, 0)
+	var is_tier_full: bool = (current_count >= EGGS_PER_DOZEN)
 
-	if matching_egg and current_count < EGGS_PER_DOZEN:
+	if matching_egg and not is_tier_full:
 		return {
 			"egg": matching_egg,
 			"dozen": tier_clamped,
 			"slot": current_count,
-			"is_valid": true
+			"is_valid": true,
+			"is_full": false,
+			"basket_count": matching_count_in_basket
 		}
-	else:
+	elif is_tier_full:
 		var preview_egg: EggData = matching_egg
 		if not preview_egg and not GameManager.player_basket.is_empty():
 			preview_egg = GameManager.player_basket[0]
-		
-		var slot_to_show: int = mini(current_count, EGGS_PER_DOZEN - 1)
 		return {
 			"egg": preview_egg,
 			"dozen": tier_clamped,
-			"slot": slot_to_show,
-			"is_valid": false
+			"slot": EGGS_PER_DOZEN - 1,
+			"is_valid": false,
+			"is_full": true,
+			"basket_count": matching_count_in_basket
+		}
+	else:
+		var preview_egg: EggData = null
+		if not GameManager.player_basket.is_empty():
+			preview_egg = GameManager.player_basket[0]
+
+		return {
+			"egg": preview_egg,
+			"dozen": tier_clamped,
+			"slot": current_count,
+			"is_valid": false,
+			"is_full": false,
+			"basket_count": 0
 		}
 
 ## Evaluates what egg and slot would be targeted next by try_deposit
@@ -386,17 +404,38 @@ func hide_placement_hologram() -> void:
 func try_deposit_at_tier(aimed_tier: int, from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -> bool:
 	var tier_clamped: int = clampi(aimed_tier, 1, DOZENS_COUNT)
 	var egg_info: EggData = null
+	var matching_count: int = 0
 	for egg in GameManager.player_basket:
 		if egg.showcase_id == showcase_id and egg.dozen_group == tier_clamped:
-			egg_info = egg
-			break
+			if not egg_info:
+				egg_info = egg
+			matching_count += 1
 	if not egg_info:
 		return false
 
 	var current_count: int = GameManager.showcase_state[showcase_id].get(tier_clamped, 0)
-	if current_count >= EGGS_PER_DOZEN:
+	var slots_needed: int = EGGS_PER_DOZEN - current_count
+	if slots_needed <= 0:
 		return false
 
+	# Cascade Deposit R2: Harmonic Snap (deposit all matching eggs simultaneously if >= 2)
+	if ProgressManager.can_use_harmonic_snap() and matching_count > 1:
+		var to_deposit: int = mini(matching_count, slots_needed)
+		for i in range(to_deposit):
+			var slot_idx: int = current_count + i
+			var slot_key: String = str(tier_clamped) + "_" + str(slot_idx)
+			if animate:
+				in_flight_slots[slot_key] = true
+			GameManager.deposit_egg_into_showcase(showcase_id, tier_clamped)
+			if not animate:
+				AudioManager.play_snap(global_position)
+				_refresh_visuals()
+				_check_completion(tier_clamped)
+			else:
+				_animate_egg_flight(egg_info, tier_clamped, slot_idx, from_global_pos, float(i) * 0.035)
+		return true
+
+	# Standard single egg deposit
 	var slot_idx: int = current_count
 	var slot_key: String = str(tier_clamped) + "_" + str(slot_idx)
 

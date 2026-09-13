@@ -303,18 +303,23 @@ func _update_raycast_hover() -> void:
 			var target: Dictionary = showcase.get_target_for_tier(aimed_tier)
 			if not target.is_empty():
 				var is_valid: bool = target.get("is_valid", false)
+				var is_full: bool = target.get("is_full", false)
+				var target_egg: EggData = target.get("egg")
 				showcase.update_placement_hologram(
-					target.get("egg"),
+					target_egg,
 					is_valid,
 					target.get("dozen", aimed_tier),
 					target.get("slot", 0)
 				)
-				if is_valid:
-					if hud:
-						hud.show_prompt(tr("UI_PROMPT_PLACE") + " • " + title)
-				else:
-					if hud:
-						hud.show_prompt(title)
+				if hud:
+					if is_valid and target_egg:
+						var egg_name: String = target_egg.get_display_name()
+						var count: int = target.get("basket_count", 1)
+						hud.show_prompt(tr("UI_PROMPT_PLACE_TIER") % [egg_name, aimed_tier, count])
+					elif is_full:
+						hud.show_prompt(title + " • " + tr("UI_PROMPT_TIER_FULL") % [aimed_tier])
+					else:
+						hud.show_prompt(title + " • " + tr("UI_PROMPT_NO_EGG_FOR_TIER") % [aimed_tier])
 			else:
 				showcase.hide_placement_hologram()
 				if hud:

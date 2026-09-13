@@ -254,21 +254,43 @@ func _check_placement_hologram() -> void:
 	var gm = get_node_or_null("/root/GameManager")
 	if gm:
 		gm.player_basket.clear()
+		var dummy_egg_t2 = EggData.new()
+		dummy_egg_t2.egg_id = 2
+		dummy_egg_t2.showcase_id = 1
+		dummy_egg_t2.dozen_group = 2
+
 		gm.player_basket.append(dummy_egg) # egg for showcase 1, tier 1
+		gm.player_basket.append(dummy_egg_t2) # egg for showcase 1, tier 2
 
 		# Aiming at tier 1 (matching egg exists -> green)
 		var target_tier1 = showcase.get_target_for_tier(1)
-		if target_tier1.get("is_valid") == true:
-			_pass("Aiming at matching tier yields valid green target")
+		if target_tier1.get("is_valid") == true and target_tier1.get("basket_count") == 1:
+			_pass("Aiming at matching tier yields valid green target with correct basket count")
 		else:
 			_fail("Aiming at matching tier failed to yield valid target")
 
-		# Aiming at tier 3 (no egg for tier 3 -> red)
+		# Aiming at tier 2 (matching egg exists -> green)
+		var target_tier2 = showcase.get_target_for_tier(2)
+		if target_tier2.get("is_valid") == true and target_tier2.get("basket_count") == 1:
+			_pass("Aiming at second tier with different carried egg resolves correctly")
+		else:
+			_fail("Aiming at second tier failed to resolve carried egg")
+
+		# Aiming at tier 3 (no egg for tier 3 -> red, not full)
 		var target_tier3 = showcase.get_target_for_tier(3)
-		if target_tier3.get("is_valid") == false and target_tier3.get("dozen") == 3:
-			_pass("Aiming at non-matching tier yields red target on aimed tier")
+		if target_tier3.get("is_valid") == false and target_tier3.get("is_full") == false and target_tier3.get("dozen") == 3:
+			_pass("Aiming at non-matching tier yields red target with no-egg status")
 		else:
 			_fail("Aiming at non-matching tier failed to yield red target on that tier")
+
+		# Test Full Tier Handling
+		gm.showcase_state[1][1] = 12
+		var target_tier1_full = showcase.get_target_for_tier(1)
+		if target_tier1_full.get("is_full") == true and target_tier1_full.get("is_valid") == false:
+			_pass("Full tier (12/12) correctly reports is_full and displays red hologram")
+		else:
+			_fail("Full tier failed to report is_full status")
+		gm.showcase_state[1][1] = 0
 
 		# Test Requirement 2: Teleport when tier changes
 		showcase.update_placement_hologram(dummy_egg, true, 1, 0)
