@@ -8,6 +8,8 @@ extends RigidBody3D
 @export var egg_data: EggData
 @export var is_golden_initial: bool = false
 
+const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
+
 var mesh_instance: MeshInstance3D
 var collision_shape: CollisionShape3D
 
@@ -43,11 +45,11 @@ func _setup_visuals_and_physics() -> void:
 	else:
 		if not mesh_instance:
 			mesh_instance = MeshInstance3D.new()
-			var sphere: SphereMesh = SphereMesh.new()
-			sphere.radius = 0.115 # 23 cm diameter
-			sphere.height = 0.30 # 30 cm height
-			mesh_instance.mesh = sphere
+			mesh_instance.name = "MeshInstance3D"
+			mesh_instance.mesh = BASE_EGG_MESH
 			add_child(mesh_instance)
+		else:
+			mesh_instance.mesh = BASE_EGG_MESH
 		
 		# Apply tactile material matching the EggData specs
 		var mat: StandardMaterial3D = StandardMaterial3D.new()

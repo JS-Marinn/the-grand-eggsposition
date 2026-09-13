@@ -38,6 +38,8 @@ enum EggSeries {
 func get_display_name() -> String:
 	return tr(egg_name_key)
 
+const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
+
 ## Instantiates a model-agnostic visual Node3D representation of this egg.
 ## Supports any future custom scene, custom mesh, or procedural default.
 func instantiate_visual_node() -> Node3D:
@@ -52,10 +54,7 @@ func instantiate_visual_node() -> Node3D:
 	if custom_mesh:
 		mi.mesh = custom_mesh
 	else:
-		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = 0.115
-		sphere.height = 0.30
-		mi.mesh = sphere
+		mi.mesh = BASE_EGG_MESH
 
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = albedo_color

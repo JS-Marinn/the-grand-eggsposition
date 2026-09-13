@@ -14,6 +14,7 @@ signal showcase_finished()
 const DOZENS_COUNT: int = 5
 const EGGS_PER_DOZEN: int = 12
 const TOTAL_CAPACITY: int = 60
+const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
 
 var multimesh_instance: MultiMeshInstance3D
 var interaction_area: Area3D
@@ -183,18 +184,14 @@ func _setup_multimesh() -> void:
 		multimesh.instance_count = TOTAL_CAPACITY
 		multimesh.visible_instance_count = 0
 
-		# 30cm height, 23cm diameter egg mesh (matching Librarian book scale)
-		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = 0.115
-		sphere.height = 0.30
-
+		# 30cm height, 23cm diameter canonical egg mesh
 		var egg_mat: StandardMaterial3D = StandardMaterial3D.new()
 		egg_mat.vertex_color_use_as_albedo = true
 		egg_mat.roughness = 0.25
 		egg_mat.metallic = 0.2
-		sphere.material = egg_mat
+		multimesh_instance.material_override = egg_mat
 
-		multimesh.mesh = sphere
+		multimesh.mesh = BASE_EGG_MESH
 		multimesh_instance.multimesh = multimesh
 		add_child(multimesh_instance)
 
