@@ -506,6 +506,47 @@ func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -
 			return true
 	return false
 
+## Calculates collision-free egg placement trajectory from local_start to local_target at normalized progress t (0.0 to 1.0).
+## Guarantees the egg maneuvers through open air in front of the showcase (Z >= 0.48) and enters the target shelf
+## strictly horizontally within its vertical opening, preventing clipping through shelves above or below.
+func get_flight_trajectory_point(local_start: Vector3, local_target: Vector3, t: float) -> Vector3:
+	var entry_z: float = maxf(0.48, local_start.z * 0.35 + 0.48 * 0.65)
+	if local_start.z < 0.50:
+		entry_z = 0.55
+	var entry_y: float = local_target.y + 0.035
+	var local_entry: Vector3 = Vector3(local_target.x, entry_y, entry_z)
+	
+	var t_split: float = 0.52
+	if t < t_split:
+		var u: float = t / t_split
+		# Quintic smoothstep for smooth approach without velocity spikes: 6u^5 - 15u^4 + 10u^3
+		var u_smooth: float = u * u * u * (u * (u * 6.0 - 15.0) + 10.0)
+		var pos: Vector3 = Vector3.ZERO
+		pos.x = lerpf(local_start.x, local_entry.x, u_smooth)
+		pos.y = lerpf(local_start.y, local_entry.y, u_smooth) + (0.10 * sin(u * PI))
+		pos.z = lerpf(local_start.z, local_entry.z, u_smooth) + (0.08 * sin(u * PI))
+		return pos
+	else:
+		var u: float = (t - t_split) / (1.0 - t_split)
+		var u_smooth: float = u * u * u * (u * (u * 6.0 - 15.0) + 10.0)
+		var pos: Vector3 = Vector3.ZERO
+		pos.x = local_target.x
+		# Inside shelf: Y gently settles 3.5cm down onto the velvet cushion
+		pos.y = lerpf(local_entry.y, local_target.y, u_smooth)
+		# Z glides straight inward to the target slot
+		pos.z = lerpf(local_entry.z, local_target.z, u_smooth)
+		return pos
+
+## Returns rotation basis during placement flight, righting the egg upright before entering the shelf opening.
+func get_flight_trajectory_basis(start_quat: Quaternion, target_basis: Basis, t: float) -> Basis:
+	var t_split: float = 0.52
+	if t < t_split:
+		var u: float = t / t_split
+		var rot_u: float = u * u * (3.0 - 2.0 * u)
+		return Basis(start_quat.slerp(Quaternion(target_basis), rot_u))
+	else:
+		return target_basis
+
 func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_pos: Vector3, delay: float = 0.0) -> void:
 	var slot_key: String = str(d) + "_" + str(slot_idx)
 	var local_slot_pos: Vector3 = get_slot_local_position(d, slot_idx)
@@ -538,27 +579,26 @@ func _animate_egg_flight(egg_info: EggData, d: int, slot_idx: int, from_global_p
 	var start_basis: Basis = target_global_basis
 	var dir: Vector3 = (target_global_pos - from_global_pos).normalized()
 	if dir.length_squared() > 0.001:
-		start_basis = Basis.looking_at(dir, Vector3.UP)
+		var up_axis: Vector3 = Vector3.UP if absf(dir.y) < 0.95 else Vector3.FORWARD
+		start_basis = Basis.looking_at(dir, up_axis)
 	proxy.global_basis = start_basis
 
-	var flight_duration: float = 0.32
+	var flight_duration: float = 0.36
 	var flight_tween: Tween = create_tween()
-	var start_pos: Vector3 = from_global_pos
 	var start_quat: Quaternion = Quaternion(start_basis)
-	var target_quat: Quaternion = Quaternion(target_global_basis)
-	var arc_height: float = maxf(0.24, absf(target_global_pos.y - start_pos.y) * 0.35 + 0.20)
+	var local_start: Vector3 = to_local(from_global_pos)
+	var local_target: Vector3 = local_slot_pos
 
 	if delay > 0.0:
 		flight_tween.tween_interval(delay)
 
 	flight_tween.tween_method(func(t: float):
-		if not is_instance_valid(proxy):
+		if not is_instance_valid(proxy) or not is_inside_tree():
 			return
-		var cur_pos: Vector3 = start_pos.lerp(target_global_pos, t)
-		cur_pos.y += 4.0 * arc_height * t * (1.0 - t)
-		proxy.global_position = cur_pos
-		proxy.global_basis = Basis(start_quat.slerp(target_quat, t))
-	, 0.0, 1.0, flight_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		var local_pos: Vector3 = get_flight_trajectory_point(local_start, local_target, t)
+		proxy.global_position = to_global(local_pos)
+		proxy.global_basis = get_flight_trajectory_basis(start_quat, target_global_basis, t)
+	, 0.0, 1.0, flight_duration)
 
 	flight_tween.tween_callback(func():
 		if not is_instance_valid(proxy):

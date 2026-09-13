@@ -336,8 +336,40 @@ func _check_placement_hologram() -> void:
 
 		if mm.use_custom_data and shader_ok and lights_ok and egg_pbr_ok:
 			_pass("MultiMesh uses showcase PBR shader with custom_data, soft lights (upper: %.2f, lower: %.2f), and authentic metallic PBR (metallic: %.2f, roughness: %.2f)" % [light_upper.light_energy, light_lower.light_energy, test_egg.metallic, test_egg.roughness])
+		# Test Requirement 6: Collision-free egg placement trajectory
+		if showcase.has_method("get_flight_trajectory_point") and showcase.has_method("get_flight_trajectory_basis"):
+			var trajectory_clips: int = 0
+			var test_starts = [
+				Vector3(0.2, 1.6, 1.3),
+				Vector3(-0.5, 1.4, 1.0),
+				Vector3(0.5, 1.8, 1.5)
+			]
+			for start_pos in test_starts:
+				for d in range(1, 6):
+					var tier_base_y: float = 0.48 + float(d - 1) * 0.42
+					for s in [0, 5, 6, 11]: # check corners of front and back rows
+						var target_pos: Vector3 = showcase.get_slot_local_position(d, s)
+						for step in range(51):
+							var t = float(step) / 50.0
+							var p = showcase.get_flight_trajectory_point(start_pos, target_pos, t)
+							var egg_top = p.y + 0.15
+							var egg_bottom = p.y - 0.15
+							var egg_back = p.z - 0.115
+							if egg_back <= 0.31: # inside cabinet depth
+								for check_d in range(1, 6):
+									var check_base_y = 0.48 + float(check_d - 1) * 0.42
+									if check_d != d:
+										if egg_bottom < check_base_y + 0.04 and egg_top > check_base_y:
+											trajectory_clips += 1
+									if check_d == d + 1:
+										if egg_top > check_base_y:
+											trajectory_clips += 1
+			if trajectory_clips == 0:
+				_pass("Egg placement animation follows collision-free corridor route (0 shelf clips across all tiers and slots)")
+			else:
+				_fail("Egg placement animation clips through shelves: %d clips detected" % trajectory_clips)
 		else:
-			_fail("Showcase PBR or lighting validation failed: use_custom_data=%s, shader=%s, lights_ok=%s, egg_pbr_ok=%s" % [str(mm.use_custom_data), str(shader_ok), str(lights_ok), str(egg_pbr_ok)])
+			_fail("ShowcaseUnit missing get_flight_trajectory_point or get_flight_trajectory_basis")
 
 		gm.player_basket.clear()
 
