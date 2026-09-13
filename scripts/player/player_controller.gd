@@ -26,9 +26,21 @@ var _dash_dir: Vector3 = Vector3.ZERO
 const DASH_DURATION: float = 0.22
 const DASH_SPEED: float = 4.0 / 0.22 # ~18.18 m/s
 
+# Fluid kinematics & camera smoothing
+var _target_yaw: float = 0.0
+var _target_pitch: float = 0.0
+var _base_cam_y: float = 1.70
+var _bob_phase: float = 0.0
+const ACCELERATION: float = 14.0
+const DECELERATION: float = 11.0
+
 func _ready() -> void:
 	_setup_camera_and_raycast()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_target_yaw = rotation.y
+	_target_pitch = camera.rotation.x if camera else 0.0
+	if camera:
+		_base_cam_y = camera.position.y
 
 func _setup_camera_and_raycast() -> void:
 	camera = get_node_or_null("Camera3D")
@@ -79,10 +91,8 @@ func _input(event: InputEvent) -> void:
 		var should_rotate: bool = (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED) or (event.button_mask & MOUSE_BUTTON_MASK_RIGHT != 0)
 		if should_rotate:
 			var sens: float = _get_sensitivity()
-			rotate_y(-event.relative.x * sens)
-			camera_pitch = clampf(camera_pitch - event.relative.y * sens, -deg_to_rad(85), deg_to_rad(85))
-			if camera:
-				camera.rotation.x = camera_pitch
+			_target_yaw -= event.relative.x * sens
+			_target_pitch = clampf(_target_pitch - event.relative.y * sens, -deg_to_rad(85), deg_to_rad(85))
 
 	if event.is_action_pressed("open_journal"):
 		var journal = get_tree().root.find_child("JournalMenu", true, false)
@@ -119,6 +129,73 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		_handle_interaction()
 
+func _process(delta: float) -> void:
+	_handle_smooth_look(delta)
+	_handle_camera_dynamics(delta)
+
+## High-frequency, sub-pixel camera rotation running at full display refresh rate (144Hz+)
+func _handle_smooth_look(delta: float) -> void:
+	var look_input: Vector2 = Vector2.ZERO
+	if Input.is_physical_key_pressed(KEY_RIGHT) or Input.is_action_pressed("ui_right"):
+		look_input.x += 1.0
+	if Input.is_physical_key_pressed(KEY_LEFT) or Input.is_action_pressed("ui_left"):
+		look_input.x -= 1.0
+	if Input.is_physical_key_pressed(KEY_UP) or Input.is_action_pressed("ui_up"):
+		look_input.y -= 1.0
+	if Input.is_physical_key_pressed(KEY_DOWN) or Input.is_action_pressed("ui_down"):
+		look_input.y += 1.0
+
+	var stick_x: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_X)
+	var stick_y: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
+	if absf(stick_x) > 0.15:
+		look_input.x += stick_x
+	if absf(stick_y) > 0.15:
+		look_input.y += stick_y
+
+	if look_input != Vector2.ZERO:
+		_target_yaw -= look_input.x * key_look_speed * delta
+		_target_pitch = clampf(_target_pitch - look_input.y * key_look_speed * delta, -deg_to_rad(85), deg_to_rad(85))
+
+	var rot_speed: float = clampf(delta * 42.0, 0.0, 1.0)
+	rotation.y = lerp_angle(rotation.y, _target_yaw, rot_speed)
+	camera_pitch = lerpf(camera_pitch, _target_pitch, rot_speed)
+	if camera:
+		camera.rotation.x = camera_pitch
+
+## Subtle, organic camera kinematics: gentle strafe lean, dynamic FOV, and natural walking head bob
+func _handle_camera_dynamics(delta: float) -> void:
+	if not camera:
+		return
+
+	# 1. Subtle camera roll / strafe lean (1.0 degree)
+	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	var target_roll: float = -input_dir.x * deg_to_rad(1.0)
+	camera.rotation.z = lerpf(camera.rotation.z, target_roll, delta * 8.0)
+
+	# 2. Dynamic FOV based on movement speed
+	var sm = get_node_or_null("/root/SettingsManager")
+	var base_fov: float = sm.fov if (sm and "fov" in sm) else 75.0
+	var target_fov: float = base_fov
+	if is_dashing:
+		target_fov += 8.0
+	elif Input.is_action_pressed("sprint") and input_dir != Vector2.ZERO:
+		target_fov += 3.5
+	camera.fov = lerpf(camera.fov, target_fov, delta * 7.0)
+
+	# 3. Organic walking head-bob
+	var horizontal_speed: float = Vector2(velocity.x, velocity.z).length()
+	if is_on_floor() and horizontal_speed > 0.4:
+		var bob_rate: float = 10.0 if Input.is_action_pressed("sprint") else 7.2
+		_bob_phase += delta * bob_rate
+		var bob_y: float = sin(_bob_phase) * 0.018
+		var bob_x: float = cos(_bob_phase * 0.5) * 0.009
+		camera.position.y = lerpf(camera.position.y, _base_cam_y + bob_y, delta * 12.0)
+		camera.position.x = lerpf(camera.position.x, bob_x, delta * 12.0)
+	else:
+		_bob_phase = 0.0
+		camera.position.y = lerpf(camera.position.y, _base_cam_y, delta * 8.0)
+		camera.position.x = lerpf(camera.position.x, 0.0, delta * 8.0)
+
 func _physics_process(delta: float) -> void:
 	if space_double_tap_timer > 0.0:
 		space_double_tap_timer = maxf(0.0, space_double_tap_timer - delta)
@@ -132,7 +209,6 @@ func _physics_process(delta: float) -> void:
 			is_dashing = false
 
 	_handle_movement(delta)
-	_handle_keyboard_gamepad_look(delta)
 	_update_raycast_hover()
 	_handle_hold_interaction(delta)
 
@@ -147,7 +223,7 @@ func _handle_hold_interaction(delta: float) -> void:
 	else:
 		interact_hold_timer = 0.0
 
-func _handle_movement(_delta: float) -> void:
+func _handle_movement(delta: float) -> void:
 	if is_dashing:
 		velocity.x = _dash_dir.x * DASH_SPEED
 		velocity.z = _dash_dir.z * DASH_SPEED
@@ -160,52 +236,21 @@ func _handle_movement(_delta: float) -> void:
 	
 	var is_sprinting: bool = Input.is_action_pressed("sprint")
 	var speed: float = sprint_speed if is_sprinting else move_speed
-	
-	# Apply swift stride skill speed multiplier
 	speed *= ProgressManager.get_swift_stride_multiplier()
 	
-	if direction:
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
-	else:
-		velocity.x = move_toward(velocity.x, 0, speed)
-		velocity.z = move_toward(velocity.z, 0, speed)
+	# Smooth acceleration and deceleration for tactile weight
+	var target_vel: Vector3 = direction * speed
+	var accel: float = ACCELERATION if direction != Vector3.ZERO else DECELERATION
+	velocity.x = lerpf(velocity.x, target_vel.x, accel * delta)
+	velocity.z = lerpf(velocity.z, target_vel.z, accel * delta)
 		
 	# Apply simple gravity if not on floor
 	if not is_on_floor():
-		velocity.y -= 9.8 * _delta
+		velocity.y -= 9.8 * delta
 	else:
 		velocity.y = 0.0
 
 	move_and_slide()
-
-## Smooth camera rotation via Arrow keys and Gamepad Right Stick
-func _handle_keyboard_gamepad_look(delta: float) -> void:
-	var look_input: Vector2 = Vector2.ZERO
-	
-	# Arrow keys look
-	if Input.is_physical_key_pressed(KEY_RIGHT) or Input.is_action_pressed("ui_right"):
-		look_input.x += 1.0
-	if Input.is_physical_key_pressed(KEY_LEFT) or Input.is_action_pressed("ui_left"):
-		look_input.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_UP) or Input.is_action_pressed("ui_up"):
-		look_input.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_DOWN) or Input.is_action_pressed("ui_down"):
-		look_input.y += 1.0
-		
-	# Gamepad right analog stick
-	var stick_x: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_X)
-	var stick_y: float = Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
-	if absf(stick_x) > 0.15:
-		look_input.x += stick_x
-	if absf(stick_y) > 0.15:
-		look_input.y += stick_y
-		
-	if look_input != Vector2.ZERO:
-		rotate_y(-look_input.x * key_look_speed * delta)
-		camera_pitch = clampf(camera_pitch - look_input.y * key_look_speed * delta, -deg_to_rad(85), deg_to_rad(85))
-		if camera:
-			camera.rotation.x = camera_pitch
 
 func _update_raycast_hover() -> void:
 	if not raycast:
