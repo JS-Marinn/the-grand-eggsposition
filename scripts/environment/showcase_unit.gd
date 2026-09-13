@@ -15,6 +15,9 @@ const DOZENS_COUNT: int = 5
 const EGGS_PER_DOZEN: int = 12
 const TOTAL_CAPACITY: int = 60
 const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
+const HOLOGRAM_SHADER: Shader = preload("res://assets/shaders/egg_hologram.gdshader")
+const HOLO_COLOR_VALID: Color = Color(0.18, 1.0, 0.42, 0.85)   # Luminous green
+const HOLO_COLOR_INVALID: Color = Color(1.0, 0.22, 0.25, 0.85) # Luminous red
 
 var multimesh_instance: MultiMeshInstance3D
 var interaction_area: Area3D
@@ -23,6 +26,8 @@ var category_label: Label3D
 var in_flight_container: Node3D
 var in_flight_slots: Dictionary = {}
 var custom_shelved_container: Node3D
+var hologram_mesh_instance: MeshInstance3D
+var hologram_material: ShaderMaterial
 
 func _ready() -> void:
 	in_flight_container = get_node_or_null("EggsInFlight")
@@ -40,6 +45,7 @@ func _ready() -> void:
 	_setup_shelves()
 	_setup_multimesh()
 	_setup_interaction_area()
+	_setup_hologram()
 	_refresh_visuals()
 	GameManager.egg_placed.connect(_on_egg_placed)
 
@@ -225,6 +231,82 @@ func get_slot_local_position(d: int, s: int) -> Vector3:
 		slot_z = +0.14
 
 	return Vector3(slot_x, slot_y, slot_z)
+
+## Sets up the translucent placement preview hologram
+func _setup_hologram() -> void:
+	if hologram_mesh_instance:
+		return
+	hologram_mesh_instance = MeshInstance3D.new()
+	hologram_mesh_instance.name = "PlacementHologram"
+	hologram_mesh_instance.mesh = BASE_EGG_MESH
+	hologram_mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+	hologram_material = ShaderMaterial.new()
+	hologram_material.shader = HOLOGRAM_SHADER
+	hologram_material.set_shader_parameter("hologram_color", HOLO_COLOR_VALID)
+	hologram_mesh_instance.material_override = hologram_material
+
+	hologram_mesh_instance.visible = false
+	add_child(hologram_mesh_instance)
+
+## Evaluates what egg and slot would be targeted next by try_deposit
+func get_next_deposit_target() -> Dictionary:
+	# 1. Check if the player carries an egg matching a tier with open slots
+	for d in range(1, DOZENS_COUNT + 1):
+		var egg_info: EggData = null
+		for egg in GameManager.player_basket:
+			if egg.showcase_id == showcase_id and egg.dozen_group == d:
+				egg_info = egg
+				break
+		if not egg_info:
+			continue
+
+		var current_count: int = GameManager.showcase_state[showcase_id].get(d, 0)
+		if current_count < EGGS_PER_DOZEN:
+			return {
+				"egg": egg_info,
+				"dozen": d,
+				"slot": current_count,
+				"is_valid": true
+			}
+
+	# 2. If no matching egg with open slots, find the first available slot in this showcase
+	for d in range(1, DOZENS_COUNT + 1):
+		var count: int = GameManager.showcase_state[showcase_id].get(d, 0)
+		if count < EGGS_PER_DOZEN:
+			var carried_egg: EggData = GameManager.player_basket[0] if not GameManager.player_basket.is_empty() else null
+			return {
+				"egg": carried_egg,
+				"dozen": d,
+				"slot": count,
+				"is_valid": false
+			}
+
+	# Showcase is 100% full
+	return {}
+
+## Shows or updates the placement hologram preview
+func update_placement_hologram(egg_to_preview: EggData, is_valid: bool, d: int, s: int) -> void:
+	if not hologram_mesh_instance:
+		_setup_hologram()
+
+	if egg_to_preview and egg_to_preview.custom_mesh:
+		hologram_mesh_instance.mesh = egg_to_preview.custom_mesh
+	else:
+		hologram_mesh_instance.mesh = BASE_EGG_MESH
+
+	var target_color: Color = HOLO_COLOR_VALID if is_valid else HOLO_COLOR_INVALID
+	if hologram_material:
+		hologram_material.set_shader_parameter("hologram_color", target_color)
+
+	var slot_pos: Vector3 = get_slot_local_position(d, s)
+	hologram_mesh_instance.position = slot_pos
+	hologram_mesh_instance.visible = true
+
+## Hides the placement preview hologram
+func hide_placement_hologram() -> void:
+	if hologram_mesh_instance:
+		hologram_mesh_instance.visible = false
 
 ## Try to deposit an egg from the player's basket into this showcase
 func try_deposit(from_global_pos: Vector3 = Vector3.INF, animate: bool = true) -> bool:

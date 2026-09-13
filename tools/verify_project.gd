@@ -22,6 +22,7 @@ func _ready() -> void:
 	_check_egg_resource_architecture()
 	_check_core_scenes()
 	_check_localization()
+	_check_placement_hologram()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -204,3 +205,49 @@ func _check_localization() -> void:
 	fa.close()
 	
 	_pass("Localization verified: %d translated keys present in CSV" % line_count)
+
+## 6. Verify Placement Hologram
+func _check_placement_hologram() -> void:
+	print("\n6. Placement Hologram:")
+	var showcase_scn: PackedScene = load("res://scenes/atrium/showcase_unit.tscn")
+	if not showcase_scn:
+		_fail("Could not load showcase_unit.tscn for hologram test")
+		return
+
+	var showcase = showcase_scn.instantiate()
+	add_child(showcase)
+
+	if showcase.hologram_mesh_instance and showcase.hologram_material:
+		_pass("ShowcaseUnit has PlacementHologram mesh and ShaderMaterial")
+	else:
+		_fail("ShowcaseUnit missing PlacementHologram or ShaderMaterial")
+
+	# Test valid placement (green)
+	var dummy_egg = EggData.new()
+	dummy_egg.egg_id = 1
+	dummy_egg.showcase_id = 1
+	dummy_egg.dozen_group = 1
+
+	showcase.update_placement_hologram(dummy_egg, true, 1, 0)
+	var col_green: Color = showcase.hologram_material.get_shader_parameter("hologram_color")
+	if showcase.hologram_mesh_instance.visible and col_green.g > col_green.r:
+		_pass("Hologram displays luminous green on valid placement target")
+	else:
+		_fail("Hologram failed to display green on valid target")
+
+	# Test invalid placement (red)
+	showcase.update_placement_hologram(dummy_egg, false, 1, 0)
+	var col_red: Color = showcase.hologram_material.get_shader_parameter("hologram_color")
+	if showcase.hologram_mesh_instance.visible and col_red.r > col_red.g:
+		_pass("Hologram displays luminous red on invalid placement target")
+	else:
+		_fail("Hologram failed to display red on invalid target")
+
+	# Test hide
+	showcase.hide_placement_hologram()
+	if not showcase.hologram_mesh_instance.visible:
+		_pass("Hologram hides cleanly when not aiming at showcase")
+	else:
+		_fail("Hologram failed to hide")
+
+	showcase.queue_free()

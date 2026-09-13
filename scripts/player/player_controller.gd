@@ -33,6 +33,7 @@ var _base_cam_y: float = 1.70
 var _bob_phase: float = 0.0
 const ACCELERATION: float = 14.0
 const DECELERATION: float = 11.0
+var _current_hologram_showcase: ShowcaseUnit = null
 
 func _ready() -> void:
 	_setup_camera_and_raycast()
@@ -259,18 +260,27 @@ func _update_raycast_hover() -> void:
 		return
 	var hud: HUD = get_tree().root.find_child("HUD", true, false) as HUD
 	if not raycast.is_colliding():
+		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+			_current_hologram_showcase.hide_placement_hologram()
+			_current_hologram_showcase = null
 		if hud:
 			hud.hide_prompt()
 		return
 
 	var collider: Object = raycast.get_collider()
 	if not collider or not is_instance_valid(collider):
+		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+			_current_hologram_showcase.hide_placement_hologram()
+			_current_hologram_showcase = null
 		if hud:
 			hud.hide_prompt()
 		return
 
 	var egg: EggActor = _resolve_egg(collider)
 	if egg:
+		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+			_current_hologram_showcase.hide_placement_hologram()
+			_current_hologram_showcase = null
 		var egg_name: String = egg.egg_data.get_display_name() if egg.egg_data else tr("EGG_LAPIS_LAZULI")
 		if hud:
 			hud.show_prompt(tr("UI_PROMPT_PICK") + " • " + egg_name)
@@ -278,17 +288,41 @@ func _update_raycast_hover() -> void:
 
 	var showcase: ShowcaseUnit = _resolve_showcase(collider)
 	if showcase:
+		if _current_hologram_showcase != showcase:
+			if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+				_current_hologram_showcase.hide_placement_hologram()
+			_current_hologram_showcase = showcase
+
 		var title: String = tr(showcase.showcase_title)
-		if GameManager.has_matching_egg_for_showcase(showcase.showcase_id):
-			if hud:
-				hud.show_prompt(tr("UI_PROMPT_PLACE") + " • " + title)
-		elif GameManager.player_basket.is_empty():
+		if GameManager.player_basket.is_empty():
+			showcase.hide_placement_hologram()
 			if hud:
 				hud.show_prompt(title + " " + tr("UI_BASKET_EMPTY"))
 		else:
-			if hud:
-				hud.show_prompt(title)
+			var target: Dictionary = showcase.get_next_deposit_target()
+			if not target.is_empty():
+				var is_valid: bool = target.get("is_valid", false)
+				showcase.update_placement_hologram(
+					target.get("egg"),
+					is_valid,
+					target.get("dozen", 1),
+					target.get("slot", 0)
+				)
+				if is_valid:
+					if hud:
+						hud.show_prompt(tr("UI_PROMPT_PLACE") + " • " + title)
+				else:
+					if hud:
+						hud.show_prompt(title)
+			else:
+				showcase.hide_placement_hologram()
+				if hud:
+					hud.show_prompt(title)
 		return
+
+	if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+		_current_hologram_showcase.hide_placement_hologram()
+		_current_hologram_showcase = null
 
 	if hud:
 		hud.hide_prompt()
