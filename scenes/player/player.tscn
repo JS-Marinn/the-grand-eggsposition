@@ -25,3 +25,11 @@ target_position = Vector3(0, 0, -4.5)
 collision_mask = 7
 collide_with_areas = true
 collide_with_bodies = true
+
+[node name="HeldEggRoot" type="Node3D" parent="Camera3D"]
+transform = Transform3D(0.610775, -0.063857, -0.213201, 0.084795, 0.638424, 0.051659, 0.205934, -0.076295, 0.612142, 0.24, -0.22, -0.48)
+visible = false
+
+[node name="HeldEggMesh" type="MeshInstance3D" parent="Camera3D/HeldEggRoot"]
+cast_shadow = 0
+

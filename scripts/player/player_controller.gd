@@ -33,10 +33,25 @@ var _base_cam_y: float = 1.70
 var _bob_phase: float = 0.0
 const ACCELERATION: float = 14.0
 const DECELERATION: float = 11.0
+const BASE_EGG_MESH: Mesh = preload("res://assets/models/baseegg_mesh.tres")
 var _current_hologram_showcase: ShowcaseUnit = null
+
+# First-person held egg viewmodel
+var held_egg_root: Node3D = null
+var held_egg_mesh: MeshInstance3D = null
+var held_egg_custom_instance: Node3D = null
+var selected_held_index: int = 0
+var _held_egg_target_pos: Vector3 = Vector3(0.24, -0.22, -0.48)
+var _held_egg_target_rot: Vector3 = Vector3(deg_to_rad(-8.0), deg_to_rad(-20.0), deg_to_rad(6.0))
+var _held_egg_base_scale: Vector3 = Vector3(0.65, 0.65, 0.65)
+var _held_egg_tween: Tween = null
 
 func _ready() -> void:
 	_setup_camera_and_raycast()
+	_setup_held_egg_view()
+	GameManager.egg_collected.connect(_on_egg_collected)
+	GameManager.egg_placed.connect(_on_egg_placed)
+	_update_held_egg_display()
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	_target_yaw = rotation.y
 	_target_pitch = camera.rotation.x if camera else 0.0
@@ -68,10 +83,19 @@ func _setup_camera_and_raycast() -> void:
 	raycast.collide_with_bodies = true
 
 func _input(event: InputEvent) -> void:
-	# Click window to capture cursor
+	# Click window to capture cursor or handle mouse wheel cycling
 	if event is InputEventMouseButton and event.pressed:
 		if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			get_viewport().set_input_as_handled()
+			return
+		
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_cycle_held_egg(-1)
+			get_viewport().set_input_as_handled()
+			return
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_cycle_held_egg(1)
 			get_viewport().set_input_as_handled()
 			return
 
@@ -201,6 +225,16 @@ func _handle_camera_dynamics(delta: float) -> void:
 	else:
 		camera.position.y = lerpf(camera.position.y, _base_cam_y, delta * 8.0)
 		camera.position.x = lerpf(camera.position.x, 0.0, delta * 8.0)
+
+	# 4. First-person held egg subtle inertia & breathing sway
+	if held_egg_root and held_egg_root.visible and (not _held_egg_tween or not _held_egg_tween.is_running()):
+		var sway_x: float = 0.0
+		var sway_y: float = 0.0
+		if is_moving:
+			sway_y = sin(_bob_phase * 1.0) * (0.003 * bob_intensity)
+			sway_x = cos(_bob_phase * 0.5) * (0.002 * bob_intensity)
+		held_egg_root.position.x = lerpf(held_egg_root.position.x, _held_egg_target_pos.x + sway_x, delta * 10.0)
+		held_egg_root.position.y = lerpf(held_egg_root.position.y, _held_egg_target_pos.y + sway_y, delta * 10.0)
 
 func _physics_process(delta: float) -> void:
 	if space_double_tap_timer > 0.0:
@@ -477,7 +511,11 @@ func trigger_wayfinder_override(egg_data: EggData = null) -> bool:
 
 	var target_egg: EggData = egg_data
 
-	# Priority 1: Egg in player basket
+	# Priority 1: Current held egg in basket
+	if not target_egg:
+		target_egg = get_current_held_egg()
+
+	# Priority 2: Any egg in player basket (fallback)
 	if not target_egg and not GameManager.player_basket.is_empty():
 		target_egg = GameManager.player_basket[0]
 
@@ -562,3 +600,182 @@ func _get_sensitivity() -> float:
 	if sm and "mouse_sensitivity" in sm:
 		return sm.mouse_sensitivity
 	return mouse_sensitivity
+
+## =========================================================================
+## FIRST-PERSON HELD EGG VIEWMODEL (COZY BOUTIQUE CURATION)
+## =========================================================================
+
+func _setup_held_egg_view() -> void:
+	if not camera:
+		camera = get_node_or_null("Camera3D")
+	if camera:
+		held_egg_root = camera.get_node_or_null("HeldEggRoot")
+		if not held_egg_root:
+			held_egg_root = Node3D.new()
+			held_egg_root.name = "HeldEggRoot"
+			held_egg_root.position = _held_egg_target_pos
+			held_egg_root.rotation = _held_egg_target_rot
+			held_egg_root.scale = _held_egg_base_scale
+			held_egg_root.visible = false
+			camera.add_child(held_egg_root)
+		
+		held_egg_mesh = held_egg_root.get_node_or_null("HeldEggMesh")
+		if not held_egg_mesh:
+			held_egg_mesh = MeshInstance3D.new()
+			held_egg_mesh.name = "HeldEggMesh"
+			held_egg_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			held_egg_mesh.mesh = BASE_EGG_MESH
+			held_egg_root.add_child(held_egg_mesh)
+
+func get_current_held_egg() -> EggData:
+	if GameManager.player_basket.is_empty():
+		return null
+	var basket_count: int = GameManager.player_basket.size()
+	selected_held_index = clampi(selected_held_index, 0, basket_count - 1)
+	return GameManager.player_basket[selected_held_index]
+
+func _cycle_held_egg(direction: int) -> void:
+	if GameManager.player_basket.is_empty():
+		return
+	
+	var basket_count: int = GameManager.player_basket.size()
+	if basket_count <= 1:
+		AudioManager.play_ui_hover()
+		_animate_held_egg_switch(direction)
+		return
+	
+	selected_held_index = posmod(selected_held_index + direction, basket_count)
+	AudioManager.play_ui_hover()
+	_animate_held_egg_switch(direction)
+	_notify_hud_held_egg_changed()
+
+func _update_held_egg_display(_animate: bool = false) -> void:
+	if not held_egg_root:
+		return
+
+	if GameManager.player_basket.is_empty():
+		held_egg_root.visible = false
+		if is_instance_valid(held_egg_custom_instance):
+			held_egg_custom_instance.queue_free()
+			held_egg_custom_instance = null
+		return
+
+	selected_held_index = clampi(selected_held_index, 0, GameManager.player_basket.size() - 1)
+	var egg: EggData = GameManager.player_basket[selected_held_index]
+	if not egg:
+		held_egg_root.visible = false
+		return
+
+	held_egg_root.visible = true
+
+	# Clean up previous custom visual instance if any
+	if is_instance_valid(held_egg_custom_instance):
+		held_egg_custom_instance.queue_free()
+		held_egg_custom_instance = null
+
+	if egg.custom_scene:
+		if held_egg_mesh:
+			held_egg_mesh.visible = false
+		held_egg_custom_instance = egg.custom_scene.instantiate() as Node3D
+		if held_egg_custom_instance:
+			held_egg_custom_instance.name = "HeldEggCustomVisual"
+			held_egg_root.add_child(held_egg_custom_instance)
+			_disable_shadows_recursive(held_egg_custom_instance)
+	else:
+		if held_egg_mesh:
+			held_egg_mesh.visible = true
+			held_egg_mesh.mesh = BASE_EGG_MESH
+			var mat: StandardMaterial3D = StandardMaterial3D.new()
+			mat.albedo_color = egg.albedo_color
+			if egg.albedo_texture:
+				mat.albedo_texture = egg.albedo_texture
+			mat.roughness = egg.roughness
+			mat.metallic = egg.metallic
+			held_egg_mesh.material_override = mat
+
+func _disable_shadows_recursive(node: Node) -> void:
+	if node is GeometryInstance3D:
+		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	for child in node.get_children():
+		_disable_shadows_recursive(child)
+
+func _animate_held_egg_switch(direction: int) -> void:
+	if not held_egg_root:
+		_update_held_egg_display(false)
+		return
+
+	if _held_egg_tween and _held_egg_tween.is_valid():
+		_held_egg_tween.kill()
+
+	_held_egg_tween = create_tween()
+	var dip_pos: Vector3 = _held_egg_target_pos + Vector3(0.0, -0.05, 0.02)
+	var dip_rot: Vector3 = _held_egg_target_rot + Vector3(deg_to_rad(-5.0), deg_to_rad(float(direction) * 8.0), deg_to_rad(-float(direction) * 6.0))
+
+	# Silky quick dip down
+	_held_egg_tween.tween_property(held_egg_root, "position", dip_pos, 0.07).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	_held_egg_tween.parallel().tween_property(held_egg_root, "rotation", dip_rot, 0.07).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	
+	# Swap visual at bottom of dip
+	_held_egg_tween.tween_callback(func():
+		_update_held_egg_display(false)
+	)
+
+	# Pop back up with tactile spring
+	_held_egg_tween.tween_property(held_egg_root, "position", _held_egg_target_pos, 0.13).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_held_egg_tween.parallel().tween_property(held_egg_root, "rotation", _held_egg_target_rot, 0.13).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _animate_held_egg_appear() -> void:
+	if not held_egg_root:
+		return
+	if _held_egg_tween and _held_egg_tween.is_valid():
+		_held_egg_tween.kill()
+
+	held_egg_root.visible = true
+	var start_pos: Vector3 = _held_egg_target_pos + Vector3(0.04, -0.16, 0.08)
+	var start_rot: Vector3 = _held_egg_target_rot + Vector3(deg_to_rad(-15.0), deg_to_rad(-10.0), 0.0)
+	held_egg_root.position = start_pos
+	held_egg_root.rotation = start_rot
+
+	_held_egg_tween = create_tween()
+	_held_egg_tween.tween_property(held_egg_root, "position", _held_egg_target_pos, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_held_egg_tween.parallel().tween_property(held_egg_root, "rotation", _held_egg_target_rot, 0.22).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func _animate_held_egg_disappear() -> void:
+	if not held_egg_root:
+		return
+	if _held_egg_tween and _held_egg_tween.is_valid():
+		_held_egg_tween.kill()
+
+	var end_pos: Vector3 = _held_egg_target_pos + Vector3(0.04, -0.16, 0.08)
+	_held_egg_tween = create_tween()
+	_held_egg_tween.tween_property(held_egg_root, "position", end_pos, 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	_held_egg_tween.tween_callback(func():
+		if GameManager.player_basket.is_empty():
+			held_egg_root.visible = false
+	)
+
+func _on_egg_collected(_egg: EggData) -> void:
+	var prev_count: int = GameManager.player_basket.size() - 1
+	if prev_count <= 0:
+		# First egg collected into basket: show it with appear animation
+		selected_held_index = 0
+		_update_held_egg_display(false)
+		_animate_held_egg_appear()
+	else:
+		selected_held_index = clampi(selected_held_index, 0, GameManager.player_basket.size() - 1)
+		_update_held_egg_display(false)
+	_notify_hud_held_egg_changed()
+
+func _on_egg_placed(_egg: EggData, _showcase: int, _dozen: int) -> void:
+	if GameManager.player_basket.is_empty():
+		selected_held_index = 0
+		_animate_held_egg_disappear()
+	else:
+		selected_held_index = clampi(selected_held_index, 0, GameManager.player_basket.size() - 1)
+		_update_held_egg_display(false)
+	_notify_hud_held_egg_changed()
+
+func _notify_hud_held_egg_changed() -> void:
+	var hud = get_tree().root.find_child("HUD", true, false)
+	if hud and hud.has_method("_update_hud"):
+		hud._update_hud()

@@ -97,7 +97,13 @@ func _on_seals_changed(_new_amount: int) -> void:
 
 func _update_hud() -> void:
 	if basket_label:
-		basket_label.text = tr("UI_BASKET_CAPACITY") % [GameManager.player_basket.size(), GameManager.max_basket_capacity]
+		var basket_text: String = tr("UI_BASKET_CAPACITY") % [GameManager.player_basket.size(), GameManager.max_basket_capacity]
+		var player = get_tree().root.find_child("Player", true, false)
+		if player and player.has_method("get_current_held_egg") and not GameManager.player_basket.is_empty():
+			var held: EggData = player.get_current_held_egg()
+			if held:
+				basket_text += " • %s (%d/%d)" % [held.get_display_name(), player.selected_held_index + 1, GameManager.player_basket.size()]
+		basket_label.text = basket_text
 	if progress_label:
 		var raw_text: String = tr("UI_TOTAL_PROGRESS")
 		if "%s /" in raw_text or "%s/" in raw_text:

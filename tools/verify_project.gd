@@ -24,6 +24,7 @@ func _ready() -> void:
 	_check_localization()
 	_check_placement_hologram()
 	_check_wayfinder_system()
+	_check_held_egg_viewmodel()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -478,4 +479,98 @@ func _check_wayfinder_system() -> void:
 		_fail("PlayerController missing wayfinder trigger methods")
 
 	game_scene.queue_free()
+
+## 8. Verify First-Person Held Egg Viewmodel & Mouse Wheel Cycling
+func _check_held_egg_viewmodel() -> void:
+	print("\n8. First-Person Held Egg Viewmodel & Wheel Cycling:")
+	var player_scene: PackedScene = load("res://scenes/player/player.tscn")
+	if not player_scene:
+		_fail("Could not load res://scenes/player/player.tscn")
+		return
+
+	var player = player_scene.instantiate()
+	add_child(player)
+
+	# 1. Check node hierarchy
+	if player.held_egg_root and player.held_egg_mesh:
+		_pass("Player has HeldEggRoot and HeldEggMesh nodes configured under Camera3D")
+	else:
+		_fail("Player missing HeldEggRoot or HeldEggMesh nodes")
+
+	# 2. Check initial empty basket state
+	var gm = get_node_or_null("/root/GameManager")
+	if not gm:
+		_fail("GameManager autoload not found")
+		player.queue_free()
+		return
+
+	gm.player_basket.clear()
+	player._update_held_egg_display(false)
+	if not player.held_egg_root.visible and player.get_current_held_egg() == null:
+		_pass("Viewmodel is hidden when player basket is empty")
+	else:
+		_fail("Viewmodel is visible with empty basket")
+
+	# 3. Add eggs to basket: Gold Egg and Pure Copper Egg
+	var egg1 = gm.get_egg_data(1) # Gold
+	var egg4 = gm.get_egg_for_showcase_dozen(1, 4) # Pure Copper
+	if not egg1 or not egg4:
+		_fail("Failed to retrieve sample egg resources")
+		player.queue_free()
+		return
+
+	gm.add_to_basket(egg1)
+	player._on_egg_collected(egg1)
+	if player.held_egg_root.visible and player.get_current_held_egg() == egg1:
+		_pass("Picking up first egg makes viewmodel visible showing held egg (Gold)")
+	else:
+		_fail("Picking up egg failed to show active held egg viewmodel")
+
+	gm.add_to_basket(egg4)
+	player._on_egg_collected(egg4)
+	if player.get_current_held_egg() == egg1 and player.selected_held_index == 0:
+		_pass("Second egg added to basket maintains first egg as initially displayed")
+	else:
+		_fail("Adding second egg unexpectedly changed selected held index")
+
+	# 4. Mouse wheel cycling
+	# Cycle forward (+1)
+	player._cycle_held_egg(1)
+	if player.selected_held_index == 1 and player.get_current_held_egg() == egg4:
+		_pass("Mouse wheel down (+1) cycles to next held egg (Pure Copper)")
+	else:
+		_fail("Mouse wheel cycle forward failed: index=%d" % player.selected_held_index)
+
+	# Cycle wrap forward (+1 -> wrap to 0)
+	player._cycle_held_egg(1)
+	if player.selected_held_index == 0 and player.get_current_held_egg() == egg1:
+		_pass("Mouse wheel cycling wraps seamlessly from end to beginning (index 0)")
+	else:
+		_fail("Mouse wheel cycle wrap failed: index=%d" % player.selected_held_index)
+
+	# Cycle backward (-1 -> wrap to 1)
+	player._cycle_held_egg(-1)
+	if player.selected_held_index == 1 and player.get_current_held_egg() == egg4:
+		_pass("Mouse wheel up (-1) cycles backwards with wrap (index 1)")
+	else:
+		_fail("Mouse wheel backwards cycle failed: index=%d" % player.selected_held_index)
+
+	# 5. Synergy with Wayfinder guidance: picking target_egg from current held selection
+	var wf_egg = player.get_current_held_egg()
+	if wf_egg == egg4:
+		_pass("Wayfinder targeting inherits current held egg (Pure Copper)")
+	else:
+		_fail("Held egg does not match expected selection for Wayfinder")
+
+	# 6. Depositing / emptying basket hides viewmodel
+	gm.player_basket.clear()
+	player._on_egg_placed(egg4, 1, 4)
+	player._update_held_egg_display(false)
+	if not player.held_egg_root.visible and player.get_current_held_egg() == null:
+		_pass("Emptying basket hides held egg viewmodel and resets held state cleanly")
+	else:
+		_fail("Held egg viewmodel remained visible after clearing basket")
+
+	player.queue_free()
+
 
