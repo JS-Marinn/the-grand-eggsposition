@@ -127,10 +127,10 @@ material = SubResource("Mat_ParquetFloor")
 size = Vector3(6.5, 0.3, 4.5)
 
 [sub_resource type="BoxShape3D" id="Shape_Landing"]
-size = Vector3(6.5, 0.3, 4.5)
+size = Vector3(9, 0.3, 3.4)
 
 [sub_resource type="BoxShape3D" id="Shape_StairRamp"]
-size = Vector3(2.4, 0.25, 8.4)
+size = Vector3(2.4, 0.25, 7.6)
 
 [node name="Game" type="Node3D"]
 
@@ -563,6 +563,17 @@ shape = SubResource("Shape_Railing")
 [node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_06"]
 mesh = SubResource("Mesh_Railing")
 
+[node name="MezzFloor_07" type="StaticBody3D" parent="MezzanineBalcony"]
+transform = Transform3D(0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.923880, 5.2428, 3.5, -12.6571)
+collision_layer = 1
+collision_mask = 3
+
+[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_07"]
+shape = SubResource("Shape_MezzFloor")
+
+[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_07"]
+mesh = SubResource("Mesh_MezzFloor")
+
 [node name="MezzFloor_09" type="StaticBody3D" parent="MezzanineBalcony"]
 transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -5.2428, 3.5, -12.6571)
 collision_layer = 1
@@ -573,17 +584,6 @@ shape = SubResource("Shape_MezzFloor")
 
 [node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_09"]
 mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_09" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -4.5157, 4.05, -10.9018)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_09"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_09"]
-mesh = SubResource("Mesh_Railing")
 
 [node name="MezzFloor_10" type="StaticBody3D" parent="MezzanineBalcony"]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -9.6874, 3.5, -9.6874)
@@ -730,7 +730,7 @@ mesh = SubResource("Mesh_DomeGlass")
 [node name="GrandStaircases" type="Node3D" parent="."]
 
 [node name="Landing" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -11.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -12.5)
 collision_layer = 1
 collision_mask = 3
 
@@ -741,7 +741,7 @@ shape = SubResource("Shape_Landing")
 mesh = SubResource("Mesh_Landing")
 
 [node name="RampRight" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(-0.897171, -0.192129, -0.397707, 0.000000, 0.900434, -0.434992, 0.441684, -0.390262, -0.807843, 4.2000, 1.7500, -8.2500)
+transform = Transform3D(-0.882344, 0.220209, -0.415905, 0, 0.883767, 0.467927, 0.470604, 0.412873, -0.779787, 4.2, 1.8, -8)
 collision_layer = 1
 collision_mask = 3
 
@@ -749,7 +749,7 @@ collision_mask = 3
 shape = SubResource("Shape_StairRamp")
 
 [node name="RampLeft" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(-0.897171, 0.192129, 0.397707, 0.000000, 0.900434, -0.434992, -0.441684, -0.390262, -0.807843, -4.2000, 1.7500, -8.2500)
+transform = Transform3D(-0.882344, -0.220209, 0.415905, 0, 0.883767, 0.467927, -0.470604, 0.412873, -0.779787, -4.2, 1.8, -8)
 collision_layer = 1
 collision_mask = 3
 

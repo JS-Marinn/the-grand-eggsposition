@@ -10,7 +10,7 @@ const CONFIG_PATH: String = "user://settings.cfg"
 # Display & Video
 var window_mode: int = 0 # 0: Windowed, 1: Borderless, 2: Fullscreen
 var resolution: Vector2i = Vector2i(1920, 1080)
-var vsync_enabled: bool = true
+var vsync_enabled: bool = false
 var fps_limit: int = 0 # 0: Unlimited, 30, 60, 120, 144, 240
 var camera_fov: float = 80.0
 var fov: float:

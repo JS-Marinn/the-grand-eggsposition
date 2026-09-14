@@ -829,6 +829,7 @@ func _check_settings_system() -> void:
 		menu.queue_free()
 		sm.fps_limit = initial_fps
 		sm.apply_all()
+		sm.save_settings()
 	else:
 		_fail("Could not load res://scenes/ui/settings_menu.tscn")
 
