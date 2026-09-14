@@ -235,6 +235,12 @@ func _check_placement_hologram() -> void:
 	else:
 		_fail("ShowcaseUnit missing PlacementHologram or ShaderMaterial")
 
+	var shelf_model = showcase.get_node_or_null("ShelfModel")
+	if shelf_model and shelf_model.get_child_count() > 0:
+		_pass("ShowcaseUnit integrates 3D shelf model (ShelfModel with %d physical mesh elements)" % shelf_model.get_child_count())
+	else:
+		_fail("ShowcaseUnit missing ShelfModel 3D asset node")
+
 	# Test valid placement (green)
 	var dummy_egg = EggData.new()
 	dummy_egg.egg_id = 1
