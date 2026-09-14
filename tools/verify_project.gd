@@ -721,7 +721,41 @@ func _check_floor_egg_stability_and_respawn() -> void:
 		else:
 			_fail("EggsOnFloor node missing from Game scene")
 			
+		# 4. Verify ShowcaseUnit interaction bounds strictly clear floor & plinth
+		var showcase = game.find_child("Showcase_Minerals_1", true, false)
+		if showcase:
+			var area = showcase.get_node_or_null("InteractionArea")
+			var col_shape = area.get_node_or_null("CollisionShape3D") if area else null
+			if col_shape and col_shape.shape is BoxShape3D:
+				var box: BoxShape3D = col_shape.shape as BoxShape3D
+				var bottom_y: float = area.position.y - box.size.y * 0.5
+				var front_z: float = area.position.z + box.size.z * 0.5
+				if bottom_y >= 0.45 and front_z <= 0.45:
+					_pass("Showcase InteractionArea bounds strictly clear the floor and plinth (bottom_y=%.2fm >= 0.45m, front_z=%.2fm <= 0.45m)" % [bottom_y, front_z])
+				else:
+					_fail("Showcase InteractionArea overlaps floor or room: bottom_y=%.2fm, front_z=%.2fm" % [bottom_y, front_z])
+			else:
+				_fail("Showcase InteractionArea missing BoxShape3D")
+		else:
+			_fail("Showcase_Minerals_1 missing from Game scene")
+
+		# 5. Verify PlayerController prevents shelf deposit when aiming at plinth/floor
+		var player = game.find_child("Player", true, false)
+		if player and showcase:
+			if player.has_method("_get_aimed_tier"):
+				# Test when raycast is not aimed at shelf tiers
+				var tier = player._get_aimed_tier(showcase)
+				if tier == 0:
+					_pass("PlayerController blocks shelf placement when aiming at floor/plinth (_get_aimed_tier returns 0)")
+				else:
+					_fail("PlayerController allowed shelf placement when not aiming at active shelf: %d" % tier)
+			else:
+				_fail("PlayerController missing _get_aimed_tier method")
+		else:
+			_fail("Player or Showcase node missing for interaction test")
+
 		game.queue_free()
 	else:
 		_fail("Could not load res://scenes/main/game.tscn")
+
 

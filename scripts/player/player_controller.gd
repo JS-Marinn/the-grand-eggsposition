@@ -297,6 +297,18 @@ func _update_raycast_hover() -> void:
 	if not raycast:
 		return
 	var hud: HUD = get_tree().root.find_child("HUD", true, false) as HUD
+
+	# Priority 1: Check if an egg is interactable (directly hit, along camera line of sight, or close to floor aim)
+	var egg: EggActor = _find_interactable_egg()
+	if egg:
+		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+			_current_hologram_showcase.hide_placement_hologram()
+			_current_hologram_showcase = null
+		var egg_name: String = egg.egg_data.get_display_name() if egg.egg_data else tr("EGG_LAPIS_LAZULI")
+		if hud:
+			hud.show_prompt(tr("UI_PROMPT_PICK") + " • " + egg_name)
+		return
+
 	if not raycast.is_colliding():
 		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
 			_current_hologram_showcase.hide_placement_hologram()
@@ -314,18 +326,18 @@ func _update_raycast_hover() -> void:
 			hud.hide_prompt()
 		return
 
-	var egg: EggActor = _resolve_egg(collider)
-	if egg:
-		if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
-			_current_hologram_showcase.hide_placement_hologram()
-			_current_hologram_showcase = null
-		var egg_name: String = egg.egg_data.get_display_name() if egg.egg_data else tr("EGG_LAPIS_LAZULI")
-		if hud:
-			hud.show_prompt(tr("UI_PROMPT_PICK") + " • " + egg_name)
-		return
-
 	var showcase: ShowcaseUnit = _resolve_showcase(collider)
 	if showcase:
+		var aimed_tier: int = _get_aimed_tier(showcase)
+		if aimed_tier < 1:
+			# Player is aiming at the showcase's lower base, not an active shelf tier
+			if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
+				_current_hologram_showcase.hide_placement_hologram()
+				_current_hologram_showcase = null
+			if hud:
+				hud.hide_prompt()
+			return
+
 		if _current_hologram_showcase != showcase:
 			if _current_hologram_showcase and is_instance_valid(_current_hologram_showcase):
 				_current_hologram_showcase.hide_placement_hologram()
@@ -337,7 +349,6 @@ func _update_raycast_hover() -> void:
 			if hud:
 				hud.show_prompt(title + " " + tr("UI_BASKET_EMPTY"))
 		else:
-			var aimed_tier: int = _get_aimed_tier(showcase)
 			var target: Dictionary = showcase.get_target_for_tier(aimed_tier)
 			if not target.is_empty():
 				var is_valid: bool = target.get("is_valid", false)
@@ -372,35 +383,88 @@ func _update_raycast_hover() -> void:
 		hud.hide_prompt()
 
 ## Calculates which shelf tier (1..5) the player is aiming at on the showcase
+## Returns 0 if aiming below the shelves (e.g. at the plinth base or floor)
 func _get_aimed_tier(showcase: ShowcaseUnit) -> int:
 	if not raycast or not raycast.is_colliding() or not showcase:
-		return 1
+		return 0
 	var hit_pos: Vector3 = raycast.get_collision_point()
 	var local_pos: Vector3 = showcase.to_local(hit_pos)
+	# Below shelf display area (plinth base / floor) is not an active shelf tier
+	if local_pos.y < 0.45:
+		return 0
 	# Shelf display tiers start at local y = 0.48 with 0.42m height increments per tier
 	var tier_idx: int = int(floor((local_pos.y - 0.48) / 0.42)) + 1
 	return clampi(tier_idx, 1, 5)
 
 func _handle_interaction() -> void:
+	# Priority 1: Pick up egg if aiming at or near an egg
+	var egg: EggActor = _find_interactable_egg()
+	if egg:
+		egg.pick_up()
+		return
+
 	if not raycast or not raycast.is_colliding():
 		return
 	var collider: Object = raycast.get_collider()
 	if not collider or not is_instance_valid(collider):
 		return
 
-	var egg: EggActor = _resolve_egg(collider)
-	if egg:
-		egg.pick_up()
-		return
-
 	var showcase: ShowcaseUnit = _resolve_showcase(collider)
 	if showcase:
-		var spawn_pos: Vector3 = Vector3.INF
-		if camera:
-			spawn_pos = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45)
 		var aimed_tier: int = _get_aimed_tier(showcase)
-		# Deposit directly into the aimed shelf tier
-		showcase.try_deposit_at_tier(aimed_tier, spawn_pos)
+		if aimed_tier >= 1:
+			var spawn_pos: Vector3 = Vector3.INF
+			if camera:
+				spawn_pos = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45)
+			# Deposit directly into the aimed shelf tier
+			showcase.try_deposit_at_tier(aimed_tier, spawn_pos)
+
+## Finds an interactable egg under crosshair or nearby, prioritizing physical eggs over showcase volumes
+func _find_interactable_egg() -> EggActor:
+	if not raycast:
+		return null
+
+	# 1. Did the primary raycast hit an egg directly?
+	if raycast.is_colliding():
+		var direct_egg: EggActor = _resolve_egg(raycast.get_collider())
+		if direct_egg:
+			return direct_egg
+
+	# 2. Check direct line of sight for physical bodies (eggs), bypassing Area3D interaction volumes
+	if camera and is_inside_tree():
+		var space_state := get_world_3d().direct_space_state
+		var from_pos := camera.global_position
+		var to_pos := from_pos + (-camera.global_basis.z) * 4.5
+		var query := PhysicsRayQueryParameters3D.create(from_pos, to_pos, 1)
+		query.collide_with_areas = false
+		query.collide_with_bodies = true
+		var hit := space_state.intersect_ray(query)
+		if hit and hit.has("collider"):
+			var body_egg: EggActor = _resolve_egg(hit.collider)
+			if body_egg:
+				return body_egg
+
+	# 3. If aiming at or near the floor/plinth base, assist with egg proximity
+	if raycast.is_colliding():
+		var hit_pos: Vector3 = raycast.get_collision_point()
+		if hit_pos.y < 0.65:
+			var nearby_egg := _find_nearby_floor_egg(hit_pos, 0.45)
+			if nearby_egg:
+				return nearby_egg
+
+	return null
+
+func _find_nearby_floor_egg(pos: Vector3, radius: float) -> EggActor:
+	var eggs := get_tree().get_nodes_in_group("eggs")
+	var best_egg: EggActor = null
+	var best_d: float = radius
+	for node in eggs:
+		if node is EggActor and is_instance_valid(node):
+			var d: float = node.global_position.distance_to(pos)
+			if d < best_d:
+				best_d = d
+				best_egg = node as EggActor
+	return best_egg
 
 ## Safely resolves a ShowcaseUnit from a collider
 func _resolve_showcase(collider: Object) -> ShowcaseUnit:

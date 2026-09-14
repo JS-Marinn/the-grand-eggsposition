@@ -222,9 +222,9 @@ func _setup_interaction_area() -> void:
 		interaction_area = Area3D.new()
 		var col: CollisionShape3D = CollisionShape3D.new()
 		var box: BoxShape3D = BoxShape3D.new()
-		box.size = Vector3(2.7, 3.1, 1.8)
+		box.size = Vector3(2.40, 2.15, 0.75)
 		col.shape = box
-		col.position = Vector3(0, 1.50, 0)
+		col.position = Vector3(0, 1.55, 0)
 		interaction_area.add_child(col)
 		add_child(interaction_area)
 	interaction_area.set_meta("showcase_unit", self)
