@@ -918,9 +918,9 @@ func _check_accessibility_system() -> void:
 		_fail("SettingsManager not found")
 		return
 
-	# 1. Verify SettingsManager fields
+	# 1. Verify SettingsManager fields and defaults (ALL OFF by default)
 	var req_fields = [
-		"colorblind_mode", "high_contrast_outlines", "crosshair_dot",
+		"colorblind_mode", "colorblind_intensity", "high_contrast_outlines", "crosshair_dot",
 		"toggle_suction", "toggle_sprint", "assisted_pickup",
 		"invert_x", "subtitles_enabled", "visual_sound_cues", "soft_continuous_sfx"
 	]
@@ -932,6 +932,26 @@ func _check_accessibility_system() -> void:
 	if fields_ok:
 		_pass("SettingsManager defines all required accessibility properties (visual, motor, auditory)")
 
+	# Reset to ensure clean default state without legacy config overrides
+	sm.reset_to_defaults()
+
+	# Verify accessibility options are disabled by default
+	var all_disabled_ok: bool = (
+		sm.colorblind_mode == 0
+		and sm.high_contrast_outlines == false
+		and sm.crosshair_dot == false
+		and sm.toggle_suction == false
+		and sm.toggle_sprint == false
+		and sm.assisted_pickup == false
+		and sm.subtitles_enabled == false
+		and sm.visual_sound_cues == false
+		and sm.soft_continuous_sfx == false
+	)
+	if all_disabled_ok:
+		_pass("All accessibility options are strictly OFF/disabled by default as requested")
+	else:
+		_fail("One or more accessibility options were enabled by default")
+
 	# 2. Verify SettingsMenu UI options and sync
 	var settings_scn: PackedScene = load("res://scenes/ui/settings_menu.tscn")
 	if settings_scn:
@@ -939,6 +959,7 @@ func _check_accessibility_system() -> void:
 		add_child(menu)
 
 		var cb_opt: OptionButton = menu.find_child("ColorblindOpt", true, false)
+		var cb_slider: HSlider = menu.find_child("ColorblindIntensitySlider", true, false)
 		var hc_check: CheckBox = menu.find_child("HighContrastCheck", true, false)
 		var cd_check: CheckBox = menu.find_child("CrosshairDotCheck", true, false)
 		var ts_check: CheckBox = menu.find_child("ToggleSuctionCheck", true, false)
@@ -947,8 +968,8 @@ func _check_accessibility_system() -> void:
 		var ix_check: CheckBox = menu.find_child("InvertXCheck", true, false)
 		var vsc_check: CheckBox = menu.find_child("VisualSoundCuesCheck", true, false)
 
-		if cb_opt and hc_check and cd_check and ts_check and tsp_check and ap_check and ix_check and vsc_check:
-			_pass("SettingsMenu contains all Accessibility & Assists UI controls in new tab")
+		if cb_opt and cb_slider and hc_check and cd_check and ts_check and tsp_check and ap_check and ix_check and vsc_check:
+			_pass("SettingsMenu contains all Accessibility & Assists UI controls including ColorblindIntensitySlider")
 			if cb_opt.item_count == 5:
 				_pass("ColorblindOpt contains 5 vision profiles (Disabled, Protanopia, Deuteranopia, Tritanopia, Monochromacy)")
 			else:
@@ -956,23 +977,26 @@ func _check_accessibility_system() -> void:
 
 			# Test UI sync and apply
 			sm.colorblind_mode = 2 # Deuteranopia
+			sm.colorblind_intensity = 0.75
 			sm.toggle_suction = true
 			menu._sync_from_manager()
-			if cb_opt.selected == 2 and ts_check.button_pressed == true:
-				_pass("SettingsMenu syncs accessibility state correctly from SettingsManager")
+			if cb_opt.selected == 2 and abs(cb_slider.value - 75.0) < 0.1 and ts_check.button_pressed == true:
+				_pass("SettingsMenu syncs accessibility state & intensity slider correctly from SettingsManager")
 			else:
 				_fail("SettingsMenu failed to sync accessibility settings from manager")
 
 			cb_opt.selected = 1 # Protanopia
+			cb_slider.value = 50.0
 			ts_check.button_pressed = false
 			menu._on_apply_pressed()
-			if sm.colorblind_mode == 1 and sm.toggle_suction == false:
-				_pass("SettingsMenu apply button persists accessibility settings back to SettingsManager")
+			if sm.colorblind_mode == 1 and abs(sm.colorblind_intensity - 0.50) < 0.05 and sm.toggle_suction == false:
+				_pass("SettingsMenu apply button persists accessibility settings & intensity back to SettingsManager")
 			else:
 				_fail("SettingsMenu apply button failed to update SettingsManager")
 
-			# Reset
+			# Reset to default
 			sm.colorblind_mode = 0
+			sm.colorblind_intensity = 1.0
 			sm.toggle_suction = false
 			sm.save_settings()
 			sm.apply_all()
@@ -996,14 +1020,16 @@ func _check_accessibility_system() -> void:
 		if cb_filter and cb_filter.material is ShaderMaterial:
 			_pass("HUD contains ColorblindFilter ColorRect with active ShaderMaterial")
 
-			# Test activating colorblind mode updates shader
+			# Test activating colorblind mode updates shader mode and intensity
 			sm.colorblind_mode = 3 # Tritanopia
+			sm.colorblind_intensity = 0.8
 			sm.apply_all()
 			var current_shader_mode = cb_filter.material.get_shader_parameter("mode")
-			if cb_filter.visible and current_shader_mode == 3:
-				_pass("HUD activates ColorblindFilter and passes mode 3 to shader uniform")
+			var current_shader_intensity = cb_filter.material.get_shader_parameter("intensity")
+			if cb_filter.visible and current_shader_mode == 3 and abs(current_shader_intensity - 0.8) < 0.05:
+				_pass("HUD activates ColorblindFilter with mode 3 and intensity 0.8 in shader uniforms")
 			else:
-				_fail("HUD failed to update ColorblindFilter for mode 3")
+				_fail("HUD failed to update ColorblindFilter for mode 3 and intensity 0.8")
 
 			sm.colorblind_mode = 0
 			sm.apply_all()
@@ -1025,15 +1051,32 @@ func _check_accessibility_system() -> void:
 				_pass("HUD reticle visibility toggles dynamically with crosshair_dot setting")
 			else:
 				_fail("HUD reticle visibility did not toggle properly")
+			sm.crosshair_dot = false
+			sm.apply_all()
+			sm.save_settings()
 		else:
 			_fail("Reticle missing from HUD")
 
 		if cue_cont:
+			# Verify cue is ignored when visual_sound_cues is false (default)
 			hud.show_visual_cue("Test Cue", 1.0)
-			if cue_cont.visible:
-				_pass("HUD displays VisualCuesContainer when triggered")
+			var ignored_when_off: bool = not cue_cont.visible
+
+			# Verify cue is displayed when visual_sound_cues is enabled
+			sm.visual_sound_cues = true
+			sm.apply_all()
+			hud.show_visual_cue("Test Cue", 1.0)
+			var shown_when_on: bool = cue_cont.visible
+
+			# Reset back to off
+			sm.visual_sound_cues = false
+			sm.apply_all()
+			sm.save_settings()
+
+			if ignored_when_off and shown_when_on:
+				_pass("HUD VisualCuesContainer respects visual_sound_cues toggle (hidden when OFF, visible when ON)")
 			else:
-				_fail("VisualCuesContainer failed to become visible on cue trigger")
+				_fail("VisualCuesContainer toggle test failed: ignored=%s, shown=%s" % [str(ignored_when_off), str(shown_when_on)])
 		else:
 			_fail("VisualCuesContainer missing from HUD")
 

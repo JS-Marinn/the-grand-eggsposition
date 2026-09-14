@@ -1,10 +1,12 @@
 shader_type canvas_item;
 
 // Fullscreen Colorblind & Accessibility Filter for The Grand Eggsposition
-// Uses standard Brettel / Vienot simulation matrices for color vision deficiencies.
+// Uses standard Brettel / Vienot simulation matrices for color vision deficiencies
+// with adjustable intensity slider (0.0 to 1.0).
 
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
 uniform int mode : hint_range(0, 4) = 0; // 0: Normal, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia, 4: Achromatopsia
+uniform float intensity : hint_range(0.0, 1.0) = 1.0;
 
 void fragment() {
 	vec4 c = texture(screen_texture, SCREEN_UV);
@@ -31,5 +33,6 @@ void fragment() {
 		sim = vec3(lum);
 	}
 
+	sim = mix(c.rgb, sim, clamp(intensity, 0.0, 1.0));
 	COLOR = vec4(clamp(sim, 0.0, 1.0), c.a);
 }

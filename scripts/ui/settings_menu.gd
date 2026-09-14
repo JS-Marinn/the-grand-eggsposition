@@ -29,6 +29,9 @@ signal closed()
 
 # Accessibility
 @onready var colorblind_opt: OptionButton = %ColorblindOpt
+@onready var colorblind_intensity_row: HBoxContainer = %ColorblindIntensityRow
+@onready var colorblind_intensity_slider: HSlider = %ColorblindIntensitySlider
+@onready var colorblind_intensity_val: Label = %ColorblindIntensityVal
 @onready var high_contrast_check: CheckBox = %HighContrastCheck
 @onready var crosshair_dot_check: CheckBox = %CrosshairDotCheck
 @onready var toggle_suction_check: CheckBox = %ToggleSuctionCheck
@@ -144,6 +147,12 @@ func _sync_from_manager() -> void:
 	if colorblind_opt:
 		colorblind_opt.selected = SettingsManager.colorblind_mode
 
+	if colorblind_intensity_slider:
+		colorblind_intensity_slider.value = SettingsManager.colorblind_intensity * 100.0
+		_on_colorblind_intensity_slider_value_changed(colorblind_intensity_slider.value)
+
+	_update_colorblind_intensity_visibility()
+
 	if high_contrast_check:
 		high_contrast_check.button_pressed = SettingsManager.high_contrast_outlines
 
@@ -175,6 +184,12 @@ func _connect_signals() -> void:
 	if head_bob_slider and not head_bob_slider.value_changed.is_connected(_on_head_bob_slider_value_changed):
 		head_bob_slider.value_changed.connect(_on_head_bob_slider_value_changed)
 
+	if colorblind_intensity_slider and not colorblind_intensity_slider.value_changed.is_connected(_on_colorblind_intensity_slider_value_changed):
+		colorblind_intensity_slider.value_changed.connect(_on_colorblind_intensity_slider_value_changed)
+
+	if colorblind_opt and not colorblind_opt.item_selected.is_connected(_on_colorblind_opt_selected):
+		colorblind_opt.item_selected.connect(_on_colorblind_opt_selected)
+
 	if btn_apply and not btn_apply.pressed.is_connected(_on_apply_pressed):
 		btn_apply.pressed.connect(_on_apply_pressed)
 		btn_apply.mouse_entered.connect(AudioManager.play_ui_hover)
@@ -185,6 +200,17 @@ func _connect_signals() -> void:
 
 	if lang_opt and not lang_opt.item_selected.is_connected(_on_language_selected):
 		lang_opt.item_selected.connect(_on_language_selected)
+
+func _on_colorblind_intensity_slider_value_changed(val: float) -> void:
+	if colorblind_intensity_val:
+		colorblind_intensity_val.text = "%d%%" % int(val)
+
+func _on_colorblind_opt_selected(_idx: int) -> void:
+	_update_colorblind_intensity_visibility()
+
+func _update_colorblind_intensity_visibility() -> void:
+	if colorblind_intensity_row and colorblind_opt:
+		colorblind_intensity_row.visible = (colorblind_opt.selected > 0)
 
 func _on_fov_slider_value_changed(val: float) -> void:
 	if fov_val_label:
@@ -265,6 +291,9 @@ func _on_apply_pressed() -> void:
 	# Save accessibility settings
 	if colorblind_opt:
 		SettingsManager.colorblind_mode = colorblind_opt.selected
+
+	if colorblind_intensity_slider:
+		SettingsManager.colorblind_intensity = colorblind_intensity_slider.value / 100.0
 
 	if high_contrast_check:
 		SettingsManager.high_contrast_outlines = high_contrast_check.button_pressed

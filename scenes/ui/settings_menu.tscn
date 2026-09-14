@@ -383,6 +383,31 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 36)
 layout_mode = 2
 
+[node name="ColorblindIntensityRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox/TabContainer/Accessibility/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/Margin/VBox/TabContainer/Accessibility/VBox/ColorblindIntensityRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LABEL_COLORBLIND_INTENSITY"
+
+[node name="ColorblindIntensitySlider" type="HSlider" parent="Center/Panel/Margin/VBox/TabContainer/Accessibility/VBox/ColorblindIntensityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(170, 24)
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 5.0
+value = 100.0
+
+[node name="ColorblindIntensityVal" type="Label" parent="Center/Panel/Margin/VBox/TabContainer/Accessibility/VBox/ColorblindIntensityRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "100%"
+horizontal_alignment = 2
+
 [node name="HighContrastCheck" type="CheckBox" parent="Center/Panel/Margin/VBox/TabContainer/Accessibility/VBox"]
 unique_name_in_owner = true
 layout_mode = 2

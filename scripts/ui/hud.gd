@@ -98,6 +98,7 @@ func _on_settings_applied() -> void:
 			colorblind_filter.visible = true
 			if colorblind_filter.material is ShaderMaterial:
 				colorblind_filter.material.set_shader_parameter("mode", SettingsManager.colorblind_mode)
+				colorblind_filter.material.set_shader_parameter("intensity", SettingsManager.colorblind_intensity)
 		else:
 			colorblind_filter.visible = false
 

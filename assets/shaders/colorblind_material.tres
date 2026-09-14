@@ -1,7 +1,8 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://cbmat001filter"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dwc1y2e4v5xir"]
 
 [ext_resource type="Shader" path="res://assets/shaders/colorblind_filter.gdshader" id="1_shader"]
 
 [resource]
 shader = ExtResource("1_shader")
 shader_parameter/mode = 0
+shader_parameter/intensity = 1.0

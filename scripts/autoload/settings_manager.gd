@@ -37,22 +37,39 @@ var invert_x: bool = false
 
 # Accessibility - Visual
 var colorblind_mode: int = 0 # 0: Off, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia, 4: Achromatopsia
+var colorblind_intensity: float = 1.0 # 0.0 to 1.0 (intensity when mode > 0)
 var high_contrast_outlines: bool = false
-var crosshair_dot: bool = true
+var crosshair_dot: bool = false
 
 # Accessibility - Motor & Controls
 var toggle_suction: bool = false
 var toggle_sprint: bool = false
-var assisted_pickup: bool = true
+var assisted_pickup: bool = false
 
 # Accessibility - Auditory
-var subtitles_enabled: bool = true
-var visual_sound_cues: bool = true
+var subtitles_enabled: bool = false
+var visual_sound_cues: bool = false
 var soft_continuous_sfx: bool = false
 
 func _ready() -> void:
 	_load_csv_translations()
 	load_settings()
+	apply_all()
+
+func reset_to_defaults() -> void:
+	colorblind_mode = 0
+	colorblind_intensity = 1.0
+	high_contrast_outlines = false
+	crosshair_dot = false
+	toggle_suction = false
+	toggle_sprint = false
+	assisted_pickup = false
+	subtitles_enabled = false
+	visual_sound_cues = false
+	soft_continuous_sfx = false
+	invert_x = false
+	invert_y = false
+	save_settings()
 	apply_all()
 
 func _load_csv_translations() -> void:
@@ -147,6 +164,7 @@ func save_settings() -> void:
 
 	# Accessibility
 	cfg.set_value("accessibility", "colorblind_mode", colorblind_mode)
+	cfg.set_value("accessibility", "colorblind_intensity", colorblind_intensity)
 	cfg.set_value("accessibility", "high_contrast_outlines", high_contrast_outlines)
 	cfg.set_value("accessibility", "crosshair_dot", crosshair_dot)
 	cfg.set_value("accessibility", "toggle_suction", toggle_suction)
@@ -195,6 +213,7 @@ func load_settings() -> void:
 
 	# Accessibility
 	colorblind_mode = cfg.get_value("accessibility", "colorblind_mode", colorblind_mode)
+	colorblind_intensity = cfg.get_value("accessibility", "colorblind_intensity", colorblind_intensity)
 	high_contrast_outlines = cfg.get_value("accessibility", "high_contrast_outlines", high_contrast_outlines)
 	crosshair_dot = cfg.get_value("accessibility", "crosshair_dot", crosshair_dot)
 	toggle_suction = cfg.get_value("accessibility", "toggle_suction", toggle_suction)
@@ -203,4 +222,5 @@ func load_settings() -> void:
 	subtitles_enabled = cfg.get_value("accessibility", "subtitles_enabled", subtitles_enabled)
 	visual_sound_cues = cfg.get_value("accessibility", "visual_sound_cues", visual_sound_cues)
 	soft_continuous_sfx = cfg.get_value("accessibility", "soft_continuous_sfx", soft_continuous_sfx)
+
 
