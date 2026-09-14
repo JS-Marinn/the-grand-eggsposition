@@ -39,7 +39,7 @@ var invert_x: bool = false
 var colorblind_mode: int = 0 # 0: Off, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia, 4: Achromatopsia
 var colorblind_intensity: float = 1.0 # 0.0 to 1.0 (intensity when mode > 0)
 var high_contrast_outlines: bool = false
-var crosshair_dot: bool = false
+var crosshair_dot: bool = true
 
 # Accessibility - Motor & Controls
 var toggle_suction: bool = false
@@ -60,7 +60,7 @@ func reset_to_defaults() -> void:
 	colorblind_mode = 0
 	colorblind_intensity = 1.0
 	high_contrast_outlines = false
-	crosshair_dot = false
+	crosshair_dot = true
 	toggle_suction = false
 	toggle_sprint = false
 	assisted_pickup = false

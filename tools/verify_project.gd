@@ -935,11 +935,11 @@ func _check_accessibility_system() -> void:
 	# Reset to ensure clean default state without legacy config overrides
 	sm.reset_to_defaults()
 
-	# Verify accessibility options are disabled by default
-	var all_disabled_ok: bool = (
+	# Verify accessibility options: assists/filters are disabled by default, crosshair_dot is enabled by default
+	var defaults_ok: bool = (
 		sm.colorblind_mode == 0
 		and sm.high_contrast_outlines == false
-		and sm.crosshair_dot == false
+		and sm.crosshair_dot == true
 		and sm.toggle_suction == false
 		and sm.toggle_sprint == false
 		and sm.assisted_pickup == false
@@ -947,10 +947,10 @@ func _check_accessibility_system() -> void:
 		and sm.visual_sound_cues == false
 		and sm.soft_continuous_sfx == false
 	)
-	if all_disabled_ok:
-		_pass("All accessibility options are strictly OFF/disabled by default as requested")
+	if defaults_ok:
+		_pass("Accessibility options are disabled by default and crosshair dot is enabled by default as requested")
 	else:
-		_fail("One or more accessibility options were enabled by default")
+		_fail("Accessibility defaults check failed: crosshair=%s" % str(sm.crosshair_dot))
 
 	# 2. Verify SettingsMenu UI options and sync
 	var settings_scn: PackedScene = load("res://scenes/ui/settings_menu.tscn")
@@ -1051,7 +1051,7 @@ func _check_accessibility_system() -> void:
 				_pass("HUD reticle visibility toggles dynamically with crosshair_dot setting")
 			else:
 				_fail("HUD reticle visibility did not toggle properly")
-			sm.crosshair_dot = false
+			sm.crosshair_dot = true
 			sm.apply_all()
 			sm.save_settings()
 		else:
