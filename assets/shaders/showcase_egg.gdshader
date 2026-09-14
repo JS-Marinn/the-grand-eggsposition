@@ -8,13 +8,23 @@ void vertex() {
 	custom_pbr = INSTANCE_CUSTOM;
 }
 
+// Exact sRGB to Linear RGB conversion matching Godot's internal StandardMaterial3D color pipeline
+vec3 srgb_to_linear(vec3 c) {
+	return mix(
+		pow((c + vec3(0.055)) * (1.0 / 1.055), vec3(2.4)),
+		c * (1.0 / 12.92),
+		lessThan(c, vec3(0.04045))
+	);
+}
+
 void fragment() {
-	ALBEDO = COLOR.rgb;
+	ALBEDO = srgb_to_linear(COLOR.rgb);
 	ROUGHNESS = custom_pbr.r;
 	METALLIC = custom_pbr.g;
 	SPECULAR = custom_pbr.b;
 	if (custom_pbr.a > 0.01) {
-		EMISSION = COLOR.rgb * custom_pbr.a;
+		EMISSION = ALBEDO * custom_pbr.a;
 	}
 }
+
 

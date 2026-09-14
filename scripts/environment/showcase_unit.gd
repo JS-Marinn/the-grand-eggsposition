@@ -97,17 +97,20 @@ func _apply_shelf_model_materials(model: Node3D) -> void:
 
 	# Antique gilded brass material for egg cup holders
 	var brass_mat := StandardMaterial3D.new()
-	brass_mat.albedo_color = Color(0.88, 0.72, 0.28, 1.0)
-	brass_mat.metallic = 0.88
-	brass_mat.roughness = 0.24
+	brass_mat.albedo_color = Color(0.82, 0.66, 0.26, 1.0)
+	brass_mat.metallic = 0.80
+	brass_mat.roughness = 0.38
+
 
 	for child in model.get_children():
 		if child is MeshInstance3D:
 			var mi := child as MeshInstance3D
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 			if "Holder" in mi.name:
 				mi.material_override = brass_mat
 			else:
 				mi.material_override = oak_mat
+
 
 func _setup_multimesh() -> void:
 	multimesh_instance = get_node_or_null("MultiMeshInstance3D")
