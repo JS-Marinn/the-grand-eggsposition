@@ -29,6 +29,7 @@ func _ready() -> void:
 	_check_floor_egg_stability_and_respawn()
 	_check_settings_system()
 	_check_final_space_rotunda()
+	_check_accessibility_system()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -908,5 +909,150 @@ func _check_final_space_rotunda() -> void:
 		_fail("Missing sunlight or dome lighting")
 
 	inst.queue_free()
+
+## 13. Verify Comprehensive Accessibility Suite & Assists
+func _check_accessibility_system() -> void:
+	print("\n13. Comprehensive Accessibility Suite & Assists:")
+	var sm = get_node_or_null("/root/SettingsManager")
+	if not sm:
+		_fail("SettingsManager not found")
+		return
+
+	# 1. Verify SettingsManager fields
+	var req_fields = [
+		"colorblind_mode", "high_contrast_outlines", "crosshair_dot",
+		"toggle_suction", "toggle_sprint", "assisted_pickup",
+		"invert_x", "subtitles_enabled", "visual_sound_cues", "soft_continuous_sfx"
+	]
+	var fields_ok: bool = true
+	for f in req_fields:
+		if not (f in sm):
+			fields_ok = false
+			_fail("SettingsManager missing accessibility property: %s" % f)
+	if fields_ok:
+		_pass("SettingsManager defines all required accessibility properties (visual, motor, auditory)")
+
+	# 2. Verify SettingsMenu UI options and sync
+	var settings_scn: PackedScene = load("res://scenes/ui/settings_menu.tscn")
+	if settings_scn:
+		var menu = settings_scn.instantiate()
+		add_child(menu)
+
+		var cb_opt: OptionButton = menu.find_child("ColorblindOpt", true, false)
+		var hc_check: CheckBox = menu.find_child("HighContrastCheck", true, false)
+		var cd_check: CheckBox = menu.find_child("CrosshairDotCheck", true, false)
+		var ts_check: CheckBox = menu.find_child("ToggleSuctionCheck", true, false)
+		var tsp_check: CheckBox = menu.find_child("ToggleSprintCheck", true, false)
+		var ap_check: CheckBox = menu.find_child("AssistedPickupCheck", true, false)
+		var ix_check: CheckBox = menu.find_child("InvertXCheck", true, false)
+		var vsc_check: CheckBox = menu.find_child("VisualSoundCuesCheck", true, false)
+
+		if cb_opt and hc_check and cd_check and ts_check and tsp_check and ap_check and ix_check and vsc_check:
+			_pass("SettingsMenu contains all Accessibility & Assists UI controls in new tab")
+			if cb_opt.item_count == 5:
+				_pass("ColorblindOpt contains 5 vision profiles (Disabled, Protanopia, Deuteranopia, Tritanopia, Monochromacy)")
+			else:
+				_fail("ColorblindOpt has unexpected item count: %d" % cb_opt.item_count)
+
+			# Test UI sync and apply
+			sm.colorblind_mode = 2 # Deuteranopia
+			sm.toggle_suction = true
+			menu._sync_from_manager()
+			if cb_opt.selected == 2 and ts_check.button_pressed == true:
+				_pass("SettingsMenu syncs accessibility state correctly from SettingsManager")
+			else:
+				_fail("SettingsMenu failed to sync accessibility settings from manager")
+
+			cb_opt.selected = 1 # Protanopia
+			ts_check.button_pressed = false
+			menu._on_apply_pressed()
+			if sm.colorblind_mode == 1 and sm.toggle_suction == false:
+				_pass("SettingsMenu apply button persists accessibility settings back to SettingsManager")
+			else:
+				_fail("SettingsMenu apply button failed to update SettingsManager")
+
+			# Reset
+			sm.colorblind_mode = 0
+			sm.toggle_suction = false
+			sm.save_settings()
+			sm.apply_all()
+		else:
+			_fail("One or more accessibility controls missing from SettingsMenu")
+
+		menu.queue_free()
+	else:
+		_fail("Could not load settings_menu.tscn")
+
+	# 3. Verify HUD ColorblindFilter & Reticle & VisualSoundCues
+	var hud_scn: PackedScene = load("res://scenes/ui/hud.tscn")
+	if hud_scn:
+		var hud = hud_scn.instantiate()
+		add_child(hud)
+
+		var cb_filter: ColorRect = hud.find_child("ColorblindFilter", true, false)
+		var reticle: ColorRect = hud.find_child("Reticle", true, false)
+		var cue_cont: PanelContainer = hud.find_child("VisualCuesContainer", true, false)
+
+		if cb_filter and cb_filter.material is ShaderMaterial:
+			_pass("HUD contains ColorblindFilter ColorRect with active ShaderMaterial")
+
+			# Test activating colorblind mode updates shader
+			sm.colorblind_mode = 3 # Tritanopia
+			sm.apply_all()
+			var current_shader_mode = cb_filter.material.get_shader_parameter("mode")
+			if cb_filter.visible and current_shader_mode == 3:
+				_pass("HUD activates ColorblindFilter and passes mode 3 to shader uniform")
+			else:
+				_fail("HUD failed to update ColorblindFilter for mode 3")
+
+			sm.colorblind_mode = 0
+			sm.apply_all()
+			if not cb_filter.visible:
+				_pass("HUD disables ColorblindFilter when mode is 0 (zero GPU overhead)")
+			else:
+				_fail("HUD did not disable ColorblindFilter when mode is 0")
+		else:
+			_fail("ColorblindFilter or ShaderMaterial missing from HUD")
+
+		if reticle:
+			sm.crosshair_dot = false
+			sm.apply_all()
+			var hidden_ok = not reticle.visible
+			sm.crosshair_dot = true
+			sm.apply_all()
+			var visible_ok = reticle.visible
+			if hidden_ok and visible_ok:
+				_pass("HUD reticle visibility toggles dynamically with crosshair_dot setting")
+			else:
+				_fail("HUD reticle visibility did not toggle properly")
+		else:
+			_fail("Reticle missing from HUD")
+
+		if cue_cont:
+			hud.show_visual_cue("Test Cue", 1.0)
+			if cue_cont.visible:
+				_pass("HUD displays VisualCuesContainer when triggered")
+			else:
+				_fail("VisualCuesContainer failed to become visible on cue trigger")
+		else:
+			_fail("VisualCuesContainer missing from HUD")
+
+		hud.queue_free()
+	else:
+		_fail("Could not load hud.tscn")
+
+	# 4. Verify PlayerController Batch Deposit & Assisted Pickup
+	var player_script = load("res://scripts/player/player_controller.gd")
+	if player_script:
+		var temp_player = CharacterBody3D.new()
+		temp_player.set_script(player_script)
+		if temp_player.has_method("batch_deposit_matching_eggs"):
+			_pass("PlayerController implements batch_deposit_matching_eggs [R] assist")
+		else:
+			_fail("PlayerController missing batch_deposit_matching_eggs method")
+		temp_player.queue_free()
+	else:
+		_fail("Could not load player_controller.gd")
+
 
 

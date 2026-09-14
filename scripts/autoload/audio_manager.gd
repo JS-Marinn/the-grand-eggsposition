@@ -4,6 +4,8 @@ extends Node
 ## Handles tactile velvet snaps, clicks, Lo-Fi music fading, and chime feedback.
 ## Includes procedural audio fallbacks so feedback sounds function out-of-the-box.
 
+signal sound_played(sound_name: String, pos: Vector3)
+
 var snap_stream: AudioStreamWAV
 var tap_stream: AudioStreamWAV
 var chime_stream: AudioStreamWAV
@@ -17,6 +19,7 @@ var wax_stamp_stream: AudioStreamWAV
 
 func _ready() -> void:
 	_generate_procedural_sounds()
+
 
 ## Plays an ultra-soft wood tick on button hover
 func play_ui_hover() -> void:
@@ -41,9 +44,12 @@ func play_ui_click() -> void:
 
 ## Plays the calibrated 180 Hz tactile velvet snap when an egg slots into a showcase.
 func play_snap(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("snap", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = snap_stream
 	player.bus = &"Master"
+	if SettingsManager.soft_continuous_sfx:
+		player.volume_db -= 4.0
 	# Pitch modulation avoids auditory fatigue across 3,600 placements
 	player.pitch_scale = randf_range(0.97, 1.03)
 	player.unit_size = 12.0
@@ -56,9 +62,12 @@ func play_snap(pos: Vector3 = Vector3.ZERO) -> void:
 
 ## Plays a dry wood tap when an egg is picked up from the floor or table.
 func play_pick_tap(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("pick_tap", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = tap_stream
 	player.bus = &"Master"
+	if SettingsManager.soft_continuous_sfx:
+		player.volume_db -= 4.0
 	player.pitch_scale = randf_range(0.95, 1.05)
 	player.unit_size = 8.0
 	add_child(player)
@@ -69,6 +78,7 @@ func play_pick_tap(pos: Vector3 = Vector3.ZERO) -> void:
 
 ## Plays a bright resonant chime (used for Resonance Chime [Q] and secrets).
 func play_chime(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("chime", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = chime_stream
 	player.bus = &"Master"
@@ -81,6 +91,7 @@ func play_chime(pos: Vector3 = Vector3.ZERO) -> void:
 
 ## Plays the C Major arpeggio chord when completing a full dozen (12/12).
 func play_dozen_harp(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("dozen_harp", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = harp_stream
 	player.bus = &"Master"
@@ -93,9 +104,12 @@ func play_dozen_harp(pos: Vector3 = Vector3.ZERO) -> void:
 
 ## Plays a soft velvet fabric friction slide when performing a Velvet Dash.
 func play_velvet_slide(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("velvet_slide", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = slide_stream
 	player.bus = &"Master"
+	if SettingsManager.soft_continuous_sfx:
+		player.volume_db -= 4.0
 	player.unit_size = 10.0
 	player.pitch_scale = randf_range(0.96, 1.04)
 	add_child(player)
@@ -106,9 +120,12 @@ func play_velvet_slide(pos: Vector3 = Vector3.ZERO) -> void:
 
 ## Plays a gentle air swirl when activating Sweep Suction on a batch of eggs.
 func play_suction_swirl(pos: Vector3 = Vector3.ZERO) -> void:
+	sound_played.emit("suction_swirl", pos)
 	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
 	player.stream = suction_stream
 	player.bus = &"Master"
+	if SettingsManager.soft_continuous_sfx:
+		player.volume_db -= 4.0
 	player.unit_size = 12.0
 	add_child(player)
 	if pos != Vector3.ZERO:
@@ -127,6 +144,7 @@ func play_page_turn() -> void:
 
 ## Plays a heavy dampened stamp sound with sizzling hot wax when stamping a seal
 func play_wax_stamp() -> void:
+	sound_played.emit("wax_stamp", Vector3.ZERO)
 	var player: AudioStreamPlayer = AudioStreamPlayer.new()
 	player.stream = wax_stamp_stream
 	player.bus = &"Master"
@@ -134,6 +152,7 @@ func play_wax_stamp() -> void:
 	add_child(player)
 	player.play()
 	player.finished.connect(player.queue_free)
+
 
 # --- Procedural Audio Synthesizers for Instant In-Engine Audio ---
 

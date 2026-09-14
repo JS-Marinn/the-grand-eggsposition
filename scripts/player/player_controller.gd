@@ -26,6 +26,9 @@ var _dash_timer: float = 0.0
 var _dash_dir: Vector3 = Vector3.ZERO
 const DASH_DURATION: float = 0.22
 const DASH_SPEED: float = 4.0 / 0.22 # ~18.18 m/s
+var _is_sprint_toggled: bool = false
+var _is_suction_toggled: bool = false
+
 
 # Fluid kinematics & camera smoothing
 var _target_yaw: float = 0.0
@@ -124,8 +127,10 @@ func _input(event: InputEvent) -> void:
 		var should_rotate: bool = (Input.mouse_mode == Input.MOUSE_MODE_CAPTURED) or (event.button_mask & MOUSE_BUTTON_MASK_RIGHT != 0)
 		if should_rotate:
 			var sens: float = _get_sensitivity()
-			_target_yaw -= event.relative.x * sens
-			_target_pitch = clampf(_target_pitch - event.relative.y * sens, -deg_to_rad(85), deg_to_rad(85))
+			var inv_x: float = -1.0 if (SettingsManager and SettingsManager.invert_x) else 1.0
+			var inv_y: float = -1.0 if (SettingsManager and SettingsManager.invert_y) else 1.0
+			_target_yaw -= event.relative.x * sens * inv_x
+			_target_pitch = clampf(_target_pitch - event.relative.y * sens * inv_y, -deg_to_rad(85), deg_to_rad(85))
 
 	if event.is_action_pressed("open_journal"):
 		var journal = get_tree().root.find_child("JournalMenu", true, false)
@@ -134,11 +139,18 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
+	if event.is_action_pressed("sprint") and SettingsManager and SettingsManager.toggle_sprint:
+		_is_sprint_toggled = not _is_sprint_toggled
+
 	if event.is_action_pressed("resonance_chime"):
 		_trigger_resonance()
 
 	if event.is_action_pressed("wayfinder_guidance") or (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_G):
 		_trigger_wayfinder()
+
+	# Batch deposit shortcut [R]
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_R:
+		batch_deposit_matching_eggs()
 
 	# Velvet Dash & Jump: Single-tap Space jumps, Double-tap Space or dedicated V key dashes
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -165,7 +177,16 @@ func _input(event: InputEvent) -> void:
 			KEY_F8: ProgressManager.upgrade_skill("egg_toss")
 
 	if event.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		_handle_interaction()
+		if SettingsManager and SettingsManager.toggle_suction:
+			var direct_egg: EggActor = _find_interactable_egg()
+			if direct_egg:
+				direct_egg.pick_up()
+			else:
+				_is_suction_toggled = not _is_suction_toggled
+				if _is_suction_toggled:
+					_try_sweep_suction()
+		else:
+			_handle_interaction()
 
 func _process(delta: float) -> void:
 	_handle_smooth_look(delta)
@@ -191,8 +212,10 @@ func _handle_smooth_look(delta: float) -> void:
 		look_input.y += stick_y
 
 	if look_input != Vector2.ZERO:
-		_target_yaw -= look_input.x * key_look_speed * delta
-		_target_pitch = clampf(_target_pitch - look_input.y * key_look_speed * delta, -deg_to_rad(85), deg_to_rad(85))
+		var inv_x: float = -1.0 if (SettingsManager and SettingsManager.invert_x) else 1.0
+		var inv_y: float = -1.0 if (SettingsManager and SettingsManager.invert_y) else 1.0
+		_target_yaw -= look_input.x * key_look_speed * delta * inv_x
+		_target_pitch = clampf(_target_pitch - look_input.y * key_look_speed * delta * inv_y, -deg_to_rad(85), deg_to_rad(85))
 
 	var rot_speed: float = clampf(delta * 42.0, 0.0, 1.0)
 	rotation.y = lerp_angle(rotation.y, _target_yaw, rot_speed)
@@ -263,12 +286,21 @@ func _physics_process(delta: float) -> void:
 	_handle_hold_interaction(delta)
 
 func _handle_hold_interaction(delta: float) -> void:
-	if Input.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+	var suction_active: bool = false
+	if SettingsManager and SettingsManager.toggle_suction:
+		if GameManager.player_basket.size() >= GameManager.max_basket_capacity:
+			_is_suction_toggled = false
+		suction_active = _is_suction_toggled
+	else:
+		suction_active = Input.is_action_pressed("interact_primary") and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+
+	if suction_active:
 		interact_hold_timer += delta
 		var repeat_rate: float = ProgressManager.get_cascade_repeat_rate()
 		if interact_hold_timer >= INTERACT_REPEAT_DELAY:
 			if not _try_sweep_suction():
-				_handle_interaction()
+				if not (SettingsManager and SettingsManager.toggle_suction):
+					_handle_interaction()
 			interact_hold_timer -= repeat_rate
 	else:
 		interact_hold_timer = 0.0
@@ -284,7 +316,7 @@ func _handle_movement(delta: float) -> void:
 	var input_dir: Vector2 = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var direction: Vector3 = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	
-	var is_sprinting: bool = Input.is_action_pressed("sprint")
+	var is_sprinting: bool = _is_sprint_toggled if (SettingsManager and SettingsManager.toggle_sprint) else Input.is_action_pressed("sprint")
 	var speed: float = sprint_speed if is_sprinting else move_speed
 	speed *= ProgressManager.get_swift_stride_multiplier()
 	
@@ -373,7 +405,10 @@ func _update_raycast_hover() -> void:
 					if is_valid and target_egg:
 						var egg_name: String = target_egg.get_display_name()
 						var count: int = target.get("basket_count", 1)
-						hud.show_prompt(tr("UI_PROMPT_PLACE_TIER") % [egg_name, aimed_tier, count])
+						var prompt_text: String = tr("UI_PROMPT_PLACE_TIER") % [egg_name, aimed_tier, count]
+						if count > 1:
+							prompt_text += " • " + tr("PROMPT_BATCH_DEPOSIT")
+						hud.show_prompt(prompt_text)
 					elif is_full:
 						hud.show_prompt(title + " • " + tr("UI_PROMPT_TIER_FULL") % [aimed_tier])
 					else:
@@ -443,7 +478,8 @@ func _find_interactable_egg() -> EggActor:
 	if camera and is_inside_tree():
 		var space_state := get_world_3d().direct_space_state
 		var from_pos := camera.global_position
-		var to_pos := from_pos + (-camera.global_basis.z) * 4.5
+		var reach_dist: float = (reach_distance + 1.2) if (SettingsManager and SettingsManager.assisted_pickup) else 4.5
+		var to_pos := from_pos + (-camera.global_basis.z) * reach_dist
 		var query := PhysicsRayQueryParameters3D.create(from_pos, to_pos, 1)
 		query.collide_with_areas = false
 		query.collide_with_bodies = true
@@ -453,15 +489,72 @@ func _find_interactable_egg() -> EggActor:
 			if body_egg:
 				return body_egg
 
-	# 3. If aiming at or near the floor/plinth base, assist with egg proximity
+	# 3. Proximity assistance near raycast hit or camera line of sight
+	var assist_radius: float = 1.0 if (SettingsManager and SettingsManager.assisted_pickup) else 0.45
 	if raycast.is_colliding():
 		var hit_pos: Vector3 = raycast.get_collision_point()
-		if hit_pos.y < 0.65:
-			var nearby_egg := _find_nearby_floor_egg(hit_pos, 0.45)
+		if hit_pos.y < 0.65 or (SettingsManager and SettingsManager.assisted_pickup):
+			var nearby_egg := _find_nearby_floor_egg(hit_pos, assist_radius)
 			if nearby_egg:
 				return nearby_egg
+	elif SettingsManager and SettingsManager.assisted_pickup and camera:
+		var fwd_pos: Vector3 = camera.global_position + (-camera.global_basis.z) * 2.5
+		var nearby_egg := _find_nearby_floor_egg(fwd_pos, assist_radius)
+		if nearby_egg:
+			return nearby_egg
 
 	return null
+
+## One-click Batch Deposit: Deposits all eggs in basket matching the aimed showcase
+func batch_deposit_matching_eggs(target_showcase: ShowcaseUnit = null) -> int:
+	var showcase: ShowcaseUnit = target_showcase
+	if not showcase:
+		if raycast and raycast.is_colliding():
+			showcase = _resolve_showcase(raycast.get_collider())
+		if not showcase:
+			showcase = _find_nearby_showcase()
+	if not showcase:
+		return 0
+
+	var matching_eggs: Array[EggData] = []
+	for egg in GameManager.player_basket:
+		if egg and egg.showcase_id == showcase.showcase_id:
+			matching_eggs.append(egg)
+
+	if matching_eggs.is_empty():
+		return 0
+
+	var deposited_count: int = 0
+	var spawn_pos: Vector3 = camera.global_position + camera.global_basis * Vector3(0.2, -0.25, -0.45) if camera else global_position
+
+	for egg in matching_eggs:
+		var tier: int = egg.dozen_group
+		var current_in_tier: int = GameManager.showcase_state[showcase.showcase_id].get(tier, 0)
+		if current_in_tier < GameManager.EGGS_PER_DOZEN:
+			var ok: bool = showcase.try_deposit_at_tier(tier, spawn_pos, true)
+			if ok:
+				deposited_count += 1
+
+	if deposited_count > 0:
+		AudioManager.sound_played.emit("batch_deposit", showcase.global_position)
+		var hud = get_tree().root.find_child("HUD", true, false)
+		if hud and hud.has_method("show_visual_cue"):
+			hud.show_visual_cue(tr("CUE_BATCH_DEPOSITED"))
+
+	return deposited_count
+
+func _find_nearby_showcase() -> ShowcaseUnit:
+	var showcases = get_tree().get_nodes_in_group("showcases")
+	var best_showcase: ShowcaseUnit = null
+	var best_dist: float = reach_distance + 1.5
+	for sc in showcases:
+		if sc is ShowcaseUnit and is_instance_valid(sc):
+			var d: float = global_position.distance_to(sc.global_position)
+			if d < best_dist:
+				best_dist = d
+				best_showcase = sc as ShowcaseUnit
+	return best_showcase
+
 
 func _find_nearby_floor_egg(pos: Vector3, radius: float) -> EggActor:
 	var eggs := get_tree().get_nodes_in_group("eggs")

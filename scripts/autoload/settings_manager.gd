@@ -33,6 +33,22 @@ var current_locale: String = "en"
 var mouse_sensitivity: float = 0.003
 var key_look_speed: float = 2.4
 var invert_y: bool = false
+var invert_x: bool = false
+
+# Accessibility - Visual
+var colorblind_mode: int = 0 # 0: Off, 1: Protanopia, 2: Deuteranopia, 3: Tritanopia, 4: Achromatopsia
+var high_contrast_outlines: bool = false
+var crosshair_dot: bool = true
+
+# Accessibility - Motor & Controls
+var toggle_suction: bool = false
+var toggle_sprint: bool = false
+var assisted_pickup: bool = true
+
+# Accessibility - Auditory
+var subtitles_enabled: bool = true
+var visual_sound_cues: bool = true
+var soft_continuous_sfx: bool = false
 
 func _ready() -> void:
 	_load_csv_translations()
@@ -127,6 +143,18 @@ func save_settings() -> void:
 	cfg.set_value("controls", "mouse_sensitivity", mouse_sensitivity)
 	cfg.set_value("controls", "key_look_speed", key_look_speed)
 	cfg.set_value("controls", "invert_y", invert_y)
+	cfg.set_value("controls", "invert_x", invert_x)
+
+	# Accessibility
+	cfg.set_value("accessibility", "colorblind_mode", colorblind_mode)
+	cfg.set_value("accessibility", "high_contrast_outlines", high_contrast_outlines)
+	cfg.set_value("accessibility", "crosshair_dot", crosshair_dot)
+	cfg.set_value("accessibility", "toggle_suction", toggle_suction)
+	cfg.set_value("accessibility", "toggle_sprint", toggle_sprint)
+	cfg.set_value("accessibility", "assisted_pickup", assisted_pickup)
+	cfg.set_value("accessibility", "subtitles_enabled", subtitles_enabled)
+	cfg.set_value("accessibility", "visual_sound_cues", visual_sound_cues)
+	cfg.set_value("accessibility", "soft_continuous_sfx", soft_continuous_sfx)
 	
 	cfg.save(CONFIG_PATH)
 
@@ -163,3 +191,16 @@ func load_settings() -> void:
 	mouse_sensitivity = cfg.get_value("controls", "mouse_sensitivity", mouse_sensitivity)
 	key_look_speed = cfg.get_value("controls", "key_look_speed", key_look_speed)
 	invert_y = cfg.get_value("controls", "invert_y", invert_y)
+	invert_x = cfg.get_value("controls", "invert_x", invert_x)
+
+	# Accessibility
+	colorblind_mode = cfg.get_value("accessibility", "colorblind_mode", colorblind_mode)
+	high_contrast_outlines = cfg.get_value("accessibility", "high_contrast_outlines", high_contrast_outlines)
+	crosshair_dot = cfg.get_value("accessibility", "crosshair_dot", crosshair_dot)
+	toggle_suction = cfg.get_value("accessibility", "toggle_suction", toggle_suction)
+	toggle_sprint = cfg.get_value("accessibility", "toggle_sprint", toggle_sprint)
+	assisted_pickup = cfg.get_value("accessibility", "assisted_pickup", assisted_pickup)
+	subtitles_enabled = cfg.get_value("accessibility", "subtitles_enabled", subtitles_enabled)
+	visual_sound_cues = cfg.get_value("accessibility", "visual_sound_cues", visual_sound_cues)
+	soft_continuous_sfx = cfg.get_value("accessibility", "soft_continuous_sfx", soft_continuous_sfx)
+

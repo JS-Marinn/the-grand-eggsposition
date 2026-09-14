@@ -19,8 +19,13 @@ extends Control
 @onready var capacity_slash: Label = get_node_or_null("BasketStack/VBox/CapacityContainer/CapacitySlash")
 @onready var capacity_max: Label = get_node_or_null("BasketStack/VBox/CapacityContainer/CapacityMax")
 
+@onready var colorblind_filter: ColorRect = get_node_or_null("ColorblindFilter")
+@onready var visual_cues_container: PanelContainer = get_node_or_null("VisualCuesContainer")
+@onready var visual_cue_label: Label = get_node_or_null("VisualCuesContainer/VisualCueLabel")
+
 var _fps_timer: float = 0.0
 var _override_selected_idx: int = -1  ## Set by tests when no Player node is in scene
+var _cue_tween: Tween = null
 
 func _ready() -> void:
 	GameManager.egg_collected.connect(_on_inventory_changed)
@@ -28,6 +33,7 @@ func _ready() -> void:
 	ProgressManager.wax_seals_changed.connect(_on_seals_changed)
 	ProgressManager.skill_upgraded.connect(_on_skill_upgraded)
 	SettingsManager.settings_applied.connect(_on_settings_applied)
+	AudioManager.sound_played.connect(_on_sound_played)
 	_on_settings_applied()
 	_update_hud()
 
@@ -83,6 +89,63 @@ func _on_skill_upgraded(_skill_id: String, _tier: int) -> void:
 func _on_settings_applied() -> void:
 	if fps_label:
 		fps_label.visible = SettingsManager.show_fps
+
+	if reticle:
+		reticle.visible = SettingsManager.crosshair_dot
+
+	if colorblind_filter:
+		if SettingsManager.colorblind_mode > 0:
+			colorblind_filter.visible = true
+			if colorblind_filter.material is ShaderMaterial:
+				colorblind_filter.material.set_shader_parameter("mode", SettingsManager.colorblind_mode)
+		else:
+			colorblind_filter.visible = false
+
+	_apply_contrast_settings()
+
+func _apply_contrast_settings() -> void:
+	var outline_sz: int = 8 if SettingsManager.high_contrast_outlines else 4
+	var outline_col: Color = Color(0, 0, 0, 1.0) if SettingsManager.high_contrast_outlines else Color(0, 0, 0, 0.75)
+	var labels = [basket_label, fps_label, skills_label, progress_label, seals_label, prompt_label, visual_cue_label]
+	for lbl in labels:
+		if lbl and is_instance_valid(lbl):
+			lbl.add_theme_constant_override("outline_size", outline_sz)
+			lbl.add_theme_color_override("font_outline_color", outline_col)
+
+func show_visual_cue(text: String, duration: float = 2.4) -> void:
+	if not visual_cues_container or not visual_cue_label:
+		return
+	if not SettingsManager.visual_sound_cues:
+		visual_cues_container.visible = false
+		return
+
+	visual_cue_label.text = text
+	visual_cues_container.visible = true
+	visual_cues_container.modulate.a = 1.0
+
+	if _cue_tween and _cue_tween.is_valid():
+		_cue_tween.kill()
+
+	_cue_tween = create_tween()
+	_cue_tween.tween_interval(duration * 0.7)
+	_cue_tween.tween_property(visual_cues_container, "modulate:a", 0.0, duration * 0.3).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_cue_tween.tween_callback(func():
+		if visual_cues_container:
+			visual_cues_container.visible = false
+			visual_cues_container.modulate.a = 1.0
+	)
+
+func _on_sound_played(sound_name: String, _pos: Vector3) -> void:
+	if not SettingsManager.visual_sound_cues:
+		return
+	match sound_name:
+		"dozen_harp":
+			show_visual_cue(tr("CUE_DOZEN_COMPLETED"))
+		"wax_stamp":
+			show_visual_cue(tr("CUE_WAX_SEAL"))
+		"batch_deposit":
+			show_visual_cue(tr("CUE_BATCH_DEPOSITED"))
+
 
 func show_prompt(text: String) -> void:
 	if prompt_label and prompt_container:

@@ -25,6 +25,18 @@ signal closed()
 @onready var mouse_sens_slider: HSlider = %SensSlider
 @onready var key_look_slider: HSlider = %KeyLookSlider
 @onready var invert_y_check: CheckBox = %InvertYCheck
+@onready var invert_x_check: CheckBox = %InvertXCheck
+
+# Accessibility
+@onready var colorblind_opt: OptionButton = %ColorblindOpt
+@onready var high_contrast_check: CheckBox = %HighContrastCheck
+@onready var crosshair_dot_check: CheckBox = %CrosshairDotCheck
+@onready var toggle_suction_check: CheckBox = %ToggleSuctionCheck
+@onready var toggle_sprint_check: CheckBox = %ToggleSprintCheck
+@onready var assisted_pickup_check: CheckBox = %AssistedPickupCheck
+@onready var visual_cues_check: CheckBox = %VisualSoundCuesCheck
+@onready var subtitles_check: CheckBox = %SubtitlesCheck
+@onready var soft_sfx_check: CheckBox = %SoftSFXCheck
 
 @onready var btn_apply: Button = %BtnApply
 @onready var btn_back: Button = %BtnBack
@@ -61,6 +73,14 @@ func _populate_options() -> void:
 		lang_opt.clear()
 		lang_opt.add_item("English (Original)", 0)
 		lang_opt.add_item("Español (Castellano)", 1)
+
+	if colorblind_opt:
+		colorblind_opt.clear()
+		colorblind_opt.add_item(tr("COLORBLIND_OFF"), 0)
+		colorblind_opt.add_item(tr("COLORBLIND_PROTANOPIA"), 1)
+		colorblind_opt.add_item(tr("COLORBLIND_DEUTERANOPIA"), 2)
+		colorblind_opt.add_item(tr("COLORBLIND_TRITANOPIA"), 3)
+		colorblind_opt.add_item(tr("COLORBLIND_ACHROMATOPSIA"), 4)
 
 func _sync_from_manager() -> void:
 	if window_mode_opt:
@@ -117,6 +137,36 @@ func _sync_from_manager() -> void:
 
 	if invert_y_check:
 		invert_y_check.button_pressed = SettingsManager.invert_y
+
+	if invert_x_check:
+		invert_x_check.button_pressed = SettingsManager.invert_x
+
+	if colorblind_opt:
+		colorblind_opt.selected = SettingsManager.colorblind_mode
+
+	if high_contrast_check:
+		high_contrast_check.button_pressed = SettingsManager.high_contrast_outlines
+
+	if crosshair_dot_check:
+		crosshair_dot_check.button_pressed = SettingsManager.crosshair_dot
+
+	if toggle_suction_check:
+		toggle_suction_check.button_pressed = SettingsManager.toggle_suction
+
+	if toggle_sprint_check:
+		toggle_sprint_check.button_pressed = SettingsManager.toggle_sprint
+
+	if assisted_pickup_check:
+		assisted_pickup_check.button_pressed = SettingsManager.assisted_pickup
+
+	if visual_cues_check:
+		visual_cues_check.button_pressed = SettingsManager.visual_sound_cues
+
+	if subtitles_check:
+		subtitles_check.button_pressed = SettingsManager.subtitles_enabled
+
+	if soft_sfx_check:
+		soft_sfx_check.button_pressed = SettingsManager.soft_continuous_sfx
 
 func _connect_signals() -> void:
 	if fov_slider and not fov_slider.value_changed.is_connected(_on_fov_slider_value_changed):
@@ -208,6 +258,37 @@ func _on_apply_pressed() -> void:
 
 	if invert_y_check:
 		SettingsManager.invert_y = invert_y_check.button_pressed
+
+	if invert_x_check:
+		SettingsManager.invert_x = invert_x_check.button_pressed
+
+	# Save accessibility settings
+	if colorblind_opt:
+		SettingsManager.colorblind_mode = colorblind_opt.selected
+
+	if high_contrast_check:
+		SettingsManager.high_contrast_outlines = high_contrast_check.button_pressed
+
+	if crosshair_dot_check:
+		SettingsManager.crosshair_dot = crosshair_dot_check.button_pressed
+
+	if toggle_suction_check:
+		SettingsManager.toggle_suction = toggle_suction_check.button_pressed
+
+	if toggle_sprint_check:
+		SettingsManager.toggle_sprint = toggle_sprint_check.button_pressed
+
+	if assisted_pickup_check:
+		SettingsManager.assisted_pickup = assisted_pickup_check.button_pressed
+
+	if visual_cues_check:
+		SettingsManager.visual_sound_cues = visual_cues_check.button_pressed
+
+	if subtitles_check:
+		SettingsManager.subtitles_enabled = subtitles_check.button_pressed
+
+	if soft_sfx_check:
+		SettingsManager.soft_continuous_sfx = soft_sfx_check.button_pressed
 
 	SettingsManager.save_settings()
 	SettingsManager.apply_all()
