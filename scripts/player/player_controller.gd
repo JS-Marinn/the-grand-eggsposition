@@ -6,6 +6,7 @@ extends CharacterBody3D
 
 @export var move_speed: float = 4.2
 @export var sprint_speed: float = 6.8
+@export var jump_velocity: float = 4.8
 @export var mouse_sensitivity: float = 0.003
 @export var key_look_speed: float = 2.4
 @export var reach_distance: float = 3.5
@@ -58,6 +59,12 @@ func _ready() -> void:
 	_target_pitch = camera.rotation.x if camera else 0.0
 	if camera:
 		_base_cam_y = camera.position.y
+
+	# Configure CharacterBody3D for smooth stair climbing and slope stabilization
+	floor_snap_length = 0.35
+	floor_constant_speed = true
+	floor_max_angle = deg_to_rad(50.0)
+	floor_stop_on_slope = true
 
 func _setup_camera_and_raycast() -> void:
 	camera = get_node_or_null("Camera3D")
@@ -133,9 +140,11 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("wayfinder_guidance") or (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_G):
 		_trigger_wayfinder()
 
-	# Velvet Dash: Double-tap Space or dedicated V key
+	# Velvet Dash & Jump: Single-tap Space jumps, Double-tap Space or dedicated V key dashes
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.physical_keycode == KEY_SPACE:
+			if is_on_floor():
+				velocity.y = jump_velocity
 			if space_double_tap_timer > 0.0:
 				space_double_tap_timer = 0.0
 				_perform_velvet_dash()
@@ -287,8 +296,8 @@ func _handle_movement(delta: float) -> void:
 		
 	# Apply simple gravity if not on floor
 	if not is_on_floor():
-		velocity.y -= 9.8 * delta
-	else:
+		velocity.y -= 12.0 * delta
+	elif velocity.y < 0.0:
 		velocity.y = 0.0
 
 	move_and_slide()
