@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/journal_menu.tscn" id="6_journal_scene"]
 [ext_resource type="Script" path="res://scripts/systems/wayfinder_system.gd" id="7_wayfinder_script"]
 [ext_resource type="PackedScene" path="res://assets/models/showcase_shelf.glb" id="8_shelf_model"]
+[ext_resource type="Script" path="res://scripts/systems/benchmark_controller.gd" id="9_benchmark_script"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_atrium"]
 sky_top_color = Color(0.42, 0.62, 0.86, 1)
@@ -1671,3 +1672,6 @@ visible = false
 
 [node name="WayfinderSystem" type="Node3D" parent="."]
 script = ExtResource("7_wayfinder_script")
+
+[node name="BenchmarkController" type="Node" parent="."]
+script = ExtResource("9_benchmark_script")
