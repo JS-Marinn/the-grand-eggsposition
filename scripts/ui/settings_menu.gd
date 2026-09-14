@@ -8,6 +8,7 @@ signal closed()
 
 @onready var window_mode_opt: OptionButton = %WindowModeOpt
 @onready var res_opt: OptionButton = %ResolutionOpt
+@onready var fps_limit_opt: OptionButton = %FPSLimitOpt
 @onready var vsync_check: CheckBox = %VSyncCheck
 @onready var show_fps_check: CheckBox = %ShowFPSCheck
 @onready var fov_slider: HSlider = %FOVSlider
@@ -47,6 +48,15 @@ func _populate_options() -> void:
 		res_opt.add_item("2560 x 1440 (16:9 QHD)", 1)
 		res_opt.add_item("1280 x 720 (16:9 HD)", 2)
 
+	if fps_limit_opt:
+		fps_limit_opt.clear()
+		fps_limit_opt.add_item(tr("OPTION_FPS_UNLIMITED"), 0)
+		fps_limit_opt.add_item("30 FPS", 1)
+		fps_limit_opt.add_item("60 FPS", 2)
+		fps_limit_opt.add_item("120 FPS", 3)
+		fps_limit_opt.add_item("144 FPS", 4)
+		fps_limit_opt.add_item("240 FPS", 5)
+
 	if lang_opt:
 		lang_opt.clear()
 		lang_opt.add_item("English (Original)", 0)
@@ -62,6 +72,16 @@ func _sync_from_manager() -> void:
 			Vector2i(2560, 1440): res_opt.selected = 1
 			Vector2i(1280, 720): res_opt.selected = 2
 			_: res_opt.selected = 0
+
+	if fps_limit_opt:
+		match SettingsManager.fps_limit:
+			0: fps_limit_opt.selected = 0
+			30: fps_limit_opt.selected = 1
+			60: fps_limit_opt.selected = 2
+			120: fps_limit_opt.selected = 3
+			144: fps_limit_opt.selected = 4
+			240: fps_limit_opt.selected = 5
+			_: fps_limit_opt.selected = 0
 
 	if vsync_check:
 		vsync_check.button_pressed = SettingsManager.vsync_enabled
@@ -146,6 +166,16 @@ func _on_apply_pressed() -> void:
 			0: SettingsManager.resolution = Vector2i(1920, 1080)
 			1: SettingsManager.resolution = Vector2i(2560, 1440)
 			2: SettingsManager.resolution = Vector2i(1280, 720)
+
+	if fps_limit_opt:
+		match fps_limit_opt.selected:
+			0: SettingsManager.fps_limit = 0
+			1: SettingsManager.fps_limit = 30
+			2: SettingsManager.fps_limit = 60
+			3: SettingsManager.fps_limit = 120
+			4: SettingsManager.fps_limit = 144
+			5: SettingsManager.fps_limit = 240
+			_: SettingsManager.fps_limit = 0
 
 	if vsync_check:
 		SettingsManager.vsync_enabled = vsync_check.button_pressed

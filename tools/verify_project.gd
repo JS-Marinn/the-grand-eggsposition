@@ -27,6 +27,7 @@ func _ready() -> void:
 	_check_held_egg_viewmodel()
 	_check_hud_basket_stack()
 	_check_floor_egg_stability_and_respawn()
+	_check_settings_system()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -763,5 +764,71 @@ func _check_floor_egg_stability_and_respawn() -> void:
 		game.queue_free()
 	else:
 		_fail("Could not load res://scenes/main/game.tscn")
+
+## 11. Verify Settings Manager & FPS Limiter
+func _check_settings_system() -> void:
+	print("\n11. Settings Manager & Framerate Limiting:")
+	
+	# 1. Verify SettingsManager defaults and applies fps_limit to Engine.max_fps
+	var sm = get_node_or_null("/root/SettingsManager")
+	if not sm:
+		_fail("SettingsManager autoload not found")
+		return
+		
+	var initial_fps = sm.fps_limit
+	sm.fps_limit = 60
+	sm.apply_all()
+	if Engine.max_fps == 60:
+		_pass("SettingsManager updates Engine.max_fps when fps_limit changed (tested 60 FPS)")
+	else:
+		_fail("SettingsManager failed to update Engine.max_fps to 60, was %d" % Engine.max_fps)
+		
+	sm.fps_limit = 0
+	sm.apply_all()
+	if Engine.max_fps == 0:
+		_pass("SettingsManager properly restores unlimited framerate (Engine.max_fps = 0)")
+	else:
+		_fail("SettingsManager failed to restore Engine.max_fps to 0, was %d" % Engine.max_fps)
+		
+	sm.fps_limit = initial_fps
+	sm.apply_all()
+	
+	# 2. Verify SettingsMenu UI has %FPSLimitOpt and contains correct options
+	var settings_scn: PackedScene = load("res://scenes/ui/settings_menu.tscn")
+	if settings_scn:
+		var menu = settings_scn.instantiate()
+		add_child(menu)
+		
+		var fps_opt: OptionButton = menu.find_child("FPSLimitOpt", true, false)
+		if fps_opt:
+			_pass("SettingsMenu contains FPSLimitOpt OptionButton")
+			if fps_opt.item_count == 6:
+				_pass("FPSLimitOpt contains 6 framerate targets (Unlimited, 30, 60, 120, 144, 240)")
+			else:
+				_fail("FPSLimitOpt has unexpected item count: %d" % fps_opt.item_count)
+				
+			# Test UI sync from manager
+			sm.fps_limit = 144
+			menu._sync_from_manager()
+			if fps_opt.selected == 4:
+				_pass("SettingsMenu syncs fps_limit = 144 to OptionButton index 4")
+			else:
+				_fail("SettingsMenu failed to sync fps_limit = 144 to index 4, got %d" % fps_opt.selected)
+				
+			# Test UI apply to manager
+			fps_opt.selected = 2 # 60 FPS
+			menu._on_apply_pressed()
+			if sm.fps_limit == 60 and Engine.max_fps == 60:
+				_pass("SettingsMenu apply button updates SettingsManager.fps_limit and Engine.max_fps to 60")
+			else:
+				_fail("SettingsMenu apply failed to set fps_limit to 60")
+		else:
+			_fail("FPSLimitOpt node missing from SettingsMenu scene")
+			
+		menu.queue_free()
+		sm.fps_limit = initial_fps
+		sm.apply_all()
+	else:
+		_fail("Could not load res://scenes/ui/settings_menu.tscn")
 
 

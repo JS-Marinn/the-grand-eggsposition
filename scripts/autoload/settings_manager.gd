@@ -11,6 +11,7 @@ const CONFIG_PATH: String = "user://settings.cfg"
 var window_mode: int = 0 # 0: Windowed, 1: Borderless, 2: Fullscreen
 var resolution: Vector2i = Vector2i(1920, 1080)
 var vsync_enabled: bool = true
+var fps_limit: int = 0 # 0: Unlimited, 30, 60, 120, 144, 240
 var camera_fov: float = 80.0
 var fov: float:
 	get: return camera_fov
@@ -76,8 +77,9 @@ func apply_all() -> void:
 		2:
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 
-	# 3. Apply V-Sync
+	# 3. Apply V-Sync & Max FPS Limit
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if vsync_enabled else DisplayServer.VSYNC_DISABLED)
+	Engine.max_fps = fps_limit
 
 	# 4. Apply Audio Busses
 	_set_bus_volume("Master", master_volume)
@@ -106,6 +108,7 @@ func save_settings() -> void:
 	cfg.set_value("video", "resolution_x", resolution.x)
 	cfg.set_value("video", "resolution_y", resolution.y)
 	cfg.set_value("video", "vsync", vsync_enabled)
+	cfg.set_value("video", "fps_limit", fps_limit)
 	cfg.set_value("video", "fov", camera_fov)
 	cfg.set_value("video", "aa", aa_enabled)
 	cfg.set_value("video", "show_fps", show_fps)
@@ -141,6 +144,7 @@ func load_settings() -> void:
 	var ry: int = cfg.get_value("video", "resolution_y", resolution.y)
 	resolution = Vector2i(rx, ry)
 	vsync_enabled = cfg.get_value("video", "vsync", vsync_enabled)
+	fps_limit = cfg.get_value("video", "fps_limit", fps_limit)
 	camera_fov = cfg.get_value("video", "fov", camera_fov)
 	aa_enabled = cfg.get_value("video", "aa", aa_enabled)
 	show_fps = cfg.get_value("video", "show_fps", show_fps)

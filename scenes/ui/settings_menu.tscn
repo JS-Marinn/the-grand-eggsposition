@@ -60,7 +60,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(740, 560)
+custom_minimum_size = Vector2(740, 580)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
@@ -121,6 +121,19 @@ size_flags_horizontal = 3
 text = "LABEL_RESOLUTION"
 
 [node name="ResolutionOpt" type="OptionButton" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/ResolutionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 36)
+layout_mode = 2
+
+[node name="FPSLimitRow" type="HBoxContainer" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/FPSLimitRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LABEL_FPS_LIMIT"
+
+[node name="FPSLimitOpt" type="OptionButton" parent="Center/Panel/Margin/VBox/TabContainer/Video/VBox/FPSLimitRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 36)
 layout_mode = 2
