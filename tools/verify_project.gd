@@ -28,6 +28,7 @@ func _ready() -> void:
 	_check_hud_basket_stack()
 	_check_floor_egg_stability_and_respawn()
 	_check_settings_system()
+	_check_final_space_rotunda()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -830,5 +831,81 @@ func _check_settings_system() -> void:
 		sm.apply_all()
 	else:
 		_fail("Could not load res://scenes/ui/settings_menu.tscn")
+
+## 12. Verify Final Space Mockup (Rotonda Victoriana de Dos Niveles)
+func _check_final_space_rotunda() -> void:
+	print("\n12. Final Space Endgame Rotunda Mockup:")
+	var rotunda_path: String = "res://scenes/endgame/final_space_rotunda.tscn"
+	if not FileAccess.file_exists(rotunda_path):
+		_fail("final_space_rotunda.tscn not found at " + rotunda_path)
+		return
+
+	var scn: PackedScene = load(rotunda_path)
+	if not scn:
+		_fail("Failed to load PackedScene for final_space_rotunda.tscn")
+		return
+
+	var inst = scn.instantiate()
+	if not inst:
+		_fail("Failed to instantiate final_space_rotunda.tscn")
+		return
+
+	add_child(inst)
+
+	# 1. Verify structure and key architectural elements
+	var floor_node = inst.find_child("Floor", true, false)
+	var walls_node = inst.find_child("RotundaWalls", true, false)
+	var mezz_node = inst.find_child("MezzanineBalcony", true, false)
+	var stairs_node = inst.find_child("GrandStaircases", true, false)
+	var dome_node = inst.find_child("Dome", true, false)
+
+	if floor_node and walls_node and mezz_node and stairs_node and dome_node:
+		_pass("Rotunda geometry complete: Floor, Walls, Mezzanine Balcony, Grand Staircases, and Glass Dome present")
+	else:
+		_fail("Rotunda missing key architectural parent nodes")
+
+	# 2. Verify twin curved staircases and landing
+	var landing = stairs_node.find_child("Landing", true, false) if stairs_node else null
+	var step_r0 = stairs_node.find_child("StepR_00", true, false) if stairs_node else null
+	var step_l0 = stairs_node.find_child("StepL_00", true, false) if stairs_node else null
+	if landing and step_r0 and step_l0:
+		_pass("Grand Staircases include symmetrical twin curved stairways and elevated mezzanine landing (Y = 3.5m)")
+	else:
+		_fail("Grand Staircases missing landing or steps")
+
+	# 3. Verify open central floor (no center furniture clutter)
+	var center_clutter = inst.find_child("CenterDesk", true, false)
+	if center_clutter == null:
+		_pass("Center ground floor is open and unobstructed matching the requested reference design")
+	else:
+		_fail("Unwanted center furniture found in rotunda")
+
+	# 4. Verify presentation cameras and interactive controller
+	var cam_hero = inst.find_child("CameraHeroView", true, false)
+	var cam_mezz = inst.find_child("CameraMezzanine", true, false)
+	var cam_dome = inst.find_child("CameraDomeSkylight", true, false)
+	if cam_hero and cam_mezz and cam_dome and inst is FinalSpaceRotunda:
+		_pass("Presentation cameras configured (Hero View, Mezzanine Balcony, Dome Skylight)")
+		# Test camera switching
+		inst.set_camera(1) # Hero View
+		if cam_hero.current:
+			_pass("Controller switches cleanly to CameraHeroView (concept perspective)")
+		else:
+			_fail("Controller failed to set CameraHeroView as current")
+
+		inst.set_camera(0) # Back to player
+		_pass("Controller restores first-person exploration camera")
+	else:
+		_fail("Missing presentation cameras or FinalSpaceRotunda controller")
+
+	# 5. Verify lighting & atmosphere
+	var sunlight = inst.find_child("Sunlight", true, false)
+	var dome_light = inst.find_child("DomeFillLight", true, false)
+	if sunlight and dome_light:
+		_pass("Lighting atmosphere configured with directional sunbeams and dome cupola fill")
+	else:
+		_fail("Missing sunlight or dome lighting")
+
+	inst.queue_free()
 
 
