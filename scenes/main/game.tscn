@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cm1main001scene"]
+[gd_scene load_steps=15 format=3 uid="uid://cm1main001scene"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2_hud_scene"]
@@ -7,12 +7,11 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="5_pause_scene"]
 [ext_resource type="PackedScene" path="res://scenes/ui/journal_menu.tscn" id="6_journal_scene"]
 [ext_resource type="Script" path="res://scripts/systems/wayfinder_system.gd" id="7_wayfinder_script"]
-[ext_resource type="PackedScene" path="res://assets/models/showcase_shelf.glb" id="8_shelf_model"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_atrium"]
-sky_top_color = Color(0.42, 0.62, 0.86, 1)
-sky_horizon_color = Color(0.96, 0.88, 0.74, 1)
-ground_bottom_color = Color(0.28, 0.22, 0.16, 1)
+sky_top_color = Color(0.45, 0.65, 0.85, 1)
+sky_horizon_color = Color(0.95, 0.88, 0.75, 1)
+ground_bottom_color = Color(0.3, 0.25, 0.2, 1)
 
 [sub_resource type="Sky" id="Sky_atrium"]
 sky_material = SubResource("ProceduralSkyMaterial_atrium")
@@ -21,49 +20,24 @@ sky_material = SubResource("ProceduralSkyMaterial_atrium")
 background_mode = 2
 sky = SubResource("Sky_atrium")
 ambient_light_source = 3
-ambient_light_color = Color(0.96, 0.90, 0.80, 1)
-ambient_light_energy = 0.92
+ambient_light_color = Color(0.95, 0.88, 0.78, 1)
+ambient_light_energy = 0.85
 tonemap_mode = 3
-tonemap_exposure = 1.1
+tonemap_exposure = 1.05
 ssao_enabled = true
-ssao_radius = 1.3
+ssao_radius = 1.2
 ssao_intensity = 1.3
 ssao_power = 1.5
 glow_enabled = true
-glow_intensity = 0.18
+glow_intensity = 0.15
 glow_bloom = 0.04
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.012
-volumetric_fog_albedo = Color(0.98, 0.92, 0.82, 1)
 
-[sub_resource type="StandardMaterial3D" id="Mat_ParquetFloor"]
-albedo_color = Color(0.68, 0.48, 0.28, 1)
-roughness = 0.28
-
-[sub_resource type="StandardMaterial3D" id="Mat_DarkWood"]
-albedo_color = Color(0.32, 0.20, 0.12, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.55, 0.38, 0.22, 1)
 roughness = 0.35
 
-[sub_resource type="StandardMaterial3D" id="Mat_OakTrim"]
-albedo_color = Color(0.44, 0.28, 0.16, 1)
-roughness = 0.32
-
-[sub_resource type="StandardMaterial3D" id="Mat_GoldBrass"]
-albedo_color = Color(0.85, 0.68, 0.32, 1)
-metallic = 0.85
-roughness = 0.25
-
-[sub_resource type="StandardMaterial3D" id="Mat_RedCarpet"]
-albedo_color = Color(0.48, 0.10, 0.16, 1)
-roughness = 0.85
-
-[sub_resource type="StandardMaterial3D" id="Mat_GlassDome"]
-transparency = 1
-albedo_color = Color(0.88, 0.94, 1.0, 0.35)
-roughness = 0.05
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_floor"]
-material = SubResource("Mat_ParquetFloor")
+material = SubResource("StandardMaterial3D_floor")
 top_radius = 16.0
 bottom_radius = 16.0
 height = 0.2
@@ -73,64 +47,7 @@ height = 0.2
 radius = 16.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_atrium_wall"]
-size = Vector3(6.5, 7.5, 0.5)
-
-[sub_resource type="BoxMesh" id="Mesh_WallSegment"]
-material = SubResource("Mat_DarkWood")
-size = Vector3(6.5, 7.5, 0.4)
-
-[sub_resource type="CylinderMesh" id="Mesh_Column"]
-material = SubResource("Mat_OakTrim")
-top_radius = 0.26
-bottom_radius = 0.30
-height = 7.5
-
-[sub_resource type="BoxMesh" id="Mesh_MezzFloor"]
-material = SubResource("Mat_ParquetFloor")
-size = Vector3(6.2, 0.25, 4.2)
-
-[sub_resource type="BoxShape3D" id="Shape_MezzFloor"]
-size = Vector3(6.2, 0.25, 4.2)
-
-[sub_resource type="BoxMesh" id="Mesh_Railing"]
-material = SubResource("Mat_GoldBrass")
-size = Vector3(6.2, 0.9, 0.08)
-
-[sub_resource type="BoxShape3D" id="Shape_Railing"]
-size = Vector3(6.2, 0.9, 0.08)
-
-[sub_resource type="TorusMesh" id="Mesh_DomeRing"]
-material = SubResource("Mat_DarkWood")
-inner_radius = 14.5
-outer_radius = 15.5
-
-[sub_resource type="SphereMesh" id="Mesh_DomeGlass"]
-material = SubResource("Mat_GlassDome")
-radius = 15.2
-height = 8.0
-is_hemisphere = true
-
-[sub_resource type="BoxMesh" id="Mesh_CenterCarpet"]
-material = SubResource("Mat_RedCarpet")
-size = Vector3(2.4, 0.02, 12.0)
-
-[sub_resource type="BoxMesh" id="Mesh_StairStep"]
-material = SubResource("Mat_DarkWood")
-size = Vector3(2.2, 0.18, 0.42)
-
-[sub_resource type="BoxMesh" id="Mesh_StairCarpet"]
-material = SubResource("Mat_RedCarpet")
-size = Vector3(1.6, 0.02, 0.40)
-
-[sub_resource type="BoxMesh" id="Mesh_Landing"]
-material = SubResource("Mat_ParquetFloor")
-size = Vector3(6.5, 0.3, 4.5)
-
-[sub_resource type="BoxShape3D" id="Shape_Landing"]
-size = Vector3(9, 0.3, 3.4)
-
-[sub_resource type="BoxShape3D" id="Shape_StairRamp"]
-size = Vector3(2.4, 0.25, 7.6)
+size = Vector3(6.5, 2.5, 0.5)
 
 [node name="Game" type="Node3D"]
 
@@ -138,16 +55,10 @@ size = Vector3(2.4, 0.25, 7.6)
 environment = SubResource("Environment_cozy")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 20, 0)
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
 light_color = Color(1, 0.94, 0.82, 1)
-light_energy = 1.4
+light_energy = 1.3
 shadow_enabled = true
-
-[node name="DomeFillLight" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.5, 0)
-light_color = Color(1, 0.94, 0.84, 1)
-light_energy = 1.1
-omni_range = 28.0
 
 [node name="AtriumFloor" type="StaticBody3D" parent="."]
 collision_layer = 1
@@ -159,1515 +70,334 @@ mesh = SubResource("CylinderMesh_floor")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="AtriumFloor"]
 shape = SubResource("CylinderShape3D_floor")
 
-[node name="CenterCarpet" type="MeshInstance3D" parent="AtriumFloor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 2.5)
-mesh = SubResource("Mesh_CenterCarpet")
-
 [node name="AtriumBoundary" type="StaticBody3D" parent="."]
 collision_layer = 1
 collision_mask = 3
 
 [node name="WallSegment_00" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-1.000000, 0, 0.000000, 0, 1, 0, -0.000000, 0, -1.000000, 0.0000, 3.75, 15.6000)
+transform = Transform3D(0.000000, 0, -1.000000, 0, 1, 0, 1.000000, 0, 0.000000, 15.6000, 1.25, 0.0000)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_00" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-1.000000, 0, 0.000000, 0, 1, 0, -0.000000, 0, -1.000000, 0.0000, 3.75, 15.6000)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_00" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9946, 3.75, 15.0551)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_00" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0000, 2.6, 14.8000)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_01" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.923880, 5.9699, 3.75, 14.4125)
+transform = Transform3D(0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, 0.382683, 14.4125, 1.25, 5.9699)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_01" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.923880, 5.9699, 3.75, 14.4125)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_01" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5280, 3.75, 12.7631)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_02" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 11.0309, 3.75, 11.0309)
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11.0309, 1.25, 11.0309)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_02" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 11.0309, 3.75, 11.0309)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_02" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.7631, 3.75, 8.5280)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_02" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4652, 2.6, 10.4652)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_03" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, -0.382683, 14.4125, 3.75, 5.9699)
+transform = Transform3D(0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.923880, 5.9699, 1.25, 14.4125)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_03" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, -0.382683, 14.4125, 3.75, 5.9699)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_03" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0551, 3.75, 2.9946)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_04" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.000000, 0, -1.000000, 0, 1, 0, 1.000000, 0, -0.000000, 15.6000, 3.75, 0.0000)
+transform = Transform3D(1.000000, 0, -0.000000, 0, 1, 0, 0.000000, 0, 1.000000, 0.0000, 1.25, 15.6000)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_04" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.000000, 0, -1.000000, 0, 1, 0, 1.000000, 0, -0.000000, 15.6000, 3.75, 0.0000)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_04" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0551, 3.75, -2.9946)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_04" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.8000, 2.6, 0.0000)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_05" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, 0.382683, 14.4125, 3.75, -5.9699)
+transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -5.9699, 1.25, 14.4125)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_05" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, 0.382683, 14.4125, 3.75, -5.9699)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_05" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.7631, 3.75, -8.5280)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_06" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11.0309, 3.75, -11.0309)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -11.0309, 1.25, 11.0309)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_06" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 11.0309, 3.75, -11.0309)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_06" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5280, 3.75, -12.7631)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_06" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4652, 2.6, -10.4652)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_07" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.923880, 5.9699, 3.75, -14.4125)
+transform = Transform3D(0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, 0.382683, -14.4125, 1.25, 5.9699)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_07" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.923880, 5.9699, 3.75, -14.4125)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_07" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9946, 3.75, -15.0551)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_08" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(1.000000, 0, -0.000000, 0, 1, 0, 0.000000, 0, 1.000000, 0.0000, 3.75, -15.6000)
+transform = Transform3D(0.000000, 0, 1.000000, 0, 1, 0, -1.000000, 0, 0.000000, -15.6000, 1.25, 0.0000)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_08" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1.000000, 0, -0.000000, 0, 1, 0, 0.000000, 0, 1.000000, 0.0000, 3.75, -15.6000)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_08" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9946, 3.75, -15.0551)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_08" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0000, 2.6, -14.8000)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_09" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -5.9699, 3.75, -14.4125)
+transform = Transform3D(-0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, -0.382683, -14.4125, 1.25, -5.9699)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_09" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -5.9699, 3.75, -14.4125)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_09" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5280, 3.75, -12.7631)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_10" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -11.0309, 3.75, -11.0309)
+transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -11.0309, 1.25, -11.0309)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_10" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -11.0309, 3.75, -11.0309)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_10" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.7631, 3.75, -8.5280)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_10" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4652, 2.6, -10.4652)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_11" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, 0.382683, -14.4125, 3.75, -5.9699)
+transform = Transform3D(-0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.923880, -5.9699, 1.25, -14.4125)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_11" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, 0.382683, -14.4125, 3.75, -5.9699)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_11" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.0551, 3.75, -2.9946)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_12" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(0.000000, 0, 1.000000, 0, 1, 0, -1.000000, 0, 0.000000, -15.6000, 3.75, -0.0000)
+transform = Transform3D(-1.000000, 0, 0.000000, 0, 1, 0, -0.000000, 0, -1.000000, -0.0000, 1.25, -15.6000)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_12" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(0.000000, 0, 1.000000, 0, 1, 0, -1.000000, 0, 0.000000, -15.6000, 3.75, -0.0000)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_12" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.0551, 3.75, 2.9946)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_12" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.8000, 2.6, -0.0000)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_13" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, -0.382683, -14.4125, 3.75, 5.9699)
+transform = Transform3D(-0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.923880, 5.9699, 1.25, -14.4125)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_13" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, -0.382683, -14.4125, 3.75, 5.9699)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_13" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.7631, 3.75, 8.5280)
-mesh = SubResource("Mesh_Column")
 
 [node name="WallSegment_14" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -11.0309, 3.75, 11.0309)
+transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 11.0309, 1.25, -11.0309)
 shape = SubResource("BoxShape3D_atrium_wall")
-
-[node name="WallMesh_14" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -11.0309, 3.75, 11.0309)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_14" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.5280, 3.75, 12.7631)
-mesh = SubResource("Mesh_Column")
-
-[node name="Sconce_14" type="OmniLight3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4652, 2.6, 10.4652)
-light_color = Color(1.0, 0.88, 0.70, 1)
-light_energy = 0.35
-omni_range = 5.5
 
 [node name="WallSegment_15" type="CollisionShape3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.923880, -5.9699, 3.75, 14.4125)
+transform = Transform3D(-0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, -0.382683, 14.4125, 1.25, -5.9699)
 shape = SubResource("BoxShape3D_atrium_wall")
 
-[node name="WallMesh_15" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(-0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.923880, -5.9699, 3.75, 14.4125)
-mesh = SubResource("Mesh_WallSegment")
-
-[node name="Column_15" type="MeshInstance3D" parent="AtriumBoundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9946, 3.75, 15.0551)
-mesh = SubResource("Mesh_Column")
-
-[node name="MezzanineBalcony" type="Node3D" parent="."]
-
-[node name="MezzFloor_00" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-1.000000, 0, 0.000000, 0, 1, 0, -0.000000, 0, -1.000000, 0.0000, 3.5, 13.7000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_00"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_00"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_00" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-1.000000, 0, 0.000000, 0, 1, 0, -0.000000, 0, -1.000000, 0.0000, 4.05, 11.8000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_00"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_00"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_01" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.923880, 5.2428, 3.5, 12.6571)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_01"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_01"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_01" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, -0.923880, 4.5157, 4.05, 10.9018)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_01"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_01"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_02" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 9.6874, 3.5, 9.6874)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_02"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_02"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_02" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 8.3439, 4.05, 8.3439)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_02"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_02"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_03" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, -0.382683, 12.6571, 3.5, 5.2428)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_03"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_03"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_03" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, -0.382683, 10.9018, 4.05, 4.5157)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_03"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_03"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_04" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.000000, 0, -1.000000, 0, 1, 0, 1.000000, 0, -0.000000, 13.7000, 3.5, 0.0000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_04"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_04"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_04" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.000000, 0, -1.000000, 0, 1, 0, 1.000000, 0, -0.000000, 11.8000, 4.05, 0.0000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_04"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_04"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_05" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, 0.382683, 12.6571, 3.5, -5.2428)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_05"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_05"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_05" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.382683, 0, -0.923880, 0, 1, 0, 0.923880, 0, 0.382683, 10.9018, 4.05, -4.5157)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_05"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_05"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_06" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 9.6874, 3.5, -9.6874)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_06"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_06"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_06" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, 8.3439, 4.05, -8.3439)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_06"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_06"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_07" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.923880, 0, -0.382683, 0, 1, 0, 0.382683, 0, 0.923880, 5.2428, 3.5, -12.6571)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_07"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_07"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="MezzFloor_09" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.923880, -5.2428, 3.5, -12.6571)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_09"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_09"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="MezzFloor_10" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -9.6874, 3.5, -9.6874)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_10"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_10"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_10" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -8.3439, 4.05, -8.3439)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_10"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_10"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_11" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, 0.382683, -12.6571, 3.5, -5.2428)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_11"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_11"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_11" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, 0.382683, -10.9018, 4.05, -4.5157)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_11"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_11"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_12" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.000000, 0, 1.000000, 0, 1, 0, -1.000000, 0, 0.000000, -13.7000, 3.5, -0.0000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_12"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_12"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_12" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(0.000000, 0, 1.000000, 0, 1, 0, -1.000000, 0, 0.000000, -11.8000, 4.05, -0.0000)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_12"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_12"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_13" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, -0.382683, -12.6571, 3.5, 5.2428)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_13"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_13"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_13" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.382683, 0, 0.923880, 0, 1, 0, -0.923880, 0, -0.382683, -10.9018, 4.05, 4.5157)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_13"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_13"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_14" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -9.6874, 3.5, 9.6874)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_14"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_14"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_14" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, -0.707107, -8.3439, 4.05, 8.3439)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_14"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_14"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="MezzFloor_15" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.923880, -5.2428, 3.5, 12.6571)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/MezzFloor_15"]
-shape = SubResource("Shape_MezzFloor")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/MezzFloor_15"]
-mesh = SubResource("Mesh_MezzFloor")
-
-[node name="Railing_15" type="StaticBody3D" parent="MezzanineBalcony"]
-transform = Transform3D(-0.923880, 0, 0.382683, 0, 1, 0, -0.382683, 0, -0.923880, -4.5157, 4.05, 10.9018)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="MezzanineBalcony/Railing_15"]
-shape = SubResource("Shape_Railing")
-
-[node name="Mesh" type="MeshInstance3D" parent="MezzanineBalcony/Railing_15"]
-mesh = SubResource("Mesh_Railing")
-
-[node name="Dome" type="Node3D" parent="."]
-
-[node name="DomeRing" type="MeshInstance3D" parent="Dome"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
-mesh = SubResource("Mesh_DomeRing")
-
-[node name="DomeGlass" type="MeshInstance3D" parent="Dome"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
-mesh = SubResource("Mesh_DomeGlass")
-
-[node name="GrandStaircases" type="Node3D" parent="."]
-
-[node name="Landing" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, -12.5)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="GrandStaircases/Landing"]
-shape = SubResource("Shape_Landing")
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/Landing"]
-mesh = SubResource("Mesh_Landing")
-
-[node name="RampRight" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(-0.882344, 0.220209, -0.415905, 0, 0.883767, 0.467927, 0.470604, 0.412873, -0.779787, 4.2, 1.8, -8)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="GrandStaircases/RampRight"]
-shape = SubResource("Shape_StairRamp")
-
-[node name="RampLeft" type="StaticBody3D" parent="GrandStaircases"]
-transform = Transform3D(-0.882344, -0.220209, 0.415905, 0, 0.883767, 0.467927, -0.470604, 0.412873, -0.779787, -4.2, 1.8, -8)
-collision_layer = 1
-collision_mask = 3
-
-[node name="Col" type="CollisionShape3D" parent="GrandStaircases/RampLeft"]
-shape = SubResource("Shape_StairRamp")
-
-[node name="StepR_00" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.931127, 0, -0.364696, 0, 1, 0, 0.364696, 0, 0.931127, 5.7111, 0.1944, -5.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_00"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_00"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_00" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.931127, 0, 0.364696, 0, 1, 0, -0.364696, 0, 0.931127, -5.7111, 0.1944, -5.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_00"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_00"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_01" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.938694, 0, -0.344752, 0, 1, 0, 0.344752, 0, 0.938694, 5.5333, 0.3889, -5.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_01"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_01"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_01" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.938694, 0, 0.344752, 0, 1, 0, -0.344752, 0, 0.938694, -5.5333, 0.3889, -5.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_01"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_01"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_02" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.945834, 0, -0.324651, 0, 1, 0, 0.324651, 0, 0.945834, 5.3556, 0.5833, -5.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_02"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_02"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_02" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.945834, 0, 0.324651, 0, 1, 0, -0.324651, 0, 0.945834, -5.3556, 0.5833, -5.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_02"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_02"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_03" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.952543, 0, -0.304403, 0, 1, 0, 0.304403, 0, 0.952543, 5.1778, 0.7778, -6.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_03"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_03"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_03" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.952543, 0, 0.304403, 0, 1, 0, -0.304403, 0, 0.952543, -5.1778, 0.7778, -6.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_03"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_03"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_04" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.958820, 0, -0.284015, 0, 1, 0, 0.284015, 0, 0.958820, 5.0000, 0.9722, -6.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_04"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_04"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_04" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.958820, 0, 0.284015, 0, 1, 0, -0.284015, 0, 0.958820, -5.0000, 0.9722, -6.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_04"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_04"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_05" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.964660, 0, -0.263499, 0, 1, 0, 0.263499, 0, 0.964660, 4.8222, 1.1667, -6.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_05"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_05"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_05" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.964660, 0, 0.263499, 0, 1, 0, -0.263499, 0, 0.964660, -4.8222, 1.1667, -6.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_05"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_05"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_06" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.970061, 0, -0.242863, 0, 1, 0, 0.242863, 0, 0.970061, 4.6444, 1.3611, -7.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_06"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_06"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_06" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.970061, 0, 0.242863, 0, 1, 0, -0.242863, 0, 0.970061, -4.6444, 1.3611, -7.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_06"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_06"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_07" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.975020, 0, -0.222116, 0, 1, 0, 0.222116, 0, 0.975020, 4.4667, 1.5556, -7.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_07"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_07"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_07" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.975020, 0, 0.222116, 0, 1, 0, -0.222116, 0, 0.975020, -4.4667, 1.5556, -7.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_07"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_07"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_08" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.979536, 0, -0.201268, 0, 1, 0, 0.201268, 0, 0.979536, 4.2889, 1.7500, -7.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_08"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_08"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_08" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.979536, 0, 0.201268, 0, 1, 0, -0.201268, 0, 0.979536, -4.2889, 1.7500, -7.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_08"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_08"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_09" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.983606, 0, -0.180328, 0, 1, 0, 0.180328, 0, 0.983606, 4.1111, 1.9444, -8.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_09"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_09"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_09" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.983606, 0, 0.180328, 0, 1, 0, -0.180328, 0, 0.983606, -4.1111, 1.9444, -8.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_09"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_09"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_10" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.987229, 0, -0.159307, 0, 1, 0, 0.159307, 0, 0.987229, 3.9333, 2.1389, -8.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_10"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_10" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.987229, 0, 0.159307, 0, 1, 0, -0.159307, 0, 0.987229, -3.9333, 2.1389, -8.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_10"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_11" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.990403, 0, -0.138213, 0, 1, 0, 0.138213, 0, 0.990403, 3.7556, 2.3333, -8.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_11"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_11" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.990403, 0, 0.138213, 0, 1, 0, -0.138213, 0, 0.990403, -3.7556, 2.3333, -8.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_11"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_11"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_12" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.993125, 0, -0.117056, 0, 1, 0, 0.117056, 0, 0.993125, 3.5778, 2.5278, -9.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_12"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_12" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.993125, 0, 0.117056, 0, 1, 0, -0.117056, 0, 0.993125, -3.5778, 2.5278, -9.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_12"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_12"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_13" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.995396, 0, -0.095846, 0, 1, 0, 0.095846, 0, 0.995396, 3.4000, 2.7222, -9.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_13"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_13" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.995396, 0, 0.095846, 0, 1, 0, -0.095846, 0, 0.995396, -3.4000, 2.7222, -9.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_13"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_13"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_14" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.997214, 0, -0.074592, 0, 1, 0, 0.074592, 0, 0.997214, 3.2222, 2.9167, -9.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_14"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_14" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.997214, 0, 0.074592, 0, 1, 0, -0.074592, 0, 0.997214, -3.2222, 2.9167, -9.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_14"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_14"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_15" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.998578, 0, -0.053304, 0, 1, 0, 0.053304, 0, 0.998578, 3.0444, 3.1111, -10.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_15"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_15" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.998578, 0, 0.053304, 0, 1, 0, -0.053304, 0, 0.998578, -3.0444, 3.1111, -10.1667)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_15"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_16" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.999488, 0, -0.031992, 0, 1, 0, 0.031992, 0, 0.999488, 2.8667, 3.3056, -10.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_16"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_16" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.999488, 0, 0.031992, 0, 1, 0, -0.031992, 0, 0.999488, -2.8667, 3.3056, -10.5000)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_16"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepR_17" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.999943, 0, -0.010666, 0, 1, 0, 0.010666, 0, 0.999943, 2.6889, 3.5000, -10.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepR_17"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepR_17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
-[node name="StepL_17" type="Node3D" parent="GrandStaircases"]
-transform = Transform3D(0.999943, 0, 0.010666, 0, 1, 0, -0.010666, 0, 0.999943, -2.6889, 3.5000, -10.8333)
-
-[node name="Mesh" type="MeshInstance3D" parent="GrandStaircases/StepL_17"]
-mesh = SubResource("Mesh_StairStep")
-
-[node name="Carpet" type="MeshInstance3D" parent="GrandStaircases/StepL_17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 0)
-mesh = SubResource("Mesh_StairCarpet")
-
 [node name="Showcase_Minerals_1" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, 0.074930, 0, 1, 0, -0.074930, 0, -0.997189, -1.0940, 0.1, 14.5590)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -4.2)
 showcase_id = 1
 showcase_title = "SHOWCASE_MINERALS_1"
 
 [node name="Showcase_Fallout_2" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, -0.074930, 0, 1, 0, 0.074930, 0, -0.997189, 1.0940, 0.1, 14.5590)
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 3.6, 0.1, -3.6)
 showcase_id = 2
 showcase_title = "SHOWCASE_FALLOUT"
-
-[node name="Showcase_03" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.949957, 0, -0.312382, 0, 1, 0, 0.312382, 0, -0.949957, 4.5608, 0.1, 13.8694)
-showcase_id = 3
-showcase_title = "SHOWCASE_MINERALS_2"
-
-[node name="Showcase_04" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.892608, 0, -0.450834, 0, 1, 0, 0.450834, 0, -0.892608, 6.5822, 0.1, 13.0321)
-showcase_id = 4
-showcase_title = "SHOWCASE_FABERGE"
-
-[node name="Showcase_05" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.758102, 0, -0.652136, 0, 1, 0, 0.652136, 0, -0.758102, 9.5212, 0.1, 11.0683)
-showcase_id = 5
-showcase_title = "SHOWCASE_CHEFS"
-
-[node name="Showcase_06" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.652136, 0, -0.758102, 0, 1, 0, 0.758102, 0, -0.652136, 11.0683, 0.1, 9.5212)
-showcase_id = 6
-showcase_title = "SHOWCASE_FIREFIGHTERS"
-
-[node name="Showcase_07" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.450834, 0, -0.892608, 0, 1, 0, 0.892608, 0, -0.450834, 13.0321, 0.1, 6.5822)
-showcase_id = 7
-showcase_title = "SHOWCASE_07"
-
-[node name="Showcase_08" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.312382, 0, -0.949957, 0, 1, 0, 0.949957, 0, -0.312382, 13.8694, 0.1, 4.5608)
-showcase_id = 8
-showcase_title = "SHOWCASE_08"
-
-[node name="Showcase_09" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.074930, 0, -0.997189, 0, 1, 0, 0.997189, 0, -0.074930, 14.5590, 0.1, 1.0940)
-showcase_id = 9
-showcase_title = "SHOWCASE_09"
-
-[node name="Showcase_10" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.074930, 0, -0.997189, 0, 1, 0, 0.997189, 0, 0.074930, 14.5590, 0.1, -1.0940)
-showcase_id = 10
-showcase_title = "SHOWCASE_10"
-
-[node name="Showcase_11" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.312382, 0, -0.949957, 0, 1, 0, 0.949957, 0, 0.312382, 13.8694, 0.1, -4.5608)
-showcase_id = 11
-showcase_title = "SHOWCASE_11"
-
-[node name="Showcase_12" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.450834, 0, -0.892608, 0, 1, 0, 0.892608, 0, 0.450834, 13.0321, 0.1, -6.5822)
-showcase_id = 12
-showcase_title = "SHOWCASE_12"
-
-[node name="Showcase_13" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.652136, 0, -0.758102, 0, 1, 0, 0.758102, 0, 0.652136, 11.0683, 0.1, -9.5212)
-showcase_id = 13
-showcase_title = "SHOWCASE_13"
-
-[node name="Showcase_14" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.758102, 0, -0.652136, 0, 1, 0, 0.652136, 0, 0.758102, 9.5212, 0.1, -11.0683)
-showcase_id = 14
-showcase_title = "SHOWCASE_14"
-
-[node name="Showcase_15" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.949957, 0, 0.312382, 0, 1, 0, -0.312382, 0, 0.949957, -4.5608, 0.1, -13.8694)
-showcase_id = 15
-showcase_title = "SHOWCASE_15"
-
-[node name="Showcase_16" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.892608, 0, 0.450834, 0, 1, 0, -0.450834, 0, 0.892608, -6.5822, 0.1, -13.0321)
-showcase_id = 16
-showcase_title = "SHOWCASE_16"
-
-[node name="Showcase_17" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.758102, 0, 0.652136, 0, 1, 0, -0.652136, 0, 0.758102, -9.5212, 0.1, -11.0683)
-showcase_id = 17
-showcase_title = "SHOWCASE_17"
-
-[node name="Showcase_18" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.652136, 0, 0.758102, 0, 1, 0, -0.758102, 0, 0.652136, -11.0683, 0.1, -9.5212)
-showcase_id = 18
-showcase_title = "SHOWCASE_18"
-
-[node name="Showcase_19" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.450834, 0, 0.892608, 0, 1, 0, -0.892608, 0, 0.450834, -13.0321, 0.1, -6.5822)
-showcase_id = 19
-showcase_title = "SHOWCASE_19"
-
-[node name="Showcase_20" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.312382, 0, 0.949957, 0, 1, 0, -0.949957, 0, 0.312382, -13.8694, 0.1, -4.5608)
-showcase_id = 20
-showcase_title = "SHOWCASE_20"
-
-[node name="Showcase_21" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.074930, 0, 0.997189, 0, 1, 0, -0.997189, 0, 0.074930, -14.5590, 0.1, -1.0940)
-showcase_id = 21
-showcase_title = "SHOWCASE_21"
-
-[node name="Showcase_22" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.074930, 0, 0.997189, 0, 1, 0, -0.997189, 0, -0.074930, -14.5590, 0.1, 1.0940)
-showcase_id = 22
-showcase_title = "SHOWCASE_22"
-
-[node name="Showcase_23" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.312382, 0, 0.949957, 0, 1, 0, -0.949957, 0, -0.312382, -13.8694, 0.1, 4.5608)
-showcase_id = 23
-showcase_title = "SHOWCASE_23"
-
-[node name="Showcase_24" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.450834, 0, 0.892608, 0, 1, 0, -0.892608, 0, -0.450834, -13.0321, 0.1, 6.5822)
-showcase_id = 24
-showcase_title = "SHOWCASE_24"
-
-[node name="Showcase_25" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.652136, 0, 0.758102, 0, 1, 0, -0.758102, 0, -0.652136, -11.0683, 0.1, 9.5212)
-showcase_id = 25
-showcase_title = "SHOWCASE_25"
-
-[node name="Showcase_26" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.758102, 0, 0.652136, 0, 1, 0, -0.652136, 0, -0.758102, -9.5212, 0.1, 11.0683)
-showcase_id = 26
-showcase_title = "SHOWCASE_26"
-
-[node name="Showcase_27" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.892608, 0, 0.450834, 0, 1, 0, -0.450834, 0, -0.892608, -6.5822, 0.1, 13.0321)
-showcase_id = 27
-showcase_title = "SHOWCASE_27"
-
-[node name="Showcase_28" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.949957, 0, 0.312382, 0, 1, 0, -0.312382, 0, -0.949957, -4.5608, 0.1, 13.8694)
-showcase_id = 28
-showcase_title = "SHOWCASE_28"
-
-[node name="Showcase_29" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, 0.074930, 0, 1, 0, -0.074930, 0, -0.997189, -1.0940, 0.1, 14.5590)
-showcase_id = 29
-showcase_title = "SHOWCASE_29"
-
-[node name="Showcase_30" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, -0.074930, 0, 1, 0, 0.074930, 0, -0.997189, 1.0940, 0.1, 14.5590)
-showcase_id = 30
-showcase_title = "SHOWCASE_30"
-
-[node name="Showcase_31" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, 0.074930, 0, 1, 0, -0.074930, 0, -0.997189, -1.0940, 3.6, 14.5590)
-showcase_id = 31
-showcase_title = "SHOWCASE_31"
-
-[node name="Showcase_32" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, -0.074930, 0, 1, 0, 0.074930, 0, -0.997189, 1.0940, 3.6, 14.5590)
-showcase_id = 32
-showcase_title = "SHOWCASE_32"
-
-[node name="Showcase_33" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.949957, 0, -0.312382, 0, 1, 0, 0.312382, 0, -0.949957, 4.5608, 3.6, 13.8694)
-showcase_id = 33
-showcase_title = "SHOWCASE_33"
-
-[node name="Showcase_34" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.892608, 0, -0.450834, 0, 1, 0, 0.450834, 0, -0.892608, 6.5822, 3.6, 13.0321)
-showcase_id = 34
-showcase_title = "SHOWCASE_34"
-
-[node name="Showcase_35" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.758102, 0, -0.652136, 0, 1, 0, 0.652136, 0, -0.758102, 9.5212, 3.6, 11.0683)
-showcase_id = 35
-showcase_title = "SHOWCASE_35"
-
-[node name="Showcase_36" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.652136, 0, -0.758102, 0, 1, 0, 0.758102, 0, -0.652136, 11.0683, 3.6, 9.5212)
-showcase_id = 36
-showcase_title = "SHOWCASE_36"
-
-[node name="Showcase_37" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.450834, 0, -0.892608, 0, 1, 0, 0.892608, 0, -0.450834, 13.0321, 3.6, 6.5822)
-showcase_id = 37
-showcase_title = "SHOWCASE_37"
-
-[node name="Showcase_38" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.312382, 0, -0.949957, 0, 1, 0, 0.949957, 0, -0.312382, 13.8694, 3.6, 4.5608)
-showcase_id = 38
-showcase_title = "SHOWCASE_38"
-
-[node name="Showcase_39" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.074930, 0, -0.997189, 0, 1, 0, 0.997189, 0, -0.074930, 14.5590, 3.6, 1.0940)
-showcase_id = 39
-showcase_title = "SHOWCASE_39"
-
-[node name="Showcase_40" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.074930, 0, -0.997189, 0, 1, 0, 0.997189, 0, 0.074930, 14.5590, 3.6, -1.0940)
-showcase_id = 40
-showcase_title = "SHOWCASE_40"
-
-[node name="Showcase_41" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.312382, 0, -0.949957, 0, 1, 0, 0.949957, 0, 0.312382, 13.8694, 3.6, -4.5608)
-showcase_id = 41
-showcase_title = "SHOWCASE_41"
-
-[node name="Showcase_42" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.450834, 0, -0.892608, 0, 1, 0, 0.892608, 0, 0.450834, 13.0321, 3.6, -6.5822)
-showcase_id = 42
-showcase_title = "SHOWCASE_42"
-
-[node name="Showcase_43" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.652136, 0, -0.758102, 0, 1, 0, 0.758102, 0, 0.652136, 11.0683, 3.6, -9.5212)
-showcase_id = 43
-showcase_title = "SHOWCASE_43"
-
-[node name="Showcase_44" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.758102, 0, -0.652136, 0, 1, 0, 0.652136, 0, 0.758102, 9.5212, 3.6, -11.0683)
-showcase_id = 44
-showcase_title = "SHOWCASE_44"
-
-[node name="Showcase_45" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.949957, 0, 0.312382, 0, 1, 0, -0.312382, 0, 0.949957, -4.5608, 3.6, -13.8694)
-showcase_id = 45
-showcase_title = "SHOWCASE_45"
-
-[node name="Showcase_46" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.892608, 0, 0.450834, 0, 1, 0, -0.450834, 0, 0.892608, -6.5822, 3.6, -13.0321)
-showcase_id = 46
-showcase_title = "SHOWCASE_46"
-
-[node name="Showcase_47" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.758102, 0, 0.652136, 0, 1, 0, -0.652136, 0, 0.758102, -9.5212, 3.6, -11.0683)
-showcase_id = 47
-showcase_title = "SHOWCASE_47"
-
-[node name="Showcase_48" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.652136, 0, 0.758102, 0, 1, 0, -0.758102, 0, 0.652136, -11.0683, 3.6, -9.5212)
-showcase_id = 48
-showcase_title = "SHOWCASE_48"
-
-[node name="Showcase_49" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.450834, 0, 0.892608, 0, 1, 0, -0.892608, 0, 0.450834, -13.0321, 3.6, -6.5822)
-showcase_id = 49
-showcase_title = "SHOWCASE_49"
-
-[node name="Showcase_50" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.312382, 0, 0.949957, 0, 1, 0, -0.949957, 0, 0.312382, -13.8694, 3.6, -4.5608)
-showcase_id = 50
-showcase_title = "SHOWCASE_50"
-
-[node name="Showcase_51" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(0.074930, 0, 0.997189, 0, 1, 0, -0.997189, 0, 0.074930, -14.5590, 3.6, -1.0940)
-showcase_id = 51
-showcase_title = "SHOWCASE_51"
-
-[node name="Showcase_52" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.074930, 0, 0.997189, 0, 1, 0, -0.997189, 0, -0.074930, -14.5590, 3.6, 1.0940)
-showcase_id = 52
-showcase_title = "SHOWCASE_52"
-
-[node name="Showcase_53" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.312382, 0, 0.949957, 0, 1, 0, -0.949957, 0, -0.312382, -13.8694, 3.6, 4.5608)
-showcase_id = 53
-showcase_title = "SHOWCASE_53"
-
-[node name="Showcase_54" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.450834, 0, 0.892608, 0, 1, 0, -0.892608, 0, -0.450834, -13.0321, 3.6, 6.5822)
-showcase_id = 54
-showcase_title = "SHOWCASE_54"
-
-[node name="Showcase_55" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.652136, 0, 0.758102, 0, 1, 0, -0.758102, 0, -0.652136, -11.0683, 3.6, 9.5212)
-showcase_id = 55
-showcase_title = "SHOWCASE_55"
-
-[node name="Showcase_56" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.758102, 0, 0.652136, 0, 1, 0, -0.652136, 0, -0.758102, -9.5212, 3.6, 11.0683)
-showcase_id = 56
-showcase_title = "SHOWCASE_56"
-
-[node name="Showcase_57" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.892608, 0, 0.450834, 0, 1, 0, -0.450834, 0, -0.892608, -6.5822, 3.6, 13.0321)
-showcase_id = 57
-showcase_title = "SHOWCASE_57"
-
-[node name="Showcase_58" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.949957, 0, 0.312382, 0, 1, 0, -0.312382, 0, -0.949957, -4.5608, 3.6, 13.8694)
-showcase_id = 58
-showcase_title = "SHOWCASE_58"
-
-[node name="Showcase_59" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, 0.074930, 0, 1, 0, -0.074930, 0, -0.997189, -1.0940, 3.6, 14.5590)
-showcase_id = 59
-showcase_title = "SHOWCASE_59"
-
-[node name="Showcase_60" parent="." instance=ExtResource("3_showcase_scene")]
-transform = Transform3D(-0.997189, 0, -0.074930, 0, 1, 0, 0.074930, 0, -0.997189, 1.0940, 3.6, 14.5590)
-showcase_id = 60
-showcase_title = "SHOWCASE_60"
 
 [node name="Player" parent="." instance=ExtResource("1_player_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="EggsOnFloor" type="Node3D" parent="."]
 
-[node name="Egg_00" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, -2.0000)
+[node name="Egg_Lapis_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.960)
 egg_id = 1
 
-[node name="Egg_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, -1.5600)
+[node name="Egg_Lapis_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.960)
 egg_id = 1
 
-[node name="Egg_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, -1.1200)
+[node name="Egg_Lapis_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.960)
 egg_id = 1
 
-[node name="Egg_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, -0.6800)
+[node name="Egg_Lapis_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.960)
 egg_id = 1
 
-[node name="Egg_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, -0.2400)
+[node name="Egg_Lapis_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.600)
 egg_id = 1
 
-[node name="Egg_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, 0.2000)
+[node name="Egg_Lapis_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.600)
 egg_id = 1
 
-[node name="Egg_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, 0.6400)
+[node name="Egg_Lapis_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.600)
 egg_id = 1
 
-[node name="Egg_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, 1.0800)
+[node name="Egg_Lapis_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.600)
 egg_id = 1
 
-[node name="Egg_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, 1.5200)
+[node name="Egg_Lapis_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.240)
 egg_id = 1
 
-[node name="Egg_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8000, 0.2510, 1.9600)
+[node name="Egg_Lapis_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.240)
 egg_id = 1
 
-[node name="Egg_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, -2.0000)
+[node name="Egg_Lapis_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.240)
 egg_id = 1
 
-[node name="Egg_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, -1.5600)
+[node name="Egg_Lapis_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.240)
 egg_id = 1
 
-[node name="Egg_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, -1.1200)
+[node name="Egg_Gold_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.860)
 egg_id = 2
 
-[node name="Egg_13" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, -0.6800)
+[node name="Egg_Gold_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.860)
 egg_id = 2
 
-[node name="Egg_14" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, -0.2400)
+[node name="Egg_Gold_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.860)
 egg_id = 2
 
-[node name="Egg_15" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, 0.2000)
+[node name="Egg_Gold_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.860)
 egg_id = 2
 
-[node name="Egg_16" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, 0.6400)
+[node name="Egg_Gold_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.500)
 egg_id = 2
 
-[node name="Egg_17" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, 1.0800)
+[node name="Egg_Gold_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.500)
 egg_id = 2
 
-[node name="Egg_18" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, 1.5200)
+[node name="Egg_Gold_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.500)
 egg_id = 2
 
-[node name="Egg_19" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2500, 0.2510, 1.9600)
+[node name="Egg_Gold_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.500)
 egg_id = 2
 
-[node name="Egg_20" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, -2.0000)
+[node name="Egg_Gold_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.140)
 egg_id = 2
 
-[node name="Egg_21" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, -1.5600)
+[node name="Egg_Gold_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.140)
 egg_id = 2
 
-[node name="Egg_22" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, -1.1200)
+[node name="Egg_Gold_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.140)
 egg_id = 2
 
-[node name="Egg_23" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, -0.6800)
+[node name="Egg_Gold_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.140)
 egg_id = 2
 
-[node name="Egg_24" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, -0.2400)
-egg_id = 3
-
-[node name="Egg_25" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, 0.2000)
-egg_id = 3
-
-[node name="Egg_26" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, 0.6400)
-egg_id = 3
-
-[node name="Egg_27" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, 1.0800)
-egg_id = 3
-
-[node name="Egg_28" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, 1.5200)
-egg_id = 3
-
-[node name="Egg_29" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7000, 0.2510, 1.9600)
-egg_id = 3
-
-[node name="Egg_30" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, -2.0000)
-egg_id = 3
-
-[node name="Egg_31" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, -1.5600)
-egg_id = 3
-
-[node name="Egg_32" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, -1.1200)
-egg_id = 3
-
-[node name="Egg_33" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, -0.6800)
-egg_id = 3
-
-[node name="Egg_34" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, -0.2400)
-egg_id = 3
-
-[node name="Egg_35" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, 0.2000)
-egg_id = 3
-
-[node name="Egg_36" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, 0.6400)
-egg_id = 4
-
-[node name="Egg_37" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, 1.0800)
-egg_id = 4
-
-[node name="Egg_38" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, 1.5200)
-egg_id = 4
-
-[node name="Egg_39" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7000, 0.2510, 1.9600)
-egg_id = 4
-
-[node name="Egg_40" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, -2.0000)
-egg_id = 4
-
-[node name="Egg_41" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, -1.5600)
-egg_id = 4
-
-[node name="Egg_42" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, -1.1200)
-egg_id = 4
-
-[node name="Egg_43" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, -0.6800)
-egg_id = 4
-
-[node name="Egg_44" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, -0.2400)
-egg_id = 4
-
-[node name="Egg_45" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, 0.2000)
-egg_id = 4
-
-[node name="Egg_46" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, 0.6400)
-egg_id = 4
-
-[node name="Egg_47" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, 1.0800)
-egg_id = 4
-
-[node name="Egg_48" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, 1.5200)
+[node name="Egg_Bronze_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -3.160)
 egg_id = 11
 
-[node name="Egg_49" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2500, 0.2510, 1.9600)
+[node name="Egg_Bronze_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -3.160)
 egg_id = 11
 
-[node name="Egg_50" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, -2.0000)
+[node name="Egg_Bronze_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -3.160)
 egg_id = 11
 
-[node name="Egg_51" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, -1.5600)
+[node name="Egg_Bronze_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -3.160)
 egg_id = 11
 
-[node name="Egg_52" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, -1.1200)
+[node name="Egg_Bronze_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -2.800)
 egg_id = 11
 
-[node name="Egg_53" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, -0.6800)
+[node name="Egg_Bronze_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -2.800)
 egg_id = 11
 
-[node name="Egg_54" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, -0.2400)
+[node name="Egg_Bronze_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -2.800)
 egg_id = 11
 
-[node name="Egg_55" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, 0.2000)
+[node name="Egg_Bronze_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -2.800)
 egg_id = 11
 
-[node name="Egg_56" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, 0.6400)
+[node name="Egg_Bronze_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -2.440)
 egg_id = 11
 
-[node name="Egg_57" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, 1.0800)
+[node name="Egg_Bronze_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -2.440)
 egg_id = 11
 
-[node name="Egg_58" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, 1.5200)
+[node name="Egg_Bronze_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -2.440)
 egg_id = 11
 
-[node name="Egg_59" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8000, 0.2510, 1.9600)
+[node name="Egg_Bronze_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -2.440)
 egg_id = 11
 
+[node name="Egg_Silver_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.860)
+egg_id = 3
+
+[node name="Egg_Silver_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.860)
+egg_id = 3
+
+[node name="Egg_Silver_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.860)
+egg_id = 3
+
+[node name="Egg_Silver_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.860)
+egg_id = 3
+
+[node name="Egg_Silver_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.500)
+egg_id = 3
+
+[node name="Egg_Silver_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.500)
+egg_id = 3
+
+[node name="Egg_Silver_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.500)
+egg_id = 3
+
+[node name="Egg_Silver_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.500)
+egg_id = 3
+
+[node name="Egg_Silver_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.140)
+egg_id = 3
+
+[node name="Egg_Silver_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.140)
+egg_id = 3
+
+[node name="Egg_Silver_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.140)
+egg_id = 3
+
+[node name="Egg_Silver_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.140)
+egg_id = 3
+
+[node name="Egg_Copper_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.960)
+egg_id = 4
+
+[node name="Egg_Copper_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.960)
+egg_id = 4
+
+[node name="Egg_Copper_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.960)
+egg_id = 4
+
+[node name="Egg_Copper_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.960)
+egg_id = 4
+
+[node name="Egg_Copper_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.600)
+egg_id = 4
+
+[node name="Egg_Copper_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.600)
+egg_id = 4
+
+[node name="Egg_Copper_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.600)
+egg_id = 4
+
+[node name="Egg_Copper_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.600)
+egg_id = 4
+
+[node name="Egg_Copper_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.240)
+egg_id = 4
+
+[node name="Egg_Copper_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.240)
+egg_id = 4
+
+[node name="Egg_Copper_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.240)
+egg_id = 4
+
+[node name="Egg_Copper_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.240)
+egg_id = 4
 [node name="HUD" parent="." instance=ExtResource("2_hud_scene")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause_scene")]
-visible = false
 
 [node name="JournalMenu" parent="." instance=ExtResource("6_journal_scene")]
-visible = false
-
+ 
 [node name="WayfinderSystem" type="Node3D" parent="."]
 script = ExtResource("7_wayfinder_script")
+
