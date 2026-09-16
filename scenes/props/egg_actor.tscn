@@ -19,7 +19,7 @@ mass = 4.5
 can_sleep = true
 linear_damp = 4.0
 angular_damp = 8.0
-continuous_cd = true
+continuous_cd = false
 script = ExtResource("1_egg_script")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

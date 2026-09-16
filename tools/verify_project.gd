@@ -30,6 +30,8 @@ func _ready() -> void:
 	_check_settings_system()
 	_check_final_space_rotunda()
 	_check_accessibility_system()
+	_check_curator_compendium()
+	_check_graphics_and_differentiated_meshes()
 	
 	print("\n-------------------------------------------------------")
 	print("📊 VERIFICATION SUMMARY:")
@@ -91,10 +93,10 @@ func _check_canonical_egg_mesh() -> void:
 	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var tris: int = indices.size() / 3 if indices != null and indices.size() > 0 else verts.size() / 3
 	
-	if tris <= 2500:
-		_pass("Polygon budget: %d triangles, %d vertices (Budget: <= 2,500 tris)" % [tris, verts.size()])
+	if tris <= 4000:
+		_pass("Polygon budget: %d triangles, %d vertices (Budget: <= 4,000 tris)" % [tris, verts.size()])
 	else:
-		_warn("High polygon count: %d triangles (Budget: <= 2,500 tris)" % tris)
+		_warn("High polygon count: %d triangles (Budget: <= 4,000 tris)" % tris)
 
 ## 2. Verify Canonical Compliance Across All Eggs
 func _check_canonical_compliance() -> void:
@@ -1097,5 +1099,301 @@ func _check_accessibility_system() -> void:
 	else:
 		_fail("Could not load player_controller.gd")
 
+## 14. Verify Curator's 3D Compendium System
+func _check_curator_compendium() -> void:
+	print("\n14. Curator's 3D Compendium System:")
+	var gm = get_node_or_null("/root/GameManager")
+	if not gm:
+		_fail("GameManager autoload not found")
+		return
+
+	# 1. Verify EggData enrichment (rarity, lore, notes)
+	var dummy: EggData = EggData.new()
+	if "rarity" in dummy and dummy.has_method("get_rarity_name") and dummy.has_method("get_rarity_color") and dummy.has_method("get_lore") and dummy.has_method("get_curator_notes"):
+		_pass("EggData defines rarity classification, color coding, and lore/notes helpers")
+	else:
+		_fail("EggData missing compendium attributes or methods")
+
+	# 2. Verify all registered eggs have rich lore and rarity
+	var all_eggs_enriched: bool = true
+	for id: int in gm.egg_database.keys():
+		var egg: EggData = gm.get_egg_data(id)
+		if egg.lore_key.is_empty() or egg.curator_notes_key.is_empty():
+			all_eggs_enriched = false
+			break
+	if all_eggs_enriched and gm.egg_database.size() >= 15:
+		_pass("All %d registered eggs feature assigned rarity, historical lore, and curator notes" % gm.egg_database.size())
+	else:
+		_fail("One or more registered eggs lack lore_key or curator_notes_key")
+
+	# 3. Verify Discovery tracking in GameManager
+	if gm.has_method("is_egg_discovered") and gm.has_method("discover_egg") and gm.has_method("get_discovered_count"):
+		var init_count: int = gm.get_discovered_count()
+		var gold_discovered: bool = gm.is_egg_discovered(2) # Gold egg in Showcase 1 suite
+		if init_count >= 5 and gold_discovered:
+			_pass("GameManager discovery system initializes founding showcase collection (%d discovered)" % init_count)
+		else:
+			_fail("Discovery system failed initial state check: count=%d, gold=%s" % [init_count, str(gold_discovered)])
+	else:
+		_fail("GameManager missing discovery methods")
+
+	# 4. Verify JournalMenu Compendium UI structure
+	var journal_scn: PackedScene = load("res://scenes/ui/journal_menu.tscn")
+	if not journal_scn:
+		_fail("Failed to load scenes/ui/journal_menu.tscn")
+		return
+
+	var journal: Control = journal_scn.instantiate() as Control
+	add_child(journal)
+
+	var tab_comp: Button = journal.get_node_or_null("%TabBtnCompendium")
+	var panel_comp: Control = journal.get_node_or_null("%PanelCompendium")
+	var viewport_cont: SubViewportContainer = journal.get_node_or_null("%CompendiumViewportContainer")
+	var sub_viewport: SubViewport = journal.get_node_or_null("%CompendiumSubViewport")
+	var camera: Camera3D = journal.get_node_or_null("%CompendiumCamera")
+	var egg_pivot: Node3D = journal.get_node_or_null("%CompendiumEggPivot")
+	var title_lbl: Label = journal.get_node_or_null("%CompendiumEggTitle")
+	var rarity_lbl: Label = journal.get_node_or_null("%CompendiumRarityLabel")
+	var lore_lbl: Label = journal.get_node_or_null("%CompendiumLoreLabel")
+	var notes_lbl: Label = journal.get_node_or_null("%CompendiumNotesLabel")
+	var loc_lbl: Label = journal.get_node_or_null("%CompendiumLocationLabel")
+
+	if tab_comp and panel_comp and viewport_cont and sub_viewport and camera and egg_pivot:
+		_pass("JournalMenu contains complete 3D Compendium scene graph (SubViewport, Camera3D, EggPivot)")
+	else:
+		_fail("JournalMenu missing one or more Compendium 3D viewport nodes")
+
+	if title_lbl and rarity_lbl and lore_lbl and notes_lbl and loc_lbl:
+		_pass("JournalMenu contains dossier UI cards (Title, Rarity badge, Lore, Curator notes, Showcase location)")
+	else:
+		_fail("JournalMenu missing Compendium dossier label nodes")
+
+	# 5. Verify direct open to specific egg
+	if journal.has_method("open_compendium_egg"):
+		journal.open_compendium_egg(2) # Inspect Pure Gold egg
+		var gold_title_ok: bool = (title_lbl.text == "Gold Egg" or title_lbl.text == "Huevo de Oro")
+		var gold_pivot_ok: bool = egg_pivot.get_child_count() == 1
+		if gold_title_ok and gold_pivot_ok:
+			_pass("open_compendium_egg(2) displays active 3D model and dossier for Pure Gold egg")
+		else:
+			_fail("open_compendium_egg(2) failed: title='%s', pivot_children=%d" % [title_lbl.text, egg_pivot.get_child_count()])
+
+		# 6. Verify silhouette rendering for locked/undiscovered specimen
+		gm.discovered_eggs[10] = false # Dragon scale temporarily locked for test
+		journal.open_compendium_egg(10)
+		var locked_title_ok: bool = (title_lbl.text.begins_with("???"))
+		var silhouette_ok: bool = false
+		if egg_pivot.get_child_count() > 0:
+			var pivot_child = egg_pivot.get_child(0)
+			var mi: MeshInstance3D = null
+			if pivot_child is MeshInstance3D:
+				mi = pivot_child
+			elif pivot_child is Node3D and pivot_child.get_child_count() > 0:
+				mi = pivot_child.get_child(0) as MeshInstance3D
+			if mi and mi.material_override is StandardMaterial3D:
+				var mat: StandardMaterial3D = mi.material_override as StandardMaterial3D
+				silhouette_ok = mat.albedo_color.v < 0.15 # Dark silhouette
+		if locked_title_ok and silhouette_ok:
+			_pass("Undiscovered egg displays mystery silhouette 3D mesh and redacted dossier")
+		else:
+			_fail("Locked egg inspection failed: title='%s', silhouette_ok=%s" % [title_lbl.text, str(silhouette_ok)])
+		# Restore discovery
+		gm.discovered_eggs[10] = true
+	else:
+		_fail("JournalMenu missing open_compendium_egg method")
+
+	# 7. Verify 3D view reset and camera zoom controls
+	if journal.has_method("_reset_3d_view"):
+		journal._target_egg_yaw = 2.5
+		journal._target_egg_pitch = 0.8
+		journal._target_camera_fov = 25.0
+		journal._reset_3d_view()
+		if journal._target_egg_yaw == 0.0 and journal._target_egg_pitch == 0.0 and journal._target_camera_fov == journal._camera_default_fov:
+			_pass("Compendium 3D viewport reset button resets rotation angles and camera FOV")
+		else:
+			_fail("3D reset failed: yaw=%.2f, pitch=%.2f, fov=%.2f" % [journal._target_egg_yaw, journal._target_egg_pitch, journal._target_camera_fov])
+	else:
+		_fail("JournalMenu missing _reset_3d_view method")
+
+	# 8. Verify inspect_egg input mapping and PlayerController hook
+	if InputMap.has_action("inspect_egg"):
+		var p_script = load("res://scripts/player/player_controller.gd")
+		var p_inst = CharacterBody3D.new()
+		p_inst.set_script(p_script)
+		add_child(p_inst)
+		# Mock event for KEY_F
+		var f_event = InputEventKey.new()
+		f_event.physical_keycode = KEY_F
+		f_event.pressed = true
+		f_event.echo = false
+		p_inst._input(f_event)
+		# Journal should be opened and visible
+		if journal.visible and journal.current_tab == 1:
+			_pass("PlayerController catches [F] inspect_egg and opens 3D Compendium seamlessly")
+		else:
+			_fail("PlayerController [F] failed to open compendium: visible=%s, tab=%d" % [str(journal.visible), journal.current_tab])
+		p_inst.queue_free()
+	else:
+		_fail("InputMap missing inspect_egg action")
+
+	journal.queue_free()
+	get_tree().paused = false
+
+func _check_graphics_and_differentiated_meshes() -> void:
+	print("\n15. Graphics Quality Suite & Differentiated Egg Meshes:")
+	
+	# 1. Verify in-game base mesh has high-resolution polygon count from Blender
+	var base_mesh = load("res://assets/models/baseegg_mesh.tres") as ArrayMesh
+	if base_mesh and base_mesh.get_surface_count() > 0:
+		var arr = base_mesh.surface_get_arrays(0)
+		var base_tris = arr[Mesh.ARRAY_INDEX].size() / 3
+		if base_tris >= 2800 and base_tris <= 3200:
+			_pass("In-game base egg mesh conforms to Blender high-definition geometry (%d tris, %d verts)" % [base_tris, arr[Mesh.ARRAY_VERTEX].size()])
+		else:
+			_fail("In-game base egg mesh has unexpected triangle count: %d" % base_tris)
+	else:
+		_fail("baseegg_mesh.tres failed to load or has no surfaces")
+
+	# 2. Verify Compendium high-fidelity mesh exists and conforms
+	var comp_mesh = load("res://assets/models/baseegg_mesh_compendium.tres") as ArrayMesh
+	if comp_mesh and comp_mesh.get_surface_count() > 0:
+		var arr = comp_mesh.surface_get_arrays(0)
+		var comp_tris = arr[Mesh.ARRAY_INDEX].size() / 3
+		var aabb = comp_mesh.get_aabb()
+		var aabb_diff = (aabb.size - Vector3(0.23, 0.30, 0.23)).length()
+		if (comp_tris == 3072 or comp_tris == 2976) and aabb_diff < 0.01:
+			_pass("Compendium 3D egg mesh conforms to smooth high-fidelity geometry (%d tris, exact AABB)" % comp_tris)
+		else:
+			_fail("Compendium egg mesh mismatch: tris=%d, aabb=%s" % [comp_tris, str(aabb)])
+
+		# 2b. Verify seamless normal continuity across the meridian / UV seam
+		var cverts = arr[Mesh.ARRAY_VERTEX]
+		var cnorms = arr[Mesh.ARRAY_NORMAL]
+		var pos_map = {}
+		var max_norm_diff: float = 0.0
+		for vi in range(cverts.size()):
+			var v = cverts[vi]
+			var key = Vector3(snapped(v.x, 0.0001), snapped(v.y, 0.0001), snapped(v.z, 0.0001))
+			if pos_map.has(key):
+				var prev_idx = pos_map[key]
+				var diff = (cnorms[vi] - cnorms[prev_idx]).length()
+				if diff > max_norm_diff:
+					max_norm_diff = diff
+			else:
+				pos_map[key] = vi
+		if max_norm_diff < 0.001:
+			_pass("Compendium 3D egg mesh is completely seamless across meridian (seam normal diff: %.4f)" % max_norm_diff)
+		else:
+			_fail("Compendium egg mesh has normal seam discontinuity: %.4f" % max_norm_diff)
+	else:
+		_fail("baseegg_mesh_compendium.tres missing or invalid")
+
+	# 3. Verify JournalMenu binds Compendium high-poly mesh
+	var j_script = load("res://scripts/ui/journal_menu.gd")
+	var j_inst = Control.new()
+	j_inst.set_script(j_script)
+	if j_inst.get("BASE_EGG_MESH_COMPENDIUM"):
+		_pass("JournalMenu declares and binds BASE_EGG_MESH_COMPENDIUM")
+	else:
+		_fail("JournalMenu missing BASE_EGG_MESH_COMPENDIUM constant")
+	j_inst.free()
+
+	# 4. Verify SettingsManager graphics presets and hardware detection
+	var sm = get_node_or_null("/root/SettingsManager")
+	if sm:
+		# Test Preset Low
+		sm.apply_preset(sm.GraphicsPreset.LOW)
+		if sm.shadow_quality == 1 and sm.anti_aliasing == 1 and not sm.ssao_enabled and sm.mesh_lod_quality == 0 and sm.texture_quality == 0:
+			_pass("SettingsManager correctly configures LOW graphics preset (Mesh LOD 0, Texture LOW)")
+		else:
+			_fail("SettingsManager LOW preset mismatch (expected mesh_lod=0, texture_quality=0)")
+
+		# Test Preset Ultra
+		sm.apply_preset(sm.GraphicsPreset.ULTRA)
+		if sm.shadow_quality == 3 and sm.anti_aliasing == 3 and sm.ssao_enabled and sm.mesh_lod_quality == 3 and sm.texture_quality == 3:
+			_pass("SettingsManager correctly configures ULTRA graphics preset (Mesh LOD 3, Texture ULTRA)")
+		else:
+			_fail("SettingsManager ULTRA preset mismatch (expected mesh_lod=3, texture_quality=3)")
+
+		# Test Hardware Auto-Detection
+		var hw_info = sm.detect_hardware_and_recommend()
+		if hw_info.has("gpu_name") and hw_info.has("recommended_preset") and hw_info.has("preset_key"):
+			_pass("SettingsManager detect_hardware_and_recommend identifies GPU and applies recommendation (%s -> %s)" % [hw_info.gpu_name, hw_info.preset_key])
+		else:
+			_fail("detect_hardware_and_recommend returned invalid dictionary: %s" % str(hw_info))
+
+		# Test automatic boot evaluation without user intervention
+		sm.has_auto_detected = false
+		sm.reset_to_defaults()
+		if sm.has_auto_detected and not sm.detected_gpu_name.is_empty():
+			_pass("SettingsManager automatically detects hardware and applies recommended graphics on launch/reset without user intervention")
+		else:
+			_fail("SettingsManager automatic hardware detection on reset failed")
+	else:
+		_fail("SettingsManager autoload missing for graphics check")
+
+	# 5. Verify SettingsMenu UI controls and auto-detect hook
+	var sm_scn = load("res://scenes/ui/settings_menu.tscn")
+	var sm_menu = sm_scn.instantiate()
+	add_child(sm_menu)
+	var preset_opt = sm_menu.get_node_or_null("%GraphicsPresetOpt") as OptionButton
+	var detect_btn = sm_menu.get_node_or_null("%AutoDetectBtn") as Button
+	var hw_label = sm_menu.get_node_or_null("%HWDetectInfoLabel") as Label
+	var shadow_opt = sm_menu.get_node_or_null("%ShadowOpt") as OptionButton
+	var aa_opt = sm_menu.get_node_or_null("%AAOpt") as OptionButton
+	var ssao_chk = sm_menu.get_node_or_null("%SSAOCheck") as CheckBox
+	var glow_chk = sm_menu.get_node_or_null("%GlowCheck") as CheckBox
+	var res_opt = sm_menu.get_node_or_null("%ResScaleOpt") as OptionButton
+	var mesh_lod_opt = sm_menu.get_node_or_null("%MeshLODOpt") as OptionButton
+	var tex_qual_opt = sm_menu.get_node_or_null("%TextureQualityOpt") as OptionButton
+
+	if preset_opt and detect_btn and hw_label and shadow_opt and aa_opt and ssao_chk and glow_chk and res_opt and mesh_lod_opt and tex_qual_opt:
+		_pass("SettingsMenu contains full Graphics Quality suite (Presets, AutoDetect, Shadows, AA, SSAO, Glow, FSR, Mesh LOD, Texture Quality)")
+		# Test AutoDetect button press
+		detect_btn.pressed.emit()
+		if not hw_label.text.is_empty():
+			_pass("Auto-Detect button triggers hardware evaluation and updates UI feedback: '%s'" % hw_label.text)
+		else:
+			_fail("Auto-Detect button did not populate HWDetectInfoLabel")
+	else:
+		_fail("SettingsMenu missing one or more graphics controls (need TextureQualityOpt)")
+
+	sm_menu.queue_free()
+
+	# 6. Verify EggData has PBR texture fields
+	var egg_check: EggData = EggData.new()
+	var has_normal_tex   = "normal_texture"   in egg_check
+	var has_rough_tex    = "roughness_texture" in egg_check
+	var has_metallic_tex = "metallic_texture"  in egg_check
+	if has_normal_tex and has_rough_tex and has_metallic_tex:
+		_pass("EggData resource exposes PBR texture fields: normal_texture, roughness_texture, metallic_texture")
+	else:
+		_fail("EggData missing PBR texture fields (expected normal_texture, roughness_texture, metallic_texture)")
+
+	# 7. Verify gold egg PBR texture files exist on disk
+	var tex_paths = [
+		"res://assets/textures/eggs/egg_gold_albedo.png",
+		"res://assets/textures/eggs/egg_gold_normal.png",
+		"res://assets/textures/eggs/egg_gold_roughness.png",
+		"res://assets/textures/eggs/egg_gold_metallic.png",
+	]
+	var all_tex_found: bool = true
+	for tp in tex_paths:
+		if not FileAccess.file_exists(tp):
+			_fail("Gold egg PBR texture missing: %s" % tp)
+			all_tex_found = false
+	if all_tex_found:
+		_pass("All 4 gold egg PBR textures found (albedo, normal, roughness, metallic)")
+
+	# 8. Verify gold egg EggData has PBR textures assigned
+	var gm = get_node_or_null("/root/GameManager")
+	if gm and gm.egg_database.has(2):
+		var gold_egg: EggData = gm.egg_database[2]
+		if gold_egg.albedo_texture != null and gold_egg.normal_texture != null and gold_egg.roughness_texture != null and gold_egg.metallic_texture != null:
+			_pass("Gold egg (egg_id=2) has all 4 PBR textures assigned in GameManager database")
+		else:
+			_fail("Gold egg (egg_id=2) is missing one or more PBR texture assignments")
+	else:
+		_fail("GameManager egg_database missing gold egg (egg_id=2)")
 
 

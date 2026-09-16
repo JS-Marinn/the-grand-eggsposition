@@ -41,6 +41,18 @@ signal closed()
 @onready var subtitles_check: CheckBox = %SubtitlesCheck
 @onready var soft_sfx_check: CheckBox = %SoftSFXCheck
 
+# Graphics Quality Controls
+@onready var graphics_preset_opt: OptionButton = %GraphicsPresetOpt
+@onready var auto_detect_btn: Button = %AutoDetectBtn
+@onready var hw_detect_info_label: Label = %HWDetectInfoLabel
+@onready var shadow_opt: OptionButton = %ShadowOpt
+@onready var aa_opt: OptionButton = %AAOpt
+@onready var ssao_check: CheckBox = %SSAOCheck
+@onready var glow_check: CheckBox = %GlowCheck
+@onready var res_scale_opt: OptionButton = %ResScaleOpt
+@onready var mesh_lod_opt: OptionButton = %MeshLODOpt
+@onready var texture_quality_opt: OptionButton = %TextureQualityOpt
+
 @onready var btn_apply: Button = %BtnApply
 @onready var btn_back: Button = %BtnBack
 
@@ -85,7 +97,86 @@ func _populate_options() -> void:
 		colorblind_opt.add_item(tr("COLORBLIND_TRITANOPIA"), 3)
 		colorblind_opt.add_item(tr("COLORBLIND_ACHROMATOPSIA"), 4)
 
+	if graphics_preset_opt:
+		graphics_preset_opt.clear()
+		graphics_preset_opt.add_item(tr("PRESET_LOW"), 0)
+		graphics_preset_opt.add_item(tr("PRESET_MEDIUM"), 1)
+		graphics_preset_opt.add_item(tr("PRESET_HIGH"), 2)
+		graphics_preset_opt.add_item(tr("PRESET_ULTRA"), 3)
+		graphics_preset_opt.add_item(tr("PRESET_CUSTOM"), 4)
+
+	if shadow_opt:
+		shadow_opt.clear()
+		shadow_opt.add_item(tr("SHADOW_OFF"), 0)
+		shadow_opt.add_item(tr("SHADOW_LOW"), 1)
+		shadow_opt.add_item(tr("SHADOW_MEDIUM"), 2)
+		shadow_opt.add_item(tr("SHADOW_HIGH"), 3)
+
+	if aa_opt:
+		aa_opt.clear()
+		aa_opt.add_item(tr("AA_OFF"), 0)
+		aa_opt.add_item(tr("AA_FXAA"), 1)
+		aa_opt.add_item(tr("AA_MSAA_2X"), 2)
+		aa_opt.add_item(tr("AA_MSAA_4X"), 3)
+		aa_opt.add_item(tr("AA_MSAA_8X"), 4)
+
+	if res_scale_opt:
+		res_scale_opt.clear()
+		res_scale_opt.add_item(tr("SCALE_PERF"), 0)
+		res_scale_opt.add_item(tr("SCALE_BALANCED"), 1)
+		res_scale_opt.add_item(tr("SCALE_QUALITY"), 2)
+		res_scale_opt.add_item(tr("SCALE_NATIVE"), 3)
+
+	if mesh_lod_opt:
+		mesh_lod_opt.clear()
+		mesh_lod_opt.add_item(tr("LOD_LOW"), 0)
+		mesh_lod_opt.add_item(tr("LOD_MEDIUM"), 1)
+		mesh_lod_opt.add_item(tr("LOD_HIGH"), 2)
+		mesh_lod_opt.add_item(tr("LOD_ULTRA"), 3)
+
+	if texture_quality_opt:
+		texture_quality_opt.clear()
+		texture_quality_opt.add_item(tr("TEXQ_LOW"), 0)
+		texture_quality_opt.add_item(tr("TEXQ_MEDIUM"), 1)
+		texture_quality_opt.add_item(tr("TEXQ_HIGH"), 2)
+		texture_quality_opt.add_item(tr("TEXQ_ULTRA"), 3)
+
 func _sync_from_manager() -> void:
+	if graphics_preset_opt:
+		graphics_preset_opt.selected = SettingsManager.graphics_preset
+
+	if hw_detect_info_label:
+		if SettingsManager.has_auto_detected and not SettingsManager.detected_gpu_name.is_empty():
+			var p_key: String = SettingsManager.get_preset_key(SettingsManager.graphics_preset)
+			hw_detect_info_label.text = tr("HW_DETECTED_INFO") % [SettingsManager.detected_gpu_name, tr(p_key)]
+		else:
+			hw_detect_info_label.text = ""
+
+	if shadow_opt:
+		shadow_opt.selected = SettingsManager.shadow_quality
+
+	if aa_opt:
+		aa_opt.selected = SettingsManager.anti_aliasing
+
+	if ssao_check:
+		ssao_check.button_pressed = SettingsManager.ssao_enabled
+
+	if glow_check:
+		glow_check.button_pressed = SettingsManager.glow_enabled
+
+	if res_scale_opt:
+		match snappedf(SettingsManager.resolution_scale, 0.01):
+			0.67: res_scale_opt.selected = 0
+			0.77: res_scale_opt.selected = 1
+			0.85: res_scale_opt.selected = 2
+			_: res_scale_opt.selected = 3
+
+	if mesh_lod_opt:
+		mesh_lod_opt.selected = SettingsManager.mesh_lod_quality
+
+	if texture_quality_opt:
+		texture_quality_opt.selected = SettingsManager.texture_quality
+
 	if window_mode_opt:
 		window_mode_opt.selected = SettingsManager.window_mode
 
@@ -200,6 +291,74 @@ func _connect_signals() -> void:
 
 	if lang_opt and not lang_opt.item_selected.is_connected(_on_language_selected):
 		lang_opt.item_selected.connect(_on_language_selected)
+
+	if graphics_preset_opt and not graphics_preset_opt.item_selected.is_connected(_on_preset_selected):
+		graphics_preset_opt.item_selected.connect(_on_preset_selected)
+
+	if auto_detect_btn and not auto_detect_btn.pressed.is_connected(_on_auto_detect_pressed):
+		auto_detect_btn.pressed.connect(_on_auto_detect_pressed)
+		auto_detect_btn.mouse_entered.connect(AudioManager.play_ui_hover)
+
+	if shadow_opt and not shadow_opt.item_selected.is_connected(_on_shadow_opt_selected):
+		shadow_opt.item_selected.connect(_on_shadow_opt_selected)
+
+	if aa_opt and not aa_opt.item_selected.is_connected(_on_aa_opt_selected):
+		aa_opt.item_selected.connect(_on_aa_opt_selected)
+
+	if ssao_check and not ssao_check.toggled.is_connected(_on_ssao_toggled):
+		ssao_check.toggled.connect(_on_ssao_toggled)
+
+	if glow_check and not glow_check.toggled.is_connected(_on_glow_toggled):
+		glow_check.toggled.connect(_on_glow_toggled)
+
+	if res_scale_opt and not res_scale_opt.item_selected.is_connected(_on_res_scale_opt_selected):
+		res_scale_opt.item_selected.connect(_on_res_scale_opt_selected)
+
+	if mesh_lod_opt and not mesh_lod_opt.item_selected.is_connected(_on_mesh_lod_opt_selected):
+		mesh_lod_opt.item_selected.connect(_on_mesh_lod_opt_selected)
+
+	if texture_quality_opt and not texture_quality_opt.item_selected.is_connected(_on_texture_quality_opt_selected):
+		texture_quality_opt.item_selected.connect(_on_texture_quality_opt_selected)
+
+func _on_preset_selected(index: int) -> void:
+	if index >= 0 and index < 4:
+		AudioManager.play_ui_click()
+		SettingsManager.apply_preset(index)
+		_sync_from_manager()
+
+func _on_custom_graphics_changed() -> void:
+	if graphics_preset_opt:
+		graphics_preset_opt.selected = SettingsManager.GraphicsPreset.CUSTOM
+		SettingsManager.graphics_preset = SettingsManager.GraphicsPreset.CUSTOM
+
+func _on_shadow_opt_selected(_idx: int) -> void:
+	_on_custom_graphics_changed()
+
+func _on_aa_opt_selected(_idx: int) -> void:
+	_on_custom_graphics_changed()
+
+func _on_ssao_toggled(_val: bool) -> void:
+	_on_custom_graphics_changed()
+
+func _on_glow_toggled(_val: bool) -> void:
+	_on_custom_graphics_changed()
+
+func _on_res_scale_opt_selected(_idx: int) -> void:
+	_on_custom_graphics_changed()
+
+func _on_mesh_lod_opt_selected(_idx: int) -> void:
+	_on_custom_graphics_changed()
+
+func _on_texture_quality_opt_selected(_idx: int) -> void:
+	_on_custom_graphics_changed()
+
+func _on_auto_detect_pressed() -> void:
+	AudioManager.play_ui_click()
+	var info: Dictionary = SettingsManager.detect_hardware_and_recommend()
+	if hw_detect_info_label:
+		var p_name: String = tr(info.get("preset_key", "PRESET_HIGH"))
+		hw_detect_info_label.text = tr("HW_DETECTED_INFO") % [info.get("gpu_name", "GPU"), p_name]
+	_sync_from_manager()
 
 func _on_colorblind_intensity_slider_value_changed(val: float) -> void:
 	if colorblind_intensity_val:
@@ -318,6 +477,28 @@ func _on_apply_pressed() -> void:
 
 	if soft_sfx_check:
 		SettingsManager.soft_continuous_sfx = soft_sfx_check.button_pressed
+
+	# Save graphics settings
+	if graphics_preset_opt:
+		SettingsManager.graphics_preset = graphics_preset_opt.selected
+	if shadow_opt:
+		SettingsManager.shadow_quality = shadow_opt.selected
+	if aa_opt:
+		SettingsManager.anti_aliasing = aa_opt.selected
+	if ssao_check:
+		SettingsManager.ssao_enabled = ssao_check.button_pressed
+	if glow_check:
+		SettingsManager.glow_enabled = glow_check.button_pressed
+	if res_scale_opt:
+		match res_scale_opt.selected:
+			0: SettingsManager.resolution_scale = 0.67
+			1: SettingsManager.resolution_scale = 0.77
+			2: SettingsManager.resolution_scale = 0.85
+			3: SettingsManager.resolution_scale = 1.0
+	if mesh_lod_opt:
+		SettingsManager.mesh_lod_quality = mesh_lod_opt.selected
+	if texture_quality_opt:
+		SettingsManager.texture_quality = texture_quality_opt.selected
 
 	SettingsManager.save_settings()
 	SettingsManager.apply_all()

@@ -12,6 +12,7 @@
 sky_top_color = Color(0.45, 0.65, 0.85, 1)
 sky_horizon_color = Color(0.95, 0.88, 0.75, 1)
 ground_bottom_color = Color(0.3, 0.25, 0.2, 1)
+ground_horizon_color = Color(0.55, 0.45, 0.35, 1)
 
 [sub_resource type="Sky" id="Sky_atrium"]
 sky_material = SubResource("ProceduralSkyMaterial_atrium")
@@ -153,245 +154,245 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="EggsOnFloor" type="Node3D" parent="."]
 
-[node name="Egg_Lapis_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.960)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.960)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.960)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.960)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.600)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.600)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.600)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.600)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.140, 0.251, -2.240)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.780, 0.251, -2.240)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.420, 0.251, -2.240)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Lapis_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Spirals_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.060, 0.251, -2.240)
-egg_id = 1
+egg_id = 21
 
-[node name="Egg_Gold_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.860)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.860)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.860)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.860)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.500)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.500)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.500)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.500)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.840, 0.251, -1.140)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.480, 0.251, -1.140)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.120, 0.251, -1.140)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Gold_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tendrils_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.760, 0.251, -1.140)
-egg_id = 2
+egg_id = 22
 
-[node name="Egg_Bronze_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -3.160)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -3.160)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -3.160)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -3.160)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -2.800)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -2.800)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -2.800)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -2.800)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.540, 0.251, -2.440)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.180, 0.251, -2.440)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.180, 0.251, -2.440)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Bronze_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Leaves_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.540, 0.251, -2.440)
-egg_id = 11
+egg_id = 23
 
-[node name="Egg_Silver_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.860)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.860)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.860)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.860)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.500)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.500)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.500)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.500)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.760, 0.251, -1.140)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.120, 0.251, -1.140)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.480, 0.251, -1.140)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Silver_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Tides_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.840, 0.251, -1.140)
-egg_id = 3
+egg_id = 24
 
-[node name="Egg_Copper_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_01" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.960)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_02" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.960)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_03" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.960)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_04" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.960)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_05" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.600)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_06" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.600)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_07" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.600)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_08" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.600)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_09" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.060, 0.251, -2.240)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_10" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.420, 0.251, -2.240)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_11" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.780, 0.251, -2.240)
-egg_id = 4
+egg_id = 25
 
-[node name="Egg_Copper_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
+[node name="Egg_Delft_Guilloche_12" parent="EggsOnFloor" instance=ExtResource("4_egg_scene")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.140, 0.251, -2.240)
-egg_id = 4
+egg_id = 25
 [node name="HUD" parent="." instance=ExtResource("2_hud_scene")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause_scene")]
@@ -400,4 +401,43 @@ egg_id = 4
  
 [node name="WayfinderSystem" type="Node3D" parent="."]
 script = ExtResource("7_wayfinder_script")
+
+[node name="EyeLevelCuratorShowcase" type="Node3D" parent="."]
+
+[node name="CuratorSpotlight" type="OmniLight3D" parent="EyeLevelCuratorShowcase"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -1.6)
+light_color = Color(0.98, 0.96, 0.92, 1)
+light_energy = 0.5
+omni_range = 3.0
+
+[node name="Egg_Delft_01_Spirals" parent="EyeLevelCuratorShowcase" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.73, 1.48, -1.64)
+egg_id = 21
+freeze = true
+auto_rotate = true
+
+[node name="Egg_Delft_02_Tendrils" parent="EyeLevelCuratorShowcase" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.37, 1.48, -1.76)
+egg_id = 22
+freeze = true
+auto_rotate = true
+
+[node name="Egg_Delft_03_Leaves" parent="EyeLevelCuratorShowcase" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 1.48, -1.8)
+egg_id = 23
+freeze = true
+auto_rotate = true
+
+[node name="Egg_Delft_04_Tides" parent="EyeLevelCuratorShowcase" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.37, 1.48, -1.76)
+egg_id = 24
+freeze = true
+auto_rotate = true
+
+[node name="Egg_Delft_05_Guilloche" parent="EyeLevelCuratorShowcase" instance=ExtResource("4_egg_scene")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.73, 1.48, -1.64)
+egg_id = 25
+freeze = true
+auto_rotate = true
+
 

@@ -28,6 +28,18 @@ func _ready() -> void:
 		
 	_setup_visuals_and_physics()
 
+@export var auto_rotate: bool = false
+var visual_root: Node3D = null
+var _hover_time: float = 0.0
+
+func _process(delta: float) -> void:
+	if auto_rotate and freeze and not is_being_suctioned:
+		_hover_time += delta
+		var rot_node: Node3D = visual_root if visual_root else mesh_instance
+		if rot_node:
+			rot_node.rotation.y += delta * 0.75
+			rot_node.position.y = sin(_hover_time * 2.0) * 0.03
+
 func _setup_visuals_and_physics() -> void:
 	# Enable auto-sleeping and tactile rolling damping
 	can_sleep = true
@@ -44,12 +56,14 @@ func _setup_visuals_and_physics() -> void:
 		physics_material_override = phys_mat
 	
 	mesh_instance = get_node_or_null("MeshInstance3D")
+	visual_root = mesh_instance
 	if egg_data and egg_data.custom_scene:
 		if mesh_instance:
 			mesh_instance.visible = false
 		var custom_visual: Node3D = egg_data.custom_scene.instantiate() as Node3D
 		custom_visual.name = "CustomVisual"
 		add_child(custom_visual)
+		visual_root = custom_visual
 		var inner_mesh = custom_visual.find_child("SM_Egg_Standard", true, false) as MeshInstance3D
 		if not inner_mesh:
 			inner_mesh = custom_visual.find_child("*Mesh*", true, false) as MeshInstance3D
@@ -63,16 +77,14 @@ func _setup_visuals_and_physics() -> void:
 			add_child(mesh_instance)
 		else:
 			mesh_instance.mesh = BASE_EGG_MESH
+		visual_root = mesh_instance
 		
 		# Apply tactile material matching the EggData specs
-		var mat: StandardMaterial3D = StandardMaterial3D.new()
 		if egg_data:
-			mat.albedo_color = egg_data.albedo_color
-			if egg_data.albedo_texture:
-				mat.albedo_texture = egg_data.albedo_texture
-			mat.roughness = egg_data.roughness
-			mat.metallic = egg_data.metallic
-		mesh_instance.material_override = mat
+			mesh_instance.material_override = egg_data.create_material()
+		else:
+			var mat: StandardMaterial3D = StandardMaterial3D.new()
+			mesh_instance.material_override = mat
 	
 	# Reuse existing collision shape or create collision capsule
 	collision_shape = get_node_or_null("CollisionShape3D")
@@ -130,6 +142,8 @@ func trigger_resonance_highlight(duration: float = 4.0) -> void:
 	var mat: StandardMaterial3D = mesh_instance.material_override as StandardMaterial3D
 	if not mat:
 		return
+	mat = mat.duplicate() as StandardMaterial3D
+	mesh_instance.material_override = mat
 		
 	if _resonance_tween and _resonance_tween.is_valid():
 		_resonance_tween.kill()

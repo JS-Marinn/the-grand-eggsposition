@@ -26,6 +26,35 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_viewport_bg"]
+bg_color = Color(0.12, 0.09, 0.06, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.68, 0.54, 0.28, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pedestal"]
+albedo_color = Color(0.18, 0.14, 0.11, 1)
+metallic = 0.4
+roughness = 0.5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pedestal"]
+material = SubResource("StandardMaterial3D_pedestal")
+top_radius = 0.32
+bottom_radius = 0.36
+height = 0.08
+
+[sub_resource type="Environment" id="Environment_compendium"]
+ambient_light_source = 2
+ambient_light_color = Color(0.35, 0.32, 0.29, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 3
+
 [node name="JournalMenu" type="Control"]
 process_mode = 3
 layout_mode = 3
@@ -105,23 +134,30 @@ theme_override_constants/separation = 10
 
 [node name="TabBtnCatalog" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 38)
+custom_minimum_size = Vector2(210, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "📖 Catálogo de Colección"
+
+[node name="TabBtnCompendium" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(210, 38)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔍 Compendio 3D"
 
 [node name="TabBtnSkills" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 38)
+custom_minimum_size = Vector2(210, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "⚜ Maestría del Conservador"
 
 [node name="TabBtnSecrets" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/TabBarHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 38)
+custom_minimum_size = Vector2(210, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "🔑 Secretos de Barnaby"
 
 [node name="HSeparator" type="HSeparator" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox"]
@@ -249,3 +285,254 @@ theme_override_colors/font_color = Color(0.50, 0.45, 0.40, 1)
 theme_override_font_sizes/font_size = 13
 text = "Pista del Conservador: Emplea la Campana de Resonancia [Q] al alcanzar el Rango 3 (Oído Absoluto) para detectar el tintineo de los huevitos blancos a menos de 15 metros."
 autowrap_mode = 2
+
+[node name="PanelCompendium" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CompendiumListVBox" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium"]
+custom_minimum_size = Vector2(270, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CompendiumListHeader" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumListVBox"]
+layout_mode = 2
+
+[node name="CompendiumCountLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumListVBox/CompendiumListHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.35, 0.28, 0.18, 1)
+theme_override_font_sizes/font_size = 13
+text = "Descubiertos: 5 / 15"
+
+[node name="CompendiumFilterOpt" type="OptionButton" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumListVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+
+[node name="CompendiumEggScroll" type="ScrollContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumListVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CompendiumEggList" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumListVBox/CompendiumEggScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="CompendiumDetailsVBox" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="DetailsHeaderHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CompendiumEggTitle" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 18
+text = "Huevo Lapislázuli"
+
+[node name="CompendiumRarityBadge" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CompendiumRarityLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox/CompendiumRarityBadge"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "★ RARO"
+
+[node name="CompendiumSeriesLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.38, 0.28, 1)
+theme_override_font_sizes/font_size = 13
+text = "Minerales y Gemas"
+
+[node name="CompendiumNavHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="CompendiumPrevBtn" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox/CompendiumNavHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+text = "<"
+
+[node name="CompendiumNextBtn" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DetailsHeaderHBox/CompendiumNavHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+text = ">"
+
+[node name="ViewportWrapper" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 240)
+theme_override_styles/panel = SubResource("StyleBoxFlat_viewport_bg")
+
+[node name="CompendiumViewportContainer" type="SubViewportContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper"]
+unique_name_in_owner = true
+layout_mode = 2
+stretch = true
+
+[node name="CompendiumSubViewport" type="SubViewport" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer"]
+unique_name_in_owner = true
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+msaa_3d = 3
+screen_space_aa = 1
+scaling_3d_mode = 0
+size = Vector2i(680, 240)
+render_target_update_mode = 3
+
+[node name="CompendiumStage" type="Node3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+environment = SubResource("Environment_compendium")
+
+[node name="CompendiumCamera" type="Camera3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871557, 0.996195, 0, 0.08, 1.15)
+fov = 38.0
+
+[node name="KeyLight" type="DirectionalLight3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+transform = Transform3D(0.707107, -0.353553, 0.612372, 0, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 0, 2, 2)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.15
+
+[node name="RimLight" type="DirectionalLight3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+transform = Transform3D(-0.707107, 0.353553, -0.612372, 0, 0.866025, 0.5, 0.707107, 0.353553, -0.612372, 0, 1.5, -2)
+light_color = Color(0.85, 0.9, 1, 1)
+light_energy = 0.65
+
+[node name="FillLight" type="OmniLight3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0.9)
+light_color = Color(1, 0.94, 0.88, 1)
+light_energy = 0.35
+omni_range = 4.0
+
+[node name="PedestalMesh" type="MeshInstance3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.22, 0)
+mesh = SubResource("CylinderMesh_pedestal")
+
+[node name="CompendiumEggPivot" type="Node3D" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/CompendiumViewportContainer/CompendiumSubViewport/CompendiumStage"]
+unique_name_in_owner = true
+
+[node name="ViewportOverlay" type="Control" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CompendiumResetBtn" type="Button" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/ViewportOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -110.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 34.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 11
+text = "⟲ Restablecer"
+
+[node name="CompendiumHintLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/ViewportWrapper/ViewportOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -24.0
+offset_right = 180.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.9, 0.85, 0.75, 0.7)
+theme_override_font_sizes/font_size = 11
+text = "🖱 Arrastra para rotar en 3D • Rueda para zoom"
+horizontal_alignment = 1
+
+[node name="DossierHBox" type="HBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="LoreCard" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LoreMargin" type="MarginContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/LoreCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="LoreVBox" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/LoreCard/LoreMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="LoreHeader" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/LoreCard/LoreMargin/LoreVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 13
+text = "Historia y Procedencia:"
+
+[node name="CompendiumLoreLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/LoreCard/LoreMargin/LoreVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.35, 0.3, 0.25, 1)
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="NotesCard" type="PanelContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NotesMargin" type="MarginContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/NotesCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="NotesVBox" type="VBoxContainer" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/NotesCard/NotesMargin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NotesHeader" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/NotesCard/NotesMargin/NotesVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.24, 0.15, 0.08, 1)
+theme_override_font_sizes/font_size = 13
+text = "Notas de Campo y Conservación:"
+
+[node name="CompendiumNotesLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox/DossierHBox/NotesCard/NotesMargin/NotesVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.35, 0.3, 0.25, 1)
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+
+[node name="CompendiumLocationLabel" type="Label" parent="Center/BookPanel/ParchmentMargin/Parchment/InnerMargin/MainVBox/ContentContainer/PanelCompendium/CompendiumDetailsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.4, 0.25, 1)
+theme_override_font_sizes/font_size = 12
+text = "Vitrina 1 (Minerales y Gemas I) • Balda 1"
+

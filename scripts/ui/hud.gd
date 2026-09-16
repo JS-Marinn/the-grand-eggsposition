@@ -173,7 +173,7 @@ func _update_hud() -> void:
 		if player and player.has_method("get_current_held_egg") and not GameManager.player_basket.is_empty():
 			var held: EggData = player.get_current_held_egg()
 			if held:
-				basket_text += " • %s (%d/%d)" % [held.get_display_name(), player.selected_held_index + 1, GameManager.player_basket.size()]
+				basket_text += " • %s (%d/%d) • %s" % [held.get_display_name(), player.selected_held_index + 1, GameManager.player_basket.size(), tr("UI_PROMPT_INSPECT")]
 		basket_label.text = basket_text
 	if progress_label:
 		var raw_text: String = tr("UI_TOTAL_PROGRESS")

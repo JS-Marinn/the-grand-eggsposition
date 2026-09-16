@@ -139,6 +139,15 @@ func _input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 
+	if event.is_action_pressed("inspect_egg") or (event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F):
+		var journal = get_tree().root.find_child("JournalMenu", true, false)
+		if journal and journal.has_method("open_compendium_egg"):
+			var held_egg: EggData = get_current_held_egg()
+			var target_id: int = held_egg.egg_id if held_egg else 1
+			journal.open_compendium_egg(target_id)
+			get_viewport().set_input_as_handled()
+			return
+
 	if event.is_action_pressed("sprint") and SettingsManager and SettingsManager.toggle_sprint:
 		_is_sprint_toggled = not _is_sprint_toggled
 
@@ -852,13 +861,7 @@ func _update_held_egg_display(_animate: bool = false) -> void:
 		if held_egg_mesh:
 			held_egg_mesh.visible = true
 			held_egg_mesh.mesh = BASE_EGG_MESH
-			var mat: StandardMaterial3D = StandardMaterial3D.new()
-			mat.albedo_color = egg.albedo_color
-			if egg.albedo_texture:
-				mat.albedo_texture = egg.albedo_texture
-			mat.roughness = egg.roughness
-			mat.metallic = egg.metallic
-			held_egg_mesh.material_override = mat
+			held_egg_mesh.material_override = egg.create_material()
 
 func _disable_shadows_recursive(node: Node) -> void:
 	if node is GeometryInstance3D:

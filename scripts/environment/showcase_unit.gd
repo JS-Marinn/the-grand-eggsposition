@@ -102,14 +102,14 @@ func _apply_shelf_model_materials(model: Node3D) -> void:
 	brass_mat.roughness = 0.38
 
 
-	for child in model.get_children():
-		if child is MeshInstance3D:
-			var mi := child as MeshInstance3D
-			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
-			if "Holder" in mi.name:
-				mi.material_override = brass_mat
-			else:
-				mi.material_override = oak_mat
+	var meshes = model.find_children("*", "MeshInstance3D", true, false)
+	for m in meshes:
+		var mi := m as MeshInstance3D
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+		if "Holder" in mi.name:
+			mi.material_override = brass_mat
+		else:
+			mi.material_override = oak_mat
 
 
 func _setup_multimesh() -> void:
@@ -596,7 +596,7 @@ func _refresh_visuals() -> void:
 		var specular: float = 0.5
 		var emission: float = egg_info.emission_energy if egg_info else 0.0
 		var custom_data: Color = Color(roughness, metallic, specular, emission)
-		var is_custom: bool = (egg_info != null and (egg_info.custom_scene != null or egg_info.custom_mesh != null))
+		var is_custom: bool = (egg_info != null and egg_info.has_custom_visuals())
 
 		for s in range(EGGS_PER_DOZEN):
 			var slot_idx: int = (d - 1) * EGGS_PER_DOZEN + s

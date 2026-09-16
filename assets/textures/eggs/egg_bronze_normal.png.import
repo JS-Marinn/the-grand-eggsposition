@@ -2,30 +2,27 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bl8iofyemqbwe"
-path.s3tc="res://.godot/imported/baseegg_Untitled.png-8a9d764bf24ae3131181c0d45c574699.s3tc.ctex"
+uid="uid://ickchnt68hd1"
+path.bptc="res://.godot/imported/egg_bronze_normal.png-dd49bcefab4223484a31acc6e6d9db18.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "2b7a70fa59f8173635bcbe956bad56c6"
-}
 
 [deps]
 
-source_file="res://assets/models/baseegg_Untitled.png"
-dest_files=["res://.godot/imported/baseegg_Untitled.png-8a9d764bf24ae3131181c0d45c574699.s3tc.ctex"]
+source_file="res://assets/textures/eggs/egg_bronze_normal.png"
+dest_files=["res://.godot/imported/egg_bronze_normal.png-dd49bcefab4223484a31acc6e6d9db18.bptc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=false
+compress/high_quality=true
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
-compress/normal_map=0
+compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
